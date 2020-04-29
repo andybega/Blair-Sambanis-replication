@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+.DS_Store
+.Rapp.history
+
+# >100 MB
+tuning-experiments/trafo-data
