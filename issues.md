@@ -19,6 +19,36 @@ is to assess how …
 
 This document lists the primary issues we identified.
 
+1.  Using AUC for smoothed ROC curves. Does the interpretation of Table
+    1, and superiority of the escalation model, depend on the choice to
+    use smoothed ROC curves?
+
+2.  In Table 4, are the forecasts evaluated against incidence or onset?
+    The data from 2001 to 2015 have 20 civil war onsets in total, yet
+    Table 4 appears to show 15 and 16 positive events for 2016 only. If
+    this is indeed incidence, but the original models and forecasts were
+    for onset, then this is a incorrect assessment of the forecasts’
+    accuracy.
+
+<!-- end list -->
+
+  - Table 4\!
+      - There are only 20 onsets from 2001 to 2015 But there are 15
+        “Persistence” cases (top of table 4) and 16 “Change” cases
+        (bottom of table 4)
+
+<!-- end list -->
+
+3.  Unorthodox RF hyperparameter choices that may be driving the OOS
+    test prediction results. There are two issues here. One is that the
+    RF models are so unorthodox. I’m not sure that this in itself is a
+    problem. But the second potential problem is that the hyperparameter
+    values may not have been tuned in a way that works the best for the
+    non-escalation model, and especially the CAMEO model with 1,100+
+    features.
+
+<!-- end list -->
+
   - Improperly tuning of models
       - RM: In a twitter DM, I asked Blair to clarify – “\[I\] was
         wondering how you all came to your tuning procedure for the RF
@@ -26,18 +56,126 @@ This document lists the primary issues we identified.
         honestly. … Trial and error was on early data. Forecasts were
         for much later data”
   - Using a regression framework in a classification problem
-  - Their train/test approach
-      - 5-year forecasts for sep plots and AUC scores)
   - Rounding of AUC/ROC scores
-  - Lack of yearly test forecasts in favor of a single 5-year test
-    forecast
-  - Table 4\!
-      - There are only 20 onsets from 2001 to 2015 But there are 15
-        “Persistence” cases (top of table 4) and 16 “Change” cases
-        (bottom of table 4)
+      - AB: smoothing or rounding? I think rounding is ok.
   - Treating the output of a RF regression model as Pr() – (RM: I guess
     this is akin to a Linear Probability Model, but I’m not sure if this
     is possible in a RF framework
+      - It’s hacky but it works. The resulting forecasts are within the
+        0-1 interval.
+
+The table below shows the randomForest package default hyperparameter
+values for a binary classification problem like the one at hand and
+compares them to the B\&S base settings. Some hyperparameters have
+heuristics that determine the default value based on characteristics of
+the input data; we note these in the second column and what the realized
+default setting would be for the basic Escalation model (first row in
+Table 1 in the paper) in the 3rd column. The last column has the
+settings B\&S use.
+
+| Hyperparameter | Default heuristic                                  | Default values (Escalation) | B\&S value |
+| -------------- | -------------------------------------------------- | --------------------------- | ---------- |
+| type           |                                                    | classification              | regression |
+| ntree          |                                                    | 500                         | 100,000    |
+| mtry           | `floor(sqrt(ncol(x)))`                             | 3                           | 3          |
+| replace        |                                                    | true                        | false      |
+| sampsize       | `nrow(x)` if replace, else `ceiling(.632*nrow(x))` | 11,869                      | 100        |
+| nodesize       | 1 for classification                               | 1                           | 1          |
+| maxnodes       |                                                    | null                        | 5          |
+
+It is worth noting that commonly the ntree, mtry, and nodesize
+parameters are the main parameters tuned; of these three in the B\&S
+specification only 1, the ntree parameter, deviates from the default
+settings.
+
+In any case, there is a stark contrast in the default RF settings and
+the way B\&S use the RF models. The default approach is to train a
+relatively small number (ntree; 500) of classification trees, but where
+each tree is fairly big in that it is trained on data that has the same
+number of rows as the training data, albeit sampled with replacement
+(replace is true; sampsize is 11,869), and allowed to grow fairly deep
+(this is governed by nodesize (1), which is the minimum size a terminal
+node must have). In contrast, B\&S grow very extensive forests with a
+large number of trees (100,000 compared to 500), but each tree is very
+small and shallow; only a 100 rows are sampled from the training data
+for each tree, and the trees are constrained to at most 5 terminal nodes
+(maxnodes).
+
+This approach only works due to the other unorthodox choice, which is to
+use regression, not classificaton, trees. Trying to use classification
+trees with the other parameter settings in fact does not work at all
+because it is almost guaranteed that a sample of 100 from the 11,869
+training data rows with 9 positive cases will only include 0 (negative)
+outcomes in the sample. As it is, using regression with a 0 or 1 outcome
+produces warnings when estimating the models:
+
+    Warning message:
+    In randomForest.default(y = as.integer(train_df$incidence_civil_ns_plus1 ==  :
+      The response has five or fewer unique values.  Are you sure you want to do regression?
+
+While unorthodox, the approach does work. It produces predictions that
+are within the 0 to 1 interval. The concern is that the settings work
+well only for the escalation model, and only for the particular test set
+at hand. Specifically we wonder if the CAMEO model with 1,100+ features,
+compared to 10 or less for the other specifications, would perform
+better with a more explicit tuning procedure.
+
+The table below shows cross-validated training and OOS test AUC-ROC for
+the original 1 month escalation model and a modified version which uses
+more conventional random forest parameter settings (classification, 5000
+trees, and default settings otherwise). The first and second columns are
+average and SD AUC-ROC obtained through repeated cross-validation on the
+training data set. Because there are only 9 positive cases in the whole
+training data, and thus to ensure that any given split will include at
+least 1 positive case in each data partition, we use 2-fold CV,
+i.e. splitting the original training data into equally-sized new
+training and validation sets. This is repeated 21 times for a total of
+42 OOS performance samples for each model. The last column shows the OOS
+performance on the original test set. The first value in this column
+corresponds to the base escalation model results reported Table 1 in the
+B\&S paper when *not* using smoothed ROC curves.
+
+``` r
+tbl <- structure(list(Model = c("Escalation, 1mo", "Modified Escalation, 1mo"
+), Avg_CV_ROC_AUC = c(0.698772142673124, 0.643982732304452), 
+    SD_CV_ROC_AUC = c(0.136834250535024, 0.104102374345325), 
+    Test_ROC_AUC = c(0.786872878159185, 0.583391239320482)), row.names = c(NA, 
+-2L), class = c("tbl_df", "tbl", "data.frame"))
+
+knitr::kable(tbl, digits = 2)
+```
+
+| Model                    | Avg\_CV\_ROC\_AUC | SD\_CV\_ROC\_AUC | Test\_ROC\_AUC |
+| :----------------------- | ----------------: | ---------------: | -------------: |
+| Escalation, 1mo          |              0.70 |             0.14 |           0.79 |
+| Modified Escalation, 1mo |              0.64 |             0.10 |           0.58 |
+
+Two thigs stand out:
+
+  - The escalation model has better performance in the test data than in
+    the training CV samples. This is consistent with hyperparameter
+    values that were (over-)fit to the test data.
+  - Although the original escalation model outperforms the modified
+    model in the training CV resamples (p \< 0.05), the difference in
+    means is much less pronounced than in the test data.
+
+<!-- end list -->
+
+4.  Design choices
+
+Rick, I think the points below are more subjective choices. The first
+two points above are IMO potentially objectively incorrect technical
+errors that could undermine the original B\&S findings. The 3rd point
+about the RF models is somewhere between objective error and subjective
+choice. I’m not sure. But the points below I would say are subjective
+choices that could alter their findings and that I think are justifiable
+criticisms, but I think it’ll be easier for someone to push back on this
+if they wanted to.
+
+  - Their train/test approach
+      - 5-year forecasts for sep plots and AUC scores)
+  - Lack of yearly test forecasts in favor of a single 5-year test
+    forecast
   - The lack of procedures to account for rare events in an RF model
 
 To-do
@@ -46,10 +184,14 @@ To-do
       - Can we get their results
       - RM: maybe I can go through their code and bring it “up-to-date”
         i.e. make it tidy…
+          - AB: that sounds like a lot of work
       - Figure out how they built table 4 (It looks like this is done in
         STATA)
       - Check to see if it matter that they are using regression for a
         classification problem
+          - AB: i tried switching the models as they have them just from
+            regression to classification and it breaks because the data
+            samples end up being all 0’s.
 2.  Address tuning
       - Does properly tuning the CAMEO model improve its performance?
 3.  Address AUC/ROC smoothing…
