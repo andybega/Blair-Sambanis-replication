@@ -1203,7 +1203,7 @@
     
       		# We are only running the base specification, for now... (RM: 4/29/2020)
       		
-    for(model in c("escalation", "goldstein", "all_CAMEO")){
+    for(model in c("escalation", "quad", "goldstein", "all_CAMEO")){
       
     if(model == "escalation"){
       variables <- c("gov_opp_low_level",
