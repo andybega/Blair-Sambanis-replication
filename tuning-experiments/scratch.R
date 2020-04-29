@@ -49,7 +49,7 @@ table(complete.cases(train_df[, escalation]))
 table(complete.cases(train_df[, all_cameo]))
 
 set.seed(5234)
-folds <- vfold_cv(train_df, v = 2, repeats = 7*1)
+folds <- vfold_cv(train_df, v = 2, repeats = 7*3)
 map_dbl(folds$splits, function(x) {dat = testing(x); sum(dat[[dv]]=="1")})
 
 res <- foreach(i=1:nrow(folds)) %dopar% {
@@ -97,44 +97,44 @@ res <- foreach(i=1:nrow(folds)) %dopar% {
            AUC = roc_auc(test_preds_2, truth, preds)[[".estimate"]]
     )))
 
-  # CAMEO models
-  mdl_3 <- suppressWarnings({
-    randomForest(y = as.integer(train_i$incidence_civil_ns_plus1=="1"),
-                 x = train_i[, all_cameo],
-                 type = "regression",
-                 ntree = 100000,
-                 maxnodes = 5,
-                 sampsize = 100,
-                 replace = FALSE,
-                 do.trace = FALSE)
-  })
-
-  test_preds_3 <- tibble(
-    preds = as.vector(predict(mdl_3, newdata = test_i[, all_cameo],
-                              type = "response")),
-    truth = test_i[, dv])
-  res_i <- c(res_i, list(
-    tibble(i = i,
-           model = "3",
-           AUC = roc_auc(test_preds_3, truth, preds)[[".estimate"]]
-    )))
-
-  mdl_4 <- randomForest(y = train_i$incidence_civil_ns_plus1,
-                                   x = train_i[, all_cameo],
-                                   type = "classification",
-                                   ntree = 5000,
-                                   mtry  = 34,
-                                   replace = TRUE,
-                                   do.trace = FALSE)
-
-  test_preds_4 <- tibble(
-    preds = as.vector(predict(mdl_4, newdata = test_i[, all_cameo], type = "prob")[, "1"]),
-    truth = test_i[, dv])
-  res_i <- c(res_i, list(
-    tibble(i = i,
-           model = "4",
-           AUC = roc_auc(test_preds_4, truth, preds)[[".estimate"]]
-    )))
+  # # CAMEO models
+  # mdl_3 <- suppressWarnings({
+  #   randomForest(y = as.integer(train_i$incidence_civil_ns_plus1=="1"),
+  #                x = train_i[, all_cameo],
+  #                type = "regression",
+  #                ntree = 100000,
+  #                maxnodes = 5,
+  #                sampsize = 100,
+  #                replace = FALSE,
+  #                do.trace = FALSE)
+  # })
+  #
+  # test_preds_3 <- tibble(
+  #   preds = as.vector(predict(mdl_3, newdata = test_i[, all_cameo],
+  #                             type = "response")),
+  #   truth = test_i[, dv])
+  # res_i <- c(res_i, list(
+  #   tibble(i = i,
+  #          model = "3",
+  #          AUC = roc_auc(test_preds_3, truth, preds)[[".estimate"]]
+  #   )))
+  #
+  # mdl_4 <- randomForest(y = train_i$incidence_civil_ns_plus1,
+  #                                  x = train_i[, all_cameo],
+  #                                  type = "classification",
+  #                                  ntree = 5000,
+  #                                  mtry  = 34,
+  #                                  replace = TRUE,
+  #                                  do.trace = FALSE)
+  #
+  # test_preds_4 <- tibble(
+  #   preds = as.vector(predict(mdl_4, newdata = test_i[, all_cameo], type = "prob")[, "1"]),
+  #   truth = test_i[, dv])
+  # res_i <- c(res_i, list(
+  #   tibble(i = i,
+  #          model = "4",
+  #          AUC = roc_auc(test_preds_4, truth, preds)[[".estimate"]]
+  #   )))
 
 
   res_i <- bind_rows(res_i)
@@ -143,10 +143,16 @@ res <- foreach(i=1:nrow(folds)) %dopar% {
 
 res <- bind_rows(res)
 
+cv_fit <- res %>%
+  group_by(model) %>%
+  summarize(mean_AUC = mean(AUC),
+            sd_AUC = sd(AUC))
+
 tbl <- tibble(
-  Model = c("Original escalation, 1mo", "Modified escalation, 1mo", "Original CAMEO", "Modified CAMEO"),
-  Avg_CV_ROC_AUC = c(mean(auc_1), mean(auc_2), mean(auc_3), mean(auc_4)),
-  Test_ROC_AUC = rep(NA, 4)
+  Model = c("Escalation, 1mo", "Modified Escalation, 1mo"),
+  Avg_CV_ROC_AUC = cv_fit[["mean_AUC"]],
+  SD_CV_ROC_AUC = cv_fit[["sd_AUC"]],
+  Test_ROC_AUC = rep(NA, 2)
 )
 
 
@@ -184,42 +190,47 @@ test_preds_2 <- tibble(
 tbl$Test_ROC_AUC[2] <- roc_auc(test_preds_2, truth, preds)[[".estimate"]]
 
 
-mdl_escalation_3 <- suppressWarnings({
-  randomForest(y = as.integer(train_df$incidence_civil_ns_plus1=="1"),
-               x = train_df[, all_cameo],
-               type = "regression",
-               ntree = 100000,
-               maxnodes = 5,
-               sampsize = 100,
-               replace = FALSE,
-               do.trace = FALSE)
-})
 
-test_preds_3 <- tibble(
-  preds = as.vector(predict(mdl_escalation_3, newdata = test_df[, all_cameo],
-                            type = "response")),
-  truth = test_df[, dv])
-tbl$Test_ROC_AUC[3] <- roc_auc(test_preds_3, truth, preds)[[".estimate"]]
-
-
-
-mdl_escalation_4 <- randomForest(y = train_df$incidence_civil_ns_plus1,
-                                 x = train_df[, all_cameo],
-                                 type = "classification",
-                                 ntree = 5000,
-                                 mtry  = 3,
-                                 replace = TRUE,
-                                 do.trace = FALSE)
-
-test_preds_4 <- tibble(
-  preds = as.vector(predict(mdl_escalation_4, newdata = test_df[, escalation], type = "prob")[, "1"]),
-  truth = test_df[, dv])
-tbl$Test_ROC_AUC[4] <- roc_auc(test_preds_4, truth, preds)[[".estimate"]]
+# mdl_escalation_3 <- suppressWarnings({
+#   randomForest(y = as.integer(train_df$incidence_civil_ns_plus1=="1"),
+#                x = train_df[, all_cameo],
+#                type = "regression",
+#                ntree = 100000,
+#                maxnodes = 5,
+#                sampsize = 100,
+#                replace = FALSE,
+#                do.trace = FALSE)
+# })
+#
+# test_preds_3 <- tibble(
+#   preds = as.vector(predict(mdl_escalation_3, newdata = test_df[, all_cameo],
+#                             type = "response")),
+#   truth = test_df[, dv])
+# tbl$Test_ROC_AUC[3] <- roc_auc(test_preds_3, truth, preds)[[".estimate"]]
+#
+#
+#
+# mdl_escalation_4 <- randomForest(y = train_df$incidence_civil_ns_plus1,
+#                                  x = train_df[, all_cameo],
+#                                  type = "classification",
+#                                  ntree = 5000,
+#                                  mtry  = 3,
+#                                  replace = TRUE,
+#                                  do.trace = FALSE)
+#
+# test_preds_4 <- tibble(
+#   preds = as.vector(predict(mdl_escalation_4, newdata = test_df[, escalation], type = "prob")[, "1"]),
+#   truth = test_df[, dv])
+# tbl$Test_ROC_AUC[4] <- roc_auc(test_preds_4, truth, preds)[[".estimate"]]
 
 
 tbl
 
 
+# Difference of means test. Are the base and modified model AUC scores in the
+# train CV different?
+t.test(AUC ~ model, data = res)
+# yep, p < 0.05 thus model 1 performs better than model 2.
 
 
 # Roc curve for first escalation baseline model
@@ -253,4 +264,54 @@ roc_cameo <- roc_curve(preds_cameo, truth, preds)
 autoplot(roc_cameo)
 roc_auc(preds_cameo, truth, preds)
 
+
+#
+#   HP tuning ----
+#   _______________
+
+hp_samples <- 10
+hp_grid <- tibble(
+  mtry = sample(1:5, hp_samples, replace = TRUE),
+  ntree = sample(rep_len(c(1000, 2000, 3000, 4000, 5000, 10000), length.out = hp_samples)),
+  nodesize = sample(1:100, hp_samples, replace = TRUE)
+)
+
+set.seed(5234)
+folds <- vfold_cv(train_df, v = 2, repeats = 7*1)
+map_dbl(folds$splits, function(x) {dat = testing(x); sum(dat[[dv]]=="1")})
+
+model_grid <- crossing(hp_grid, folds)
+
+res <- foreach(i=1:nrow(model_grid)) %dopar% {
+  lgr$info("Iteration %s of %s", i, nrow(model_grid))
+  res_i <- list()
+
+  train_i <- training(model_grid$splits[[i]])
+  test_i  <- testing(model_grid$splits[[i]])
+
+  fitted_mdl <- randomForest(y = train_i$incidence_civil_ns_plus1,
+                             x = train_i[, escalation],
+                             type = "classification",
+                             ntree = model_grid[i, ][["ntree"]],
+                             mtry  = model_grid[i, ][["mtry"]],
+                             nodesize = model_grid[i, ][["nodesize"]],
+                             replace = TRUE,
+                             do.trace = FALSE)
+
+  test_preds <- tibble(
+    preds = as.vector(predict(fitted_mdl, newdata = test_i[, escalation], type = "prob")[, "1"]),
+    truth = test_i[, dv])
+  res_i <- c(res_i, list(
+    tibble(i = i,
+           ntree = model_grid[i, ][["mtry"]],
+           mtry  = model_grid[i, ][["ntree"]],
+           nodesize = model_grid[i, ][["nodesize"]],
+           AUC = roc_auc(test_preds, truth, preds)[[".estimate"]]
+    )))
+
+  res_i <- bind_rows(res_i)
+  res_i
+}
+
+res <- bind_rows(res)
 
