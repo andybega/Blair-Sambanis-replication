@@ -28,8 +28,4 @@ Using these smoothed and non-smoothed curves, we then replicate Table 1 (page 13
 
 Note: we are only reproducing the "Base specification" scores found in Table 1, as these are the what Blair and Sambanis use to support their calims. In order to ensure that this replication is a close as possible to the authors' original work, I will be using the replication code they provided at https://journals.sagepub.com/doi/suppl/10.1177/0022002720918923. There is a lot going on in their code, so I will be commenting out all elements that are not necessary for this replication process. Futher, I will note any changes that I make this parsed code (i.e., removing the smoothing function). The raw replication files can be found at `GitHub/Blair-Sambanis-replication/Replication files/replication-3`, while all my edited code can be found at `GitHub/Blair-Sambanis-replication/Replication files/replication-3_BM` 
 
-  
-```{r}
-print(Sys.time())
-```
 
