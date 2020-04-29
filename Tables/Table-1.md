@@ -63,8 +63,6 @@ smoothing function). The raw replication files can be found at
 while all my edited code can be found at
 `GitHub/Blair-Sambanis-replication/Replication files/replication-3_BM`
 
-    ## [1] "2020-04-29 12:42:35 EDT"
-
 1.  RM: As a way to maintain transparency and as a poor-mans version of
-    preregistration, I’m saving each step with a time stamp (Date-time
-    group in EDT) and pushing it to GitHub.
+    preregistration, I’m pushing each stepto GitHub, where it will have
+    a time-stamp and track all changes.
