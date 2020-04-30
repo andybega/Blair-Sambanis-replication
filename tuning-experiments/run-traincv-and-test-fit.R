@@ -306,7 +306,7 @@ cv_fit <- res %>%
   unnest(ci)
 
 tbl <- cv_fit %>%
-  mutate(Test_ROC_AUC = rep(NA, nrow(cf_fit)))
+  mutate(Test_ROC_AUC = rep(NA, nrow(cv_fit)))
 
 
 #
@@ -326,7 +326,7 @@ test_preds_base <- tibble(
   truth = test_df[, dv]
 )
 
-tbl$Test_ROC_AUC[1] <- roc_auc(test_preds_base, truth, preds)[[".estimate"]]
+tbl$Test_ROC_AUC[tbl$model=="base escalation"] <- roc_auc(test_preds_base, truth, preds)[[".estimate"]]
 
 # Default RF escalation model
 fitted_default     <- rf_default(train_df, escalation)
@@ -335,7 +335,7 @@ test_preds_default <- tibble(
   truth = test_df[, dv]
 )
 
-tbl$Test_ROC_AUC[2] <- roc_auc(test_preds_default, truth, preds)[[".estimate"]]
+tbl$Test_ROC_AUC[tbl$model=="default escalation"] <- roc_auc(test_preds_default, truth, preds)[[".estimate"]]
 
 # Tuned RF escalation model
 fitted_tuned     <- rf_tuned(train_df, escalation)
@@ -344,7 +344,7 @@ test_preds_tuned <- tibble(
   truth = test_df[, dv]
 )
 
-tbl$Test_ROC_AUC[3] <- roc_auc(test_preds_tuned, truth, preds)[[".estimate"]]
+tbl$Test_ROC_AUC[tbl$model=="tuned escalation"] <- roc_auc(test_preds_tuned, truth, preds)[[".estimate"]]
 
 #
 #   Quad spec
@@ -357,7 +357,7 @@ test_preds_base <- tibble(
   truth = test_df[, dv]
 )
 
-tbl$Test_ROC_AUC[4] <- roc_auc(test_preds_base, truth, preds)[[".estimate"]]
+tbl$Test_ROC_AUC[tbl$model=="base quad"] <- roc_auc(test_preds_base, truth, preds)[[".estimate"]]
 
 # Default RF quad model
 fitted_default     <- rf_default(train_df, quad)
@@ -366,7 +366,7 @@ test_preds_default <- tibble(
   truth = test_df[, dv]
 )
 
-tbl$Test_ROC_AUC[5] <- roc_auc(test_preds_default, truth, preds)[[".estimate"]]
+tbl$Test_ROC_AUC[tbl$model=="default quad"] <- roc_auc(test_preds_default, truth, preds)[[".estimate"]]
 
 # Tuned RF quad model
 fitted_tuned     <- rf_tuned(train_df, quad)
@@ -375,7 +375,7 @@ test_preds_tuned <- tibble(
   truth = test_df[, dv]
 )
 
-tbl$Test_ROC_AUC[6] <- roc_auc(test_preds_tuned, truth, preds)[[".estimate"]]
+tbl$Test_ROC_AUC[tbl$model=="tuned quad"] <- roc_auc(test_preds_tuned, truth, preds)[[".estimate"]]
 
 # mdl_escalation_3 <- suppressWarnings({
 #   randomForest(y = as.integer(train_df$incidence_civil_ns_plus1=="1"),
