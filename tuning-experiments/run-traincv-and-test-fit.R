@@ -410,7 +410,12 @@ tbl$Test_ROC_AUC[tbl$model=="tuned quad"] <- roc_auc(test_preds_tuned, truth, pr
 # tbl$Test_ROC_AUC[4] <- roc_auc(test_preds_4, truth, preds)[[".estimate"]]
 
 write_rds(tbl, "output/test-auc-roc.rds")
-
+tbl %>%
+  mutate(spec = stringr::str_extract(model, "[a-z]+$")) %>%
+  arrange(spec, model) %>%
+  select(-spec) %>%
+  knitr::kable(digits = 2) %>%
+  writeLines("output/tbl-traincv-test-fit.md")
 
 tbl
 

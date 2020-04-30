@@ -43,12 +43,12 @@ escalation <- c(
   "opp_gov_demands"
 )
 
-all_cameo <- c(
+cameo <- c(
   names(df)[str_detect(names(df), "cameo_[0-9]+$")]
 )
 
 # Make sure we are operating on same df for both specs
-df <- df[complete.cases(df[, unique(c(dv, escalation, all_cameo))]), ]
+df <- df[complete.cases(df[, unique(c(dv, escalation, cameo))]), ]
 
 # Define training and testing sets for base specification
 train_period = mean(df$period[which(df$month==12 & df$year==2007)])
@@ -65,10 +65,12 @@ rm(df, test_df)
 
 set.seed(5234)
 
+spec <- "cameo"
+
 hp_samples <- 20
 hp_grid <- tibble(
   tune_id  = 1:hp_samples,
-  mtry     = sample(rep_len(1:5, length.out = hp_samples)),
+  mtry     = as.integer(runif(hp_samples, 5, 100)), #sample(rep_len(1:5, length.out = hp_samples)),
   ntree    = as.integer(runif(hp_samples, 1000, 25000)),
   nodesize = sample(rep_len(1:5, length.out = hp_samples))
 )
@@ -94,10 +96,12 @@ model_grid <- crossing(hp_grid, folds)
 model_grid <- model_grid[sample(1:nrow(model_grid)), ]
 
 res <- foreach(i = 1:nrow(model_grid),
-               .export = c("model_grid", "train_df", "escalation"),
+               .export = c("model_grid", "train_df", "spec", "cameo", "escalation"),
                .packages = c("randomForest", "tibble", "yardstick", "dplyr")
 ) %dopar% {
-  lgr$info("Iteration %s of %s", i, nrow(model_grid))
+
+  # keep track of run time
+  t0 <- proc.time()
 
   train_i <- train_df[model_grid$train_idx[[i]], ]
   test_i  <- train_df[model_grid$test_idx[[i]], ]
@@ -116,11 +120,13 @@ res <- foreach(i = 1:nrow(model_grid),
     truth = test_i[, dv])
   res_i <- tibble(
     i = i,
+    spec = spec,
     tune_id = model_grid[i, ][["tune_id"]],
     ntree = model_grid[i, ][["ntree"]],
     mtry  = model_grid[i, ][["mtry"]],
     nodesize = model_grid[i, ][["nodesize"]],
-    AUC = roc_auc(test_preds, truth, preds)[[".estimate"]]
+    AUC = roc_auc(test_preds, truth, preds)[[".estimate"]],
+    time = (proc.time() - t0)["elapsed"]
   )
   res_i
 }
@@ -147,7 +153,8 @@ tune_res %>%
   facet_wrap(~ name, scales = "free_x") +
   geom_point() +
   geom_smooth(se = FALSE) +
-  theme_minimal()
+  theme_minimal() +
+  labs(title = sprintf("Specification: %s", spec))
 ggsave(filename = "output/tune-results.png")
 
 tune_res %>%
