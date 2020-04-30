@@ -1,4 +1,8 @@
-
+#
+#   This is using the tidymodels approach to tune and run some models.
+#   This is taking up quite a bit of memory and is thus hard to run in parallel.
+#   Probably delete...
+#
 
 library(tidyverse)
 library(tidymodels)

@@ -1,3 +1,7 @@
+#
+#   Run a subset of the B&S models/specifications along with modified versions
+#   that use alternative RF hp settings; obtain training CV fit and test fit
+#
 
 library(tidyverse)
 library(tidymodels)
@@ -11,6 +15,51 @@ setwd(here::here("tuning-experiments"))
 
 registerDoFuture()
 plan(multisession(workers = 7))
+
+#
+#   Set up model function ----
+#   _______________________
+#
+#   I'm going to define a couple of model functions here. In Table 1 in the
+#   paper, the results are identified by 3 dimensions:
+#
+#     - forecast horizon: 1 month or 6 month
+#     - settings, what B&S call "specification": variations in RF
+#       hyperparameters, train/test splits, and DV coding
+#     - feature sets, what I will call specification: the columns used as
+#       predictors, e.g. escalation, CAMEO
+#
+#   So a result cell in the table is identified by [horizon, setting, spec].
+#
+#   I am interested in two things:
+#
+#     - adding a RF model version that uses alternative hyperparameter settings
+#     - obtaining cross-validated OOS fit for the training data split
+#
+#   Since the setting dimension includes both changes in the RF settings and
+#   changes in the data, adding another RF setting choice kind of requires
+#   splitting this dimension into RF settings vs. data changes. Maybe for now
+#   it's just easier to ignore this and add "another row".
+#
+#   I'm also going to only do this for 1 month for now. What makes sense then
+#   for the sake of flexibility is to encapsulate the model [setting] in a
+#   function but allow the feature specification [spec] and training data to
+#   vary
+#
+#     rf_[setting](data, features = [spec], horizon = 1mo)
+#
+
+# Base specification
+#
+# Corresponds to the settings in the first row in Table 1
+rf_base <- function(data, features) {
+
+}
+
+# Default RF
+#
+# RF with out of the box hyperparameter settings
+rf_default <- function(data, features)
 
 df <- read_rds("trafo-data/1mo_data.rds") %>%
   mutate(incidence_civil_ns_plus1 = factor(incidence_civil_ns_plus1, levels = c("1", "0")))
@@ -48,6 +97,10 @@ test_df  <- df[df$period>train_period & df$period<=end_period,]
 
 table(complete.cases(train_df[, escalation]))
 table(complete.cases(train_df[, all_cameo]))
+
+#
+#   Training data CV ----
+#   _________________
 
 set.seed(5234)
 folds <- vfold_cv(train_df, v = 2, repeats = 7*3)
@@ -157,6 +210,10 @@ tbl <- tibble(
 )
 
 
+#
+#   Run models on full training data and get test fit ----
+#   _________________________________________________
+
 # Estimate the final models on the full training data
 mdl_escalation_1 <- suppressWarnings({
   randomForest(y = as.integer(train_df$incidence_civil_ns_plus1=="1"),
@@ -250,11 +307,11 @@ stop()
 
 
 mdl_cameo <- randomForest(y = train$incidence_civil_ns_plus1,
-                               x = train[, all_cameo],
-                               type = "classification",
-                               ntree = 1000,
-                               replace = TRUE,
-                               do.trace = FALSE)
+                          x = train[, all_cameo],
+                          type = "classification",
+                          ntree = 1000,
+                          replace = TRUE,
+                          do.trace = FALSE)
 
 preds_cameo <- tibble(
   preds = as.vector(predict(mdl_cameo, newdata = test[, all_cameo], type = "prob")[, "1"]),
