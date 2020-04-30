@@ -9,7 +9,10 @@ downloaded the replication files authors provide from
 The original folder name of is
 `sj-zip-1-jcr-10.1177_0022002720918923/replication-3`. For simplicity,
 we extracted this `replication-3` folder and saved to the `Replication
-Files` folder of this repo.
+Files` folder of this repo. To ensure that we have a clean copy of the
+original replication scripts, I copied all files to `replication-3_BM`
+I’m (RM) currently using the sripts in this folder to recreate figure
+1 and table 1 with and without smoothing – see below
 
 Before listing the primary issues we identified, we should note that we
 are partial to their approach. Theory is important. It is helpful for
@@ -116,50 +119,78 @@ produces warnings when estimating the models:
 While unorthodox, the approach does work. It produces predictions that
 are within the 0 to 1 interval. The concern is that the settings work
 well only for the escalation model, and only for the particular test set
-at hand. Specifically we wonder if the CAMEO model with 1,100+ features,
-compared to 10 or less for the other specifications, would perform
-better with a more explicit tuning procedure.
+at hand. Specifically, we wonder (1) if the hyperparameter settings only
+work well for the particular test set chosen, and (2) if the CAMEO model
+with 1,100+ features, compared to 10 or less for the other
+specifications, would perform better with a more explicit tuning
+procedure.
 
-The table below shows cross-validated training and OOS test AUC-ROC for
-the original 1 month escalation model and a modified version which uses
-more conventional random forest parameter settings (classification, 5000
-trees, and default settings otherwise). The first and second columns are
-average and SD AUC-ROC obtained through repeated cross-validation on the
-training data set. Because there are only 9 positive cases in the whole
-training data, and thus to ensure that any given split will include at
-least 1 positive case in each data partition, we use 2-fold CV,
-i.e. splitting the original training data into equally-sized new
-training and validation sets. This is repeated 21 times for a total of
-42 OOS performance samples for each model. The last column shows the OOS
-performance on the original test set. The first value in this column
-corresponds to the base escalation model results reported Table 1 in the
-B\&S paper when *not* using smoothed ROC curves.
+## Are the RF hyperparameters overfit to the test set?
+
+Does the base specification’s good performance in the test set
+generalize?
+
+One initial piece of evidence is already available from Table 1. In
+addition to the test set starting 2008, B\&S also evaluate test sets
+starting in 2009, 2010, and 2011 (sets 1, 2, and 3 in Table 1). For the
+1 month models, when we compare the base specification performance of
+each model to the performance in the alternate test sets, the AUC-ROC
+increases in 2 (of 15) cases, is the same in 0 cases, and decreases in
+13 cases. For the 6 month models, it increases in 1 case, is the same in
+3 cases, and decreases in 11 cases. Altering the test set thus generally
+shows reduced performance. The table below shows cross-validated
+training and OOS test AUC-ROC for the original 1 month escalation model,
+a RF model with default hyperparameter settings, and a tuned RF model
+with 10,000 trees and otherwise the default settings. The first set of
+results are out of sampel results from repeated cross-validations
+performed on the training data. We show the average AUC-ROC, it’s lower
+and upper 95% CI, obtained via bootstrapping, and the standard deviation
+of the distribution of resampled AUC-ROC values.
+
+Because there are only 9 positive cases in the whole training data, and
+thus to ensure that any given split will include at least 1 positive
+case in each data partition, we use 2-fold CV, i.e. splitting the
+original training data into equally-sized new training and validation
+sets. This is repeated 21 times for a total of 42 OOS performance
+samples for each model. The last column shows the OOS performance on the
+original test set. The first value in this column corresponds to the
+base escalation model results reported Table 1 in the B\&S paper when
+*not* using smoothed ROC curves.
 
 ``` r
-tbl <- structure(list(Model = c("Escalation, 1mo", "Modified Escalation, 1mo"
-), Avg_CV_ROC_AUC = c(0.698772142673124, 0.643982732304452), 
-    SD_CV_ROC_AUC = c(0.136834250535024, 0.104102374345325), 
-    Test_ROC_AUC = c(0.786872878159185, 0.583391239320482)), row.names = c(NA, 
--2L), class = c("tbl_df", "tbl", "data.frame"))
+tbl <- structure(list(Model = c("Escalation, 1mo", "Modified Escalation, 1mo", 
+"Tuned Escalation, 1mo"), Avg_CV_ROC_AUC = c(0.677707841149067, 
+0.619719616721681, 0.671630392456263), ci_lower = c(0.634101138978023, 
+0.5835673668958, 0.634713167892701), ci_upper = c(0.722598486545989, 
+0.65584632967561, 0.706310478133188), SD_CV_ROC_AUC = c(0.147542574525528, 
+0.122337186539073, 0.117973980721395), Test_ROC_AUC = c(0.783352194140576, 
+0.586147564308735, 0.582927991423296)), row.names = c(NA, -3L
+), class = c("tbl_df", "tbl", "data.frame"))
 
 knitr::kable(tbl, digits = 2)
 ```
 
-| Model                    | Avg\_CV\_ROC\_AUC | SD\_CV\_ROC\_AUC | Test\_ROC\_AUC |
-| :----------------------- | ----------------: | ---------------: | -------------: |
-| Escalation, 1mo          |              0.70 |             0.14 |           0.79 |
-| Modified Escalation, 1mo |              0.64 |             0.10 |           0.58 |
+| Model                    | Avg\_CV\_ROC\_AUC | ci\_lower | ci\_upper | SD\_CV\_ROC\_AUC | Test\_ROC\_AUC |
+| :----------------------- | ----------------: | --------: | --------: | ---------------: | -------------: |
+| Escalation, 1mo          |              0.68 |      0.63 |      0.72 |             0.15 |           0.78 |
+| Modified Escalation, 1mo |              0.62 |      0.58 |      0.66 |             0.12 |           0.59 |
+| Tuned Escalation, 1mo    |              0.67 |      0.63 |      0.71 |             0.12 |           0.58 |
 
-Two thigs stand out:
+The results show that:
 
-  - The escalation model has better performance in the test data than in
-    the training CV samples. This is consistent with hyperparameter
-    values that were (over-)fit to the test data.
-  - Although the original escalation model outperforms the modified
-    model in the training CV resamples (p \< 0.05), the difference in
-    means is much less pronounced than in the test data.
+  - Both of the alternative RF models are able to achieve roughly
+    similar OOS performance in the training data split. *T*-tests
+    comparing model 1 to the other models fail to reject the null
+    hypothesis at a 95% confidence level. (A *t*-test comparing model 1
+    and 2 average AUC-ROC just barely fails to reject the null
+    hypothesis (*p* slightly above 0.05).)
+  - Only the base escalation model is able to achive good test
+    performance; the other two models, despite achieving similar
+    training data performance, have significantly lower test
+    performance.
 
-<!-- end list -->
+This suggests that the base RF specifications are (over-)fit to the test
+data.
 
 4.  Design choices
 
@@ -174,6 +205,7 @@ if they wanted to.
 
   - Their train/test approach
       - 5-year forecasts for sep plots and AUC scores)
+  - Smoothing of AUC/ROC scores
   - Lack of yearly test forecasts in favor of a single 5-year test
     forecast
   - The lack of procedures to account for rare events in an RF model
