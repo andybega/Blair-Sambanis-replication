@@ -166,9 +166,21 @@ AUC_obs_noSmooth <- data.frame(as.numeric(roc_noSmooth$auc))
 # AUCs <- as.matrix(c(AUC_obs, AUC_obs_robust_maxnodes, AUC_obs_robust_sampsize,
 #                     AUC_obs_robust_ntree, AUC_obs_robust_traintest1, AUC_obs_robust_traintest2,
 #                        AUC_obs_robust_traintest3, AUC_obs_robust_civil_ns_alt1, AUC_obs_robust_civil_ns_alt2))
-## RM: ADDED 4/29/2020
 
+## RM: ADDED 4/29/2020
+# keep track of both smoothed and original AUC ROC; write a table with these
+# intermediate results so that Table 1 can be reconstructed later without having
+# to re-run all of the model scripts.
 AUCs <- as.matrix(c(AUC_obs, AUC_obs_noSmooth))
+
+tbl <- data.frame(
+  model = "base specification",
+  specification = "goldstein",
+  horizon = "1 month",
+  smoothed = unname(AUC_obs),
+  original = unname(AUC_obs_noSmooth)
+)
+write.csv(tbl, "tables/auc-1mo-goldstein.csv", row.names = FALSE)
 
 # # Calculate PR
 #

@@ -1,2 +1,2 @@
-"model","specification","horizon","as.numeric.roc.auc.","as.numeric.roc_noSmooth.auc."
+"model","specification","horizon","smoothed","original"
 "base specification","escalation","1 month",0.85252962383168,0.785804099082107

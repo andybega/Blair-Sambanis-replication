@@ -134,26 +134,24 @@ source("code/1mo_define_models.R")
 # Run models
 
 source("code/1mo_run_escalation.R")
-
-source("code/1mo_run_quad.R")
-
-source("code/1mo_run_goldstein.R")
-
-source("code/1mo_run_all_CAMEO.R")
-
-source("code/1mo_run_avg.R")
-
-# Save predictions
-
 write.dta(pred_escalation_inc_civil_ns,"predictions/1mo_predictions_escalation.dta", convert.factors="string")
 
+source("code/1mo_run_quad.R")
 write.dta(pred_quad_inc_civil_ns,"predictions/1mo_predictions_quad.dta", convert.factors="string")
 
+source("code/1mo_run_goldstein.R")
 write.dta(pred_goldstein_inc_civil_ns,"predictions/1mo_predictions_goldstein.dta", convert.factors="string")
 
+source("code/1mo_run_all_CAMEO.R")
 write.dta(pred_all_CAMEO_inc_civil_ns,"predictions/1mo_predictions_all_CAMEO.dta", convert.factors="string")
 
+# AB:
+# the avg model depends entirely on predictions from the previous models;
+# it's set up to assume those are still in memory
+source("code/1mo_run_avg.R")
 write.dta(pred_avg_inc_civil_ns,"predictions/1mo_predictions_avg.dta", convert.factors="string")
+
+read.dta13("data/1mo_data.dta")
 
 # Create top panel of Table 1
 

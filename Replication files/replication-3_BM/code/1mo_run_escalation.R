@@ -177,8 +177,8 @@ tbl <- data.frame(
   model = "base specification",
   specification = "escalation",
   horizon = "1 month",
-  smoothed = AUC_obs,
-  original = AUC_obs_noSmooth
+  smoothed = unname(AUC_obs),
+  original = unname(AUC_obs_noSmooth)
 )
 write.csv(tbl, "tables/auc-1mo-escalation.csv", row.names = FALSE)
 
