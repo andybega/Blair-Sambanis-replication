@@ -348,26 +348,26 @@ source("code/6mo_define_models.R")
 # Run models
 
 source("code/6mo_run_escalation.R")
+write.dta(pred_escalation_6mo_inc_civil_ns,"predictions/6mo_predictions_escalation.dta", convert.factors="string")
 
 source("code/6mo_run_quad.R")
+write.dta(pred_quad_6mo_inc_civil_ns,"predictions/6mo_predictions_quad.dta", convert.factors="string")
 
 source("code/6mo_run_goldstein.R")
+write.dta(pred_goldstein_6mo_inc_civil_ns,"predictions/6mo_predictions_goldstein.dta", convert.factors="string")
 
 source("code/6mo_run_all_CAMEO.R")
+write.dta(pred_all_CAMEO_6mo_inc_civil_ns,"predictions/6mo_predictions_all_CAMEO.dta", convert.factors="string")
 
 source("code/6mo_run_avg.R")
+write.dta(pred_avg_6mo_inc_civil_ns,"predictions/6mo_predictions_avg.dta", convert.factors="string")
 
 # Save predictions
 
-write.dta(pred_escalation_6mo_inc_civil_ns,"predictions/6mo_predictions_escalation.dta", convert.factors="string")
 
-write.dta(pred_quad_6mo_inc_civil_ns,"predictions/6mo_predictions_quad.dta", convert.factors="string")
 
-write.dta(pred_goldstein_6mo_inc_civil_ns,"predictions/6mo_predictions_goldstein.dta", convert.factors="string")
 
-write.dta(pred_all_CAMEO_6mo_inc_civil_ns,"predictions/6mo_predictions_all_CAMEO.dta", convert.factors="string")
 
-write.dta(pred_avg_6mo_inc_civil_ns,"predictions/6mo_predictions_avg.dta", convert.factors="string")
 
 # Create bottom panel of Table 1
 

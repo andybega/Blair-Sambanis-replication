@@ -67,10 +67,12 @@ prediction <- as.numeric((prediction_escalation_inc_civil_ns +
 # Calculate AUC
 performance <- prediction(prediction, test_DV_civil_ns)
 roc <- roc(test_DV_civil_ns, prediction, smooth=TRUE, auc = TRUE)
+saveRDS(roc, "figures/roc-1mo-avg.rds")
 AUC_obs <- data.frame(as.numeric(roc$auc))
 
 ## RM: ADDED 4/29/2020
 roc_noSmooth <- roc(test_DV_civil_ns, prediction, smooth=FALSE, auc = TRUE)
+saveRDS(roc, "figures/non-smooth-roc-1mo-avg.rds")
 AUC_obs_noSmooth <- data.frame(as.numeric(roc_noSmooth$auc))
 #   			performance_robust_maxnodes <- prediction(prediction_robust_maxnodes, test_DV_civil_ns)
 #           roc_robust_maxnodes <- roc(test_DV_civil_ns, prediction_robust_maxnodes, smooth=TRUE, auc = TRUE)

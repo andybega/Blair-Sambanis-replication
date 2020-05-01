@@ -1,0 +1,62 @@
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption></caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Model </th>
+   <th style="text-align:left;"> Horizon </th>
+   <th style="text-align:left;"> ROC Smoothed </th>
+   <th style="text-align:center;"> Escalation </th>
+   <th style="text-align:center;"> Quad </th>
+   <th style="text-align:center;"> Goldstein </th>
+   <th style="text-align:center;"> CAMEO </th>
+   <th style="text-align:center;"> Avg </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;vertical-align: middle !important;" rowspan="4"> Base Specification </td>
+   <td style="text-align:left;vertical-align: middle !important;" rowspan="2"> 1 Month </td>
+   <td style="text-align:left;font-weight: bold;"> Yes </td>
+   <td style="text-align:center;"> 0.853 </td>
+   <td style="text-align:center;"> 0.804 </td>
+   <td style="text-align:center;"> 0.791 </td>
+   <td style="text-align:center;"> 0.837 </td>
+   <td style="text-align:center;"> 0.825 </td>
+  </tr>
+  <tr>
+   
+   
+   <td style="text-align:left;font-weight: bold;"> No </td>
+   <td style="text-align:center;"> 0.786 </td>
+   <td style="text-align:center;"> 0.786 </td>
+   <td style="text-align:center;"> 0.794 </td>
+   <td style="text-align:center;"> 0.809 </td>
+   <td style="text-align:center;"> 0.822 </td>
+  </tr>
+  <tr>
+   
+   <td style="text-align:left;vertical-align: middle !important;" rowspan="2"> 6 Months </td>
+   <td style="text-align:left;font-weight: bold;"> Yes </td>
+   <td style="text-align:center;"> 0.853 </td>
+   <td style="text-align:center;"> 0.804 </td>
+   <td style="text-align:center;"> 0.791 </td>
+   <td style="text-align:center;"> 0.837 </td>
+   <td style="text-align:center;"> 0.825 </td>
+  </tr>
+  <tr>
+   
+   
+   <td style="text-align:left;font-weight: bold;"> No </td>
+   <td style="text-align:center;"> 0.786 </td>
+   <td style="text-align:center;"> 0.786 </td>
+   <td style="text-align:center;"> 0.794 </td>
+   <td style="text-align:center;"> 0.809 </td>
+   <td style="text-align:center;"> 0.822 </td>
+  </tr>
+</tbody>
+<tfoot>
+<tr>
+<td style = 'padding: 0; border:0;' colspan='100%'><sup></sup> To create Table 1, Blair and Sambanis use a non-standard &quot;smoothing&quot; function when creating their various Receiver Operating Characteristic Curves (ROC). These &quot;smoothed&quot; curves are then used to compute their model performance metric -- the Area Under the Receiver Operating Characteristic Curve (AUC-ROC). We recreate these AUC-ROC scores with and without the smoothing function (Blair and Sambanis' specification and the standard specification, respectively). This allows us to see if their findings are sensitive to the use of the smoothing function.</td>
+</tr>
+</tfoot>
+</table>
