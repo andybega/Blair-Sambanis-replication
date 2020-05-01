@@ -23,7 +23,7 @@ t0 = proc.time()
 setwd(here::here("tuning-experiments"))
 
 registerDoFuture()
-plan(multisession(workers = 7))
+plan(multisession(workers = 8))
 
 df <- read_rds("trafo-data/1mo_data.rds") %>%
   mutate(incidence_civil_ns_plus1 = factor(incidence_civil_ns_plus1, levels = c("1", "0")))
@@ -67,12 +67,12 @@ set.seed(5234)
 
 spec <- "cameo"
 
-hp_samples <- 20
+hp_samples <- 50
 hp_grid <- tibble(
   tune_id  = 1:hp_samples,
-  mtry     = as.integer(runif(hp_samples, 5, 100)), #sample(rep_len(1:5, length.out = hp_samples)),
-  ntree    = as.integer(runif(hp_samples, 1000, 25000)),
-  nodesize = sample(rep_len(1:5, length.out = hp_samples))
+  mtry     = as.integer(runif(hp_samples, 5, 150)), #sample(rep_len(1:5, length.out = hp_samples)),
+  ntree    = as.integer(runif(hp_samples, 1000, 30000)),
+  nodesize = as.integer(runif(hp_samples, 1, 100)),  # sample(rep_len(1:5, length.out = hp_samples))
 )
 
 folds <- vfold_cv(train_df, v = 2, repeats = 7*2) %>%
