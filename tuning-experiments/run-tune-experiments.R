@@ -107,7 +107,7 @@ res <- foreach(i = 1:nrow(model_grid),
   test_i  <- train_df[model_grid$test_idx[[i]], ]
 
   fitted_mdl <- randomForest(y = train_i$incidence_civil_ns_plus1,
-                             x = train_i[, escalation],
+                             x = train_i[, spec],
                              type = "classification",
                              ntree = model_grid$ntree[[i]],
                              mtry  = model_grid[i, ][["mtry"]],
@@ -116,7 +116,7 @@ res <- foreach(i = 1:nrow(model_grid),
                              do.trace = FALSE)
 
   test_preds <- tibble(
-    preds = as.vector(predict(fitted_mdl, newdata = test_i[, escalation], type = "prob")[, "1"]),
+    preds = as.vector(predict(fitted_mdl, newdata = test_i[, spec], type = "prob")[, "1"]),
     truth = test_i[, dv])
   res_i <- tibble(
     i = i,
