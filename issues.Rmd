@@ -1,29 +1,90 @@
 ---
-title: "Replicating Blair and Sambanis: Forecasting Civil Wars - JCR 2020"
+title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
+author: Richard K. Morgan and Andreas Beger
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
-  pdf_document
+  pdf_document:
+    keep_tex: false
+references:
+- id: blair2020forecasting
+  title: "Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning"
+  author:
+  - family: Blair
+    given: Robert A.
+  - family: Sambanis
+    given: Nicholas
+  container-title: Journal of Conflict Resolution
+  type: article-journal
+  issued:
+    year: 2020
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+
+library(readr)
+library(dplyr)
 ```
 
 
-### Introduction
+We highlight some issues with the analysis in the recent Blair and Sambanis paper that undermine their main empirical finding, that a theoretically-informed model can forecast civil war onsets better than more inductive alternatives. 
 
-While reading Blair and Sambanis (2020), a few issues stuck out. We downloaded the replication files authors provide from https://journals.sagepub.com/doi/suppl/10.1177/0022002720918923/suppl_file/sj-zip-1-jcr-10.1177_0022002720918923.zip. The original folder name of is `sj-zip-1-jcr-10.1177_0022002720918923/replication-3`. For simplicity, we extracted this `replication-3` folder and saved to the `Replication Files` folder of this repo. To ensure that we have a clean copy of the original replication scripts, I copied all files to `replication-3_BM` I'm (RM) currently using the sripts in this folder to recreate figure 1 and table 1 with and without smoothing -- see below
+- The key findings depend on the decision to use smoothed rather than original ROC curves when calculating area under the ROC curve (AUC-ROC) fit statistics. When using regular, not smoothed ROC curves, the findings reverse. 
+- The 2016 forecasts for the risk of civil war onset appear to be evaluated using civil war *incidence* not *onset*. This distorts the assessment of how accurate they were. (TBD)
+- The way the random forest models are fitted by B&S is very unorthodox.^[This is in fact what first led us to examine the analysis in more detail.] We evaluate two questions: (1) does the key model's superior test forecast performance generalize or is it a result of inadvertant fitting of the model hyperparameters to test forecast performance, and (2) does the inferior performance of the alternative models, and especially the CAMEO model with 1,159 covariates, reflect a lack of proper hyperparameter tuning for these models? (TBD)
+
+# Review of the Blair and Sambanis paper
+
+@blair2020forecasting (B&S) argue that theory contributes to forecasting accuracy even when using non-parametric machine learning models and alternative specifications that are not informed by theory. They arrive at this conclusion by examining the problem of predicting civil war onset, and find that a parsimonious model using a small number of covariates derived from escalation theories of conflict can forecast civil war onset better than alternative specifications based on generic covariates not specifically informed by theory and a kitchen sink model with more than 1,100 covariates. 
+
+Their data consist of country-month observations covering 2001 to 2015. The main outcome is civil war onset, measured using Sambanis' data. The independent variables for the first set of analysis reported in Table 1 in the paper are all derived from the ICEWS event data, using domestic events between actors within a country. They key results are based on a comparison of the forecast accuracy of a random forest (RF) model with 4 covariate specifications as well as an ensemble model:
+
+- Escalation: a set of 10 theoretically-informed indicators.
+- Quad: ICEWS quad counts, i.e. material conflict, material cooperation, verbal conflict, verbal cooperation.
+- Goldstein: -10 (conflictual) to 10 (cooperative) scores derived from the ICEWS data for interactions between the government one one side and opposition or rebel actors on the other. These are directed, thus making for 4 total covariates.
+- CAMEO: counts for all CAMEO event codes, thus a total of 1,159 covariates. 
+- Average: unweighted average of the predictions from the 4 models above.
+
+To assess forecast accuracy, B&S:
+
+1. Split the training data into training (2001 - 2007) and test (2008 - 2015) sets.
+2. Estimate 5 random forest models with the specifications from above. 
+3. Create out-of-sample (OOS) predictions from each model for the test set. 
+4. Calculate AUC-ROC measures for each set of OOS predictions.
+
+This is done for both 1-month ahead and 6-month ahead forecasts. B&S also conduct a series of robustness tests that (1) vary hyperparameters of the RF model, (2) change the split year for the trainin/test data split, and (3) alternative codings of the dependent variable. 
+
+The results for this analysis are summarized in Table 1 in the B&S paper, which we reproduce here:
+
+![](figures/bands-table1.png)
+
+The escalation model generally outperforms the alternative models/specifications, and on that basis B&S conclude that theory does indeed provide better forecast accuracy when compared to models not informed by theory.
 
 Before listing the primary issues we identified, we should note that we are partial to their approach. Theory is important. It is helpful for forecasting problems, especially with regards to identifying which variables to include in a model. This is particularly true when the goal is to assess how ... 
 
+# Issues
 
-This document lists the primary issues we identified. 
+## Smoothed ROC curves
 
-1. Using AUC for smoothed ROC curves. Does the interpretation of Table 1, and superiority of the escalation model, depend on the choice to use smoothed ROC curves?
+```{r}
+auc <- read_csv("data/table1-redone.csv") %>%
+  mutate(specification = factor(specification, levels = c("escalation", "quad", "goldstein", "CAMEO", "avg"))) %>%
+  arrange(model, horizon, specification)
 
-2. In Table 4, are the forecasts evaluated against incidence or onset? The data from 2001 to 2015 have 20 civil war onsets in total, yet Table 4 appears to show 15 and 16 positive events for 2016 only. If this is indeed incidence, but the original models and forecasts were for onset, then this is a incorrect assessment of the forecasts' accuracy. 
+auc %>%
+  knitr::kable(digits = 2)
+```
 
-- Table 4! 
-  - There are only 20 onsets from 2001 to 2015 But there are 15 "Persistence" cases (top of table 4) and 16 "Change" cases (bottom of table 4)
+Using AUC-ROC values from un-smoothed, original ROC curves reverses the original conclusions from B&S Table 1. In both the 1 month-ahead and 6-month ahead forecasts, the escalation model is outperformed by alternative models. 
+
+
+## Assessment of the 2016 forecasts
+
+The main data set covering 2001 - 2015 contains 20 civil war onsets. But there are 15 "Persistence" cases (top of table 4) and 16 "Change" cases (bottom of table 4)
+
+
+
+## Random forest model tuning
 
 3. Unorthodox RF hyperparameter choices that may be driving the OOS test prediction results. There are two issues here. One is that the RF models are so unorthodox. I'm not sure that this in itself is a problem. But the second potential problem is that the hyperparameter values may not have been tuned in a way that works the best for the non-escalation model, and especially the CAMEO model with 1,100+ features. 
 
@@ -115,3 +176,5 @@ To-do
     - How drastic is the change; does it change their conclusions? 
 4. Run a yearly test forecast -- as is the current standard in TSCS forecasts (Is it the current standard?) 
 5. 
+
+# References
