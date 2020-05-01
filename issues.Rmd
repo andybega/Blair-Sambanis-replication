@@ -1,6 +1,7 @@
 ---
 title: "Replicating Blair and Sambanis: Forecasting Civil Wars - JCR 2020"
-output: github_document
+output: 
+  pdf_document
 ---
 
 ```{r setup, include=FALSE}
