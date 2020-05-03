@@ -50,6 +50,17 @@ escalation <- c(
   "opp_gov_demands"
 )
 
+quad <- c(
+  "gov_opp_vercf","gov_reb_vercf",
+  "gov_opp_matcf","gov_reb_matcf",
+  "opp_gov_vercf","reb_gov_vercf",
+  "opp_gov_matcf","reb_gov_matcf",
+  "gov_opp_vercp","gov_reb_vercp",
+  "gov_opp_matcp","gov_reb_matcp",
+  "opp_gov_vercp","reb_gov_vercp",
+  "opp_gov_matcp","reb_gov_matcp"
+)
+
 cameo <- c(
   names(df)[str_detect(names(df), "cameo_[0-9]+$")]
 )
@@ -72,9 +83,9 @@ rm(df, test_df)
 
 set.seed(5234)
 
-spec <- "escalation"
+spec <- "quad"
 
-hp_samples <- 25
+hp_samples <- 70
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -82,6 +93,13 @@ if (spec=="escalation") {
     mtry     = as.integer(runif(hp_samples, 2, 5)),
     ntree    = as.integer(runif(hp_samples, 5000, 25000)),
     nodesize = as.integer(runif(hp_samples, 1, 15))
+  )
+} else if (spec=="quad") {
+  hp_grid <- tibble(
+    tune_id  = 1:hp_samples,
+    mtry     = as.integer(runif(hp_samples, 1, 6)),
+    ntree    = as.integer(runif(hp_samples, 1000, 20000)),
+    nodesize = as.integer(runif(hp_samples, 1, 40))
   )
 } else {
   hp_grid <- tibble(
@@ -115,7 +133,7 @@ model_grid <- model_grid[sample(1:nrow(model_grid)), ]
 
 # expected run-time
 time_model <- read_rds("output/runtime-model.rds")
-et <- sum(predict(time_model, model_grid))/3600/(8*.9)
+et <- sum(predict(time_model, cbind(ncol = length(get(spec)), model_grid)))/3600/(8*.9)
 lgr$info("Expected runtime with 8 workers: %s hours", round(et, 1))
 
 # Some of the models can take a long time to run. Chunk the output and write
@@ -124,7 +142,8 @@ dir.create("output/chunks")
 writeLines(as.character(nrow(model_grid)), "output/chunks/n-chunks.txt")
 
 res <- foreach(i = 1:nrow(model_grid),
-               .export = c("model_grid", "train_df", "spec", "cameo", "escalation"),
+               .export = c("model_grid", "train_df", "spec", "cameo",
+                           "escalation", "quad"),
                .packages = c("randomForest", "tibble", "yardstick", "dplyr"),
                .inorder = FALSE) %dopar% {
 

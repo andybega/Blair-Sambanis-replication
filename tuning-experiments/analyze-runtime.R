@@ -12,6 +12,7 @@ with_time <- all_tune %>%
   filter(!is.na(time)) %>%
   mutate(ncol = case_when(
     spec=="escalation" ~ 10L,
+    spec=="quad" ~ 16L,
     TRUE ~ NA_integer_))
 
 with_time %>%
@@ -21,11 +22,13 @@ with_time %>%
   geom_point() +
   theme_minimal()
 
-fitted_mdl <- lm(time ~ ntree , data = with_time)
+fitted_mdl <- lm(time ~ ntree + mtry + nodesize + ncol, data = with_time)
+
+summary(fitted_mdl)
 
 write_rds(fitted_mdl, "output/runtime-model.rds")
 
-summary(fitted_mdl)
+
 
 plot(predict(fitted_mdl, newdata = with_time), with_time$time)
 
