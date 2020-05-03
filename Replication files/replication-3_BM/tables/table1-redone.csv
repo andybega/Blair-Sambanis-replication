@@ -1,0 +1,8 @@
+model,horizon,specification,smoothed,original
+base specification,1 month,avg,0.824748351039912,0.8221326609621
+base specification,1 month,CAMEO,0.838574388873474,0.809115395051189
+base specification,1 month,escalation,0.85252962383168,0.785804099082107
+base specification,1 month,goldstein,0.787803039251833,0.789897225145096
+base specification,1 month,quad,0.804084026077266,0.785380558147538
+base specification,6 month,escalation,0.82267377421366,0.770893649874542
+base specification,6 month,quad,0.778047466407837,0.788071800810654

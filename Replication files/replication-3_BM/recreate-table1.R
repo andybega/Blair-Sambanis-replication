@@ -17,4 +17,7 @@ auc <- lapply(dir("tables", pattern = "auc-", full.names = TRUE), read_csv,
                 original = col_double()
               )) %>%
   bind_rows() %>%
-  select(model, horizon, specification, smoothed, original)
+  dplyr::select(model, horizon, specification, smoothed, original)
+
+write_csv(auc, "tables/table1-redone.csv")
+write_csv(auc, "../../data/table1-redone.csv")
