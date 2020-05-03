@@ -72,15 +72,26 @@ rm(df, test_df)
 
 set.seed(5234)
 
-spec <- "cameo"
+spec <- "escalation"
 
-hp_samples <- 50
-hp_grid <- tibble(
-  tune_id  = 1:hp_samples,
-  mtry     = as.integer(runif(hp_samples, 5, 150)), #sample(rep_len(1:5, length.out = hp_samples)),
-  ntree    = as.integer(runif(hp_samples, 1000, 30000)),
-  nodesize = as.integer(runif(hp_samples, 1, 100)),  # sample(rep_len(1:5, length.out = hp_samples))
-)
+hp_samples <- 10
+
+if (spec=="escalation") {
+  hp_grid <- tibble(
+    tune_id  = 1:hp_samples,
+    mtry     = as.integer(runif(hp_samples, 2, 4)),
+    ntree    = as.integer(runif(hp_samples, 5000, 10000)),
+    nodesize = as.integer(runif(hp_samples, 5, 10))
+  )
+} else {
+  hp_grid <- tibble(
+    tune_id  = 1:hp_samples,
+    mtry     = as.integer(runif(hp_samples, 5, 150)),
+    ntree    = as.integer(runif(hp_samples, 1000, 30000)),
+    nodesize = as.integer(runif(hp_samples, 1, 100))
+  )
+}
+
 
 folds <- vfold_cv(train_df, v = 2, repeats = 7*2) %>%
   # rsample creates copies of the data, so this object ends up being very big
