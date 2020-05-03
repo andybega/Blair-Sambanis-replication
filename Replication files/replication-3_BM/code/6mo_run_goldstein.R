@@ -123,10 +123,12 @@ prediction[is.na(goldstein_6mo_test_frame_civil_ns$test_DV_civil_ns)] <- NA
 
 performance <- prediction(prediction, test_DV_civil_ns)
 roc <- roc(test_DV_civil_ns, prediction, smooth=TRUE, auc = TRUE)
+saveRDS(roc, "figures/roc-6mo-goldstein.rds")
 AUC_obs <- data.frame(as.numeric(roc$auc))
 
 ## RM: ADDED 4/29/2020
 roc_noSmooth <- roc(test_DV_civil_ns, prediction, smooth=FALSE, auc = TRUE)
+saveRDS(roc, "figures/non-smooth-roc-6mo-goldstein.rds")
 AUC_obs_noSmooth <- data.frame(as.numeric(roc_noSmooth$auc))
 
 #       			performance_robust_maxnodes <- prediction(prediction_robust_maxnodes, test_DV_civil_ns)
@@ -169,7 +171,19 @@ AUC_obs_noSmooth <- data.frame(as.numeric(roc_noSmooth$auc))
 #                                      AUC_obs_robust_traintest3, AUC_obs_robust_civil_ns_alt1, AUC_obs_robust_civil_ns_alt2))
 
 ## RM: ADDED 4/29/2020
+# keep track of both smoothed and original AUC ROC; write a table with these
+# intermediate results so that Table 1 can be reconstructed later without having
+# to re-run all of the model scripts.
 AUCs <- as.matrix(c(AUC_obs, AUC_obs_noSmooth))
+
+tbl <- data.frame(
+  model = "base specification",
+  specification = "goldstein",
+  horizon = "6 month",
+  smoothed = unname(AUC_obs),
+  original = unname(AUC_obs_noSmooth)
+)
+write.csv(tbl, "tables/auc-6mo-goldstein.csv", row.names = FALSE)
 
 # Calculate PR
 
