@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 library(readr)
 library(dplyr)
+library(kableExtra)
 ```
 
 
@@ -60,7 +61,7 @@ The results for this analysis are summarized in Table 1 in the B&S paper, which 
 
 The escalation model generally outperforms the alternative models/specifications, and on that basis B&S conclude that theory does indeed provide better forecast accuracy when compared to models not informed by theory.
 
-Before listing the primary issues we identified, we should note that we are partial to their approach. Theory is important. It is helpful for forecasting problems, especially with regards to identifying which variables to include in a model. This is particularly true when the goal is to assess how ... 
+Before listing the primary issues we identified, we should note that we are partial to their approach. Theory is important. It is helpful for forecasting problems, especially with regards to identifying which variables to include in a model. This is particularly true when the goal is to assess how ... (RM: I want to add something here about identifying potential policy interventions that can help advert onset...)
 
 # Issues
 
@@ -75,8 +76,12 @@ auc %>%
   knitr::kable(digits = 2)
 ```
 
+
+
 Using AUC-ROC values from un-smoothed, original ROC curves reverses the original conclusions from B&S Table 1. In both the 1 month-ahead and 6-month ahead forecasts, the escalation model is outperformed by alternative models. 
 
+
+<!-- \input{data/replicated-table-1.tex} -->
 
 ## Assessment of the 2016 forecasts
 
