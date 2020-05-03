@@ -8,3 +8,6 @@
 
 # >100 MB
 tuning-experiments/trafo-data
+
+# chunks are only used for monitoring progress
+tuning-experiments/output/chunks

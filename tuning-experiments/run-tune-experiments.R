@@ -9,8 +9,15 @@
 #   script to remove objects no longer needed.
 #
 
-library(tidyverse)
-library(tidymodels)
+library(readr)
+library(tibble)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(stringr)
+library(ggplot2)
+library(rsample)       # for vfold_cv
+library(yardstick)
 library(randomForest)
 library(future)
 library(doFuture)
@@ -95,10 +102,15 @@ model_grid <- crossing(hp_grid, folds)
 # permute the model grid so workers get a more even task load
 model_grid <- model_grid[sample(1:nrow(model_grid)), ]
 
+# Some of the models can take a long time to run. Chunk the output and write
+# it to files so that one can at least have some sense of progress.
+dir.create("output/chunks")
+writeLines(as.character(nrow(model_grid)), "output/chunks/n-chunks.txt")
+
 res <- foreach(i = 1:nrow(model_grid),
                .export = c("model_grid", "train_df", "spec", "cameo", "escalation"),
-               .packages = c("randomForest", "tibble", "yardstick", "dplyr")
-) %dopar% {
+               .packages = c("randomForest", "tibble", "yardstick", "dplyr"),
+               .inorder = FALSE) %dopar% {
 
   # keep track of run time
   t0 <- proc.time()
@@ -107,7 +119,7 @@ res <- foreach(i = 1:nrow(model_grid),
   test_i  <- train_df[model_grid$test_idx[[i]], ]
 
   fitted_mdl <- randomForest(y = train_i$incidence_civil_ns_plus1,
-                             x = train_i[, spec],
+                             x = train_i[, get(spec)],
                              type = "classification",
                              ntree = model_grid$ntree[[i]],
                              mtry  = model_grid[i, ][["mtry"]],
@@ -116,7 +128,7 @@ res <- foreach(i = 1:nrow(model_grid),
                              do.trace = FALSE)
 
   test_preds <- tibble(
-    preds = as.vector(predict(fitted_mdl, newdata = test_i[, spec], type = "prob")[, "1"]),
+    preds = as.vector(predict(fitted_mdl, newdata = test_i[, get(spec)], type = "prob")[, "1"]),
     truth = test_i[, dv])
   res_i <- tibble(
     i = i,
@@ -128,12 +140,18 @@ res <- foreach(i = 1:nrow(model_grid),
     AUC = roc_auc(test_preds, truth, preds)[[".estimate"]],
     time = (proc.time() - t0)["elapsed"]
   )
+
+  write_csv(res_i, path = sprintf("output/chunks/chunk-%s.csv", i))
+
   res_i
 }
 
 res <- bind_rows(res)
 
 write_rds(res, "output/tune-results.rds")
+
+# clean up / remove the chunks
+unlink("output/chunks", recursive = TRUE)
 
 # Append to cumulative tuning results
 all_tune <- read_rds("output/tune-results-cumulative.rds")
