@@ -74,14 +74,14 @@ set.seed(5234)
 
 spec <- "escalation"
 
-hp_samples <- 10
+hp_samples <- 25
 
 if (spec=="escalation") {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
-    mtry     = as.integer(runif(hp_samples, 2, 4)),
-    ntree    = as.integer(runif(hp_samples, 5000, 10000)),
-    nodesize = as.integer(runif(hp_samples, 5, 10))
+    mtry     = as.integer(runif(hp_samples, 2, 5)),
+    ntree    = as.integer(runif(hp_samples, 5000, 25000)),
+    nodesize = as.integer(runif(hp_samples, 1, 15))
   )
 } else {
   hp_grid <- tibble(
@@ -112,6 +112,11 @@ model_grid <- crossing(hp_grid, folds)
 
 # permute the model grid so workers get a more even task load
 model_grid <- model_grid[sample(1:nrow(model_grid)), ]
+
+# expected run-time
+time_model <- read_rds("output/runtime-model.rds")
+et <- sum(predict(time_model, model_grid))/3600/(8*.9)
+lgr$info("Expected runtime with 8 workers: %s hours", round(et, 1))
 
 # Some of the models can take a long time to run. Chunk the output and write
 # it to files so that one can at least have some sense of progress.

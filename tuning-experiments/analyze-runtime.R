@@ -23,6 +23,8 @@ with_time %>%
 
 fitted_mdl <- lm(time ~ ntree , data = with_time)
 
+write_rds(fitted_mdl, "output/runtime-model.rds")
+
 summary(fitted_mdl)
 
 plot(predict(fitted_mdl, newdata = with_time), with_time$time)
@@ -46,7 +48,7 @@ tune_res %>%
   labs(title = sprintf("Specification: %s", spec))
 
 tune_res %>%
-  filter(mtry < 10, nodesize < 20) %>%
+  filter(mtry < 10, mtry > 1, nodesize < 20) %>%
   pivot_longer(ntree:nodesize) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +
