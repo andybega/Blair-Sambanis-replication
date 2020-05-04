@@ -20,8 +20,8 @@ library(boot)
 
 setwd(here::here("tuning-experiments"))
 
-registerDoFuture()
-plan("multisession", workers = WORKERS)
+#registerDoFuture()
+#plan("multisession", workers = WORKERS)
 
 
 # Set up RF model functions -----------------------------------------------
@@ -167,7 +167,10 @@ quad <- c(
   "opp_gov_matcp","reb_gov_matcp"
 )
 
-goldstein <- c("")
+goldstein <- c(
+  "gov_opp_gold","gov_reb_gold",
+  "opp_gov_gold","reb_gov_gold"
+)
 
 cameo <- c(
   names(df)[str_detect(names(df), "cameo_[0-9]+$")]
@@ -181,6 +184,10 @@ spec_list <- list(Escalation = escalation,
 
 # Make sure we are operating on same df for both specs
 df <- df[complete.cases(df[, unique(c(dv, escalation, cameo))]), ]
+
+# Need to sort the df by year and month (implicitly period, which is a unique
+# ID for year-month), otherwise the train/test indices will be wrong
+df <- df %>% arrange(year, month, country_iso3)
 
 # Define training and testing sets for base specification
 train_period = mean(df$period[which(df$month==12 & df$year==2007)])
@@ -284,11 +291,13 @@ model_grid <- full_model_grid %>%
   filter(table1_rows=="Base specification",
          table1_columns!="Average",
          table1_columns!="CAMEO",
-         hp_set!="Tuned",
-         table1_columns=="Escalation")
+         hp_set!="Tuned")
 
 dir.create("output/table1-chunks/prediction", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/table1-chunks/roc", showWarnings = FALSE)
+
+# Keep track of how many models we aim to run
+writeLines(as.character(nrow(model_grid)), "output/table1-chunks/n-chunks.txt")
 
 # Take out models that have already been run
 if (!RERUN) {
@@ -347,7 +356,7 @@ res <- foreach(
       model_id = chunk_id,
       AUC = roc_auc(test_preds, truth, preds)[[".estimate"]]
     )
-    roc_path <- file.path(sprintf("output/table1-chunks/roc/chunk-%04d.rds", chunk_id))
+    roc_path <- file.path(sprintf("output/table1-chunks/roc/chunk-%04d.csv", chunk_id))
     write_csv(res, roc_path)
 
     NULL
