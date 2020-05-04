@@ -1,5 +1,5 @@
 #
-#   Recreate table 1 with non-smoothed ROC
+#   Recreate table 2 with non-smoothed ROC
 #
 # install.packages("")
 library(readr)
@@ -9,26 +9,24 @@ library(dplyr)
 library(here)
 
 setwd(here::here("MB-replication-checks"))
-
-
-
+getwd()
 # Write table summaries for monitoring on git
 
-auc <- lapply(dir("tables", pattern = "auc-", full.names = TRUE), read_csv,
+auc <- lapply(dir("tables/PITF/", pattern = "AUCs-", full.names = TRUE), read_csv,
               col_types = cols(
-                model = col_character(),
                 specification = col_character(),
                 horizon = col_character(),
                 smoothed = col_double(),
-                original = col_double()
-              )) %>%
+                original = col_double())) %>%
   bind_rows() %>%
-  dplyr::select(model, horizon, specification, smoothed, original)
+  dplyr::select(horizon, specification, smoothed, original)
 
-write_csv(auc, "tables/table1-redone.csv")
-write_csv(auc, "../data/table1-redone.csv")
+write_csv(auc, "tables/table2-redone.csv")
+write_csv(auc, "../data/table2-redone.csv")
 
-# Write latex versions of table 1
+# Write latex versions of table
+
+
 
 top <- read_csv("tables/table1_top.csv") %>%
   rename(`ROC Smoothed` = X1) %>%
