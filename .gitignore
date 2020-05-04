@@ -11,3 +11,4 @@ tuning-experiments/trafo-data
 
 # chunks are only used for monitoring progress
 tuning-experiments/output/chunks
+tuning-experiments/output/table1-full-model-grid.rds
