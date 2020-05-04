@@ -81,11 +81,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5235)
+set.seed(5236)
 
 spec <- "quad"
 
-hp_samples <- 5
+hp_samples <- 6
 
 if (spec=="escalation") {
   hp_grid <- tibble(
