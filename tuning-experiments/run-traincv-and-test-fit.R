@@ -21,7 +21,7 @@ library(boot)
 setwd(here::here("tuning-experiments"))
 
 registerDoFuture()
-plan(multisession(workers = WORKERS))
+plan("multisession", workers = WORKERS)
 
 
 # Set up RF model functions -----------------------------------------------
