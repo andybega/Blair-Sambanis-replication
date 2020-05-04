@@ -9,8 +9,15 @@
 RERUN   <- TRUE
 WORKERS <- 7
 
-library(tidyverse)
-library(tidymodels)
+library(readr)
+library(tibble)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(stringr)
+library(ggplot2)
+library(rsample)       # for vfold_cv
+library(yardstick)
 library(randomForest)
 library(future)
 library(doFuture)
@@ -20,8 +27,8 @@ library(boot)
 
 setwd(here::here("tuning-experiments"))
 
-#registerDoFuture()
-#plan("multisession", workers = WORKERS)
+registerDoFuture()
+plan("multisession", workers = WORKERS)
 
 
 # Set up RF model functions -----------------------------------------------
@@ -300,8 +307,18 @@ dir.create("output/table1-chunks/roc", showWarnings = FALSE)
 writeLines(as.character(nrow(model_grid)), "output/table1-chunks/n-chunks.txt")
 
 # Take out models that have already been run
-if (!RERUN) {
-  stop("not implemented yet")
+if (!RERUN & dir.exists("output/table1-chunks/prediction")) {
+  # Check both prediction and roc files in case somehow one got written but
+  # no the other
+  pred_ids <- dir("output/table1-chunks/prediction") %>%
+    str_extract("[0-9]+") %>%
+    as.integer()
+  roc_ids <- dir("output/table1-chunks/roc") %>%
+    str_extract("[0-9]+") %>%
+    as.integer()
+  done_ids <- intersect(pred_ids, roc_ids)
+  model_grid <- model_grid %>%
+    filter(!model_id %in% done_ids)
 }
 
 set.seed(5235)
@@ -361,3 +378,101 @@ res <- foreach(
 
     NULL
   }
+
+
+
+# Collect chunks ----------------------------------------------------------
+
+roc <- chunk_files <- dir("output/table1-chunks/roc", full.names = TRUE) %>%
+  map(read_csv, col_types = cols(
+    model_id = col_double(),
+    AUC = col_double()
+  )) %>%
+  bind_rows()
+
+model_mapping <- read_csv("output/table1-model-id-mapping.csv")
+
+roc <- roc %>%
+  left_join(model_mapping, by = "model_id")
+
+write_rds(roc, "table1-auc-roc-samples.rds")
+
+boot_ci <- function(x) {
+  bb <- boot(x, function(x, indices) mean(x[indices]), R = 2000)
+  ci <- boot.ci(bb, type = "basic")
+  out <- as.list(ci$basic[4:5])
+  names(out) <- c("ci_lower", "ci_upper")
+  as_tibble(out)
+}
+
+test_fit <- roc %>%
+  filter(prediction_on=="test") %>%
+  select(table1_rows, table1_columns, horizon, hp_set, AUC) %>%
+  rename(Test_AUC_ROC = AUC)
+
+traincv_roc <- roc %>%
+  filter(prediction_on=="train-cv")
+
+cv_fit <- traincv_roc %>%
+  group_by(table1_rows, table1_columns, horizon, hp_set) %>%
+  summarize(mean_AUC = mean(AUC),
+            sd_AUC   = sd(AUC),
+            ci = list(boot_ci(AUC))) %>%
+  unnest(ci) %>%
+  ungroup()
+
+fit_table <- cv_fit %>%
+  left_join(test_fit) %>%
+  select(-sd_AUC, -ci_lower, -ci_upper)
+
+fit_table %>%
+  arrange(horizon, table1_columns, hp_set) %>%
+  select(-table1_rows) %>%
+  select(horizon, table1_columns, hp_set, everything()) %>%
+  knitr::kable(digits = 2) %>%
+  writeLines("output/tbl-traincv-test-fit.md")
+
+
+by_model <- traincv_roc %>%
+  filter(horizon=="1 month") %>%
+  tidyr::unite(col = "model", c(table1_columns, hp_set), remove = TRUE) %>%
+  select(model, AUC)
+temp <- by_model %>%
+  rename(model2 = model, AUC2 = AUC) %>%
+  nest(data2 = c(AUC2))
+by_model <- crossing(
+  by_model %>% nest(data = c(AUC)),
+  temp
+) %>%
+  unnest(c(data, data2))
+t_test_matrix <- by_model %>%
+  group_by(model, model2) %>%
+  summarize(p_value = t.test(AUC, AUC2, alternative = "greater")$p.value) %>%
+  pivot_wider(names_from = model2, values_from = p_value)
+
+t_test_matrix %>%
+  knitr::kable(digits = 2) %>%
+  writeLines("output/tbl-traincv-1month-t-tests.md")
+
+by_model <- traincv_roc %>%
+  filter(horizon=="6 months") %>%
+  tidyr::unite(col = "model", c(table1_columns, hp_set), remove = TRUE) %>%
+  select(model, AUC)
+temp <- by_model %>%
+  rename(model2 = model, AUC2 = AUC) %>%
+  nest(data2 = c(AUC2))
+by_model <- crossing(
+  by_model %>% nest(data = c(AUC)),
+  temp
+) %>%
+  unnest(c(data, data2))
+t_test_matrix <- by_model %>%
+  group_by(model, model2) %>%
+  summarize(p_value = t.test(AUC, AUC2, alternative = "greater")$p.value) %>%
+  pivot_wider(names_from = model2, values_from = p_value)
+
+t_test_matrix %>%
+  knitr::kable(digits = 2) %>%
+  writeLines("output/tbl-traincv-6month-t-tests.md")
+
+
