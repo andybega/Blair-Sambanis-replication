@@ -28,11 +28,18 @@ library(kableExtra)
 ```
 
 
-We highlight some issues with the analysis in the recent Blair and Sambanis paper that undermine their main empirical finding, that a theoretically-informed model can forecast civil war onsets better than more inductive alternatives. 
+We highlight some issues with the analysis in the recent Blair and Sambanis paper that undermine their main empirical finding, that a theoretically-informed escalation model can forecast civil war onsets better than more inductive alternatives. Their paper has two key results: 
 
-- The key findings depend on the decision to use smoothed rather than original ROC curves when calculating area under the ROC curve (AUC-ROC) fit statistics. When using regular, not smoothed ROC curves, the findings reverse. 
-- The 2016 forecasts for the risk of civil war onset appear to be evaluated using civil war *incidence* not *onset*. This distorts the assessment of how accurate they were. (TBD)
-- The way the random forest models are fitted by B&S is very unorthodox.^[This is in fact what first led us to examine the analysis in more detail.] We evaluate two questions: (1) does the key model's superior test forecast performance generalize or is it a result of inadvertant fitting of the model hyperparameters to test forecast performance, and (2) does the inferior performance of the alternative models, and especially the CAMEO model with 1,159 covariates, reflect a lack of proper hyperparameter tuning for these models? (TBD)
+1. A theoretically-informed model outperforms alternative specifications in predicting civil war onset. 
+2. Structural variables do not add, and sometimes detract, from the forecast accuracy of the escalation model. 
+
+They also evaluate forecasts for the first half of 2016 and conclude good accuracy in forecasting civil war. 
+
+We find three issues in their empirical analyses:
+
+- The first key finding depends entirely on using smoothed ROC curves when calculating the AUC-ROC values in Table 1. When using the original ROC curves, the findings reverse. Alternative specifications consistently beat the escalation model.
+- Regarding the forecast assessment in Table 4, the forecatss for 2016-H1 are erraneously assessed using civil war incidence, not onset, even though the models from which they are gneerated are clearly fitted to onset. This vastly overstates the precision of the forecasts. 
+- The way the random forest models are fitted by B&S is very unorthodox.^[This is in fact what first led us to examine the analysis in more detail.] We evaluate two questions: (1) does the key model's superior test forecast performance generalize or is it a result of inadvertant fitting of the model hyperparameters to test forecast performance, and (2) does the inferior performance of the alternative models, and especially the CAMEO model with 1,159 covariates, reflect a lack of proper hyperparameter tuning for these models? (work still in progress)
 
 # Review of the Blair and Sambanis paper
 
@@ -67,13 +74,13 @@ Before listing the primary issues we identified, we should note that we are part
 
 ## Smoothed ROC curves
 
-```{r}
+```{r, message=FALSE}
 auc <- read_csv("data/table1-redone.csv") %>%
   mutate(specification = factor(specification, levels = c("escalation", "quad", "goldstein", "CAMEO", "avg"))) %>%
   arrange(model, horizon, specification)
 
 auc %>%
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 2, booktabs = TRUE, caption = "Comparison of smoothed and original AUC-ROC values")
 ```
 
 
@@ -85,56 +92,25 @@ Using AUC-ROC values from un-smoothed, original ROC curves reverses the original
 
 ## Assessment of the 2016 forecasts
 
+The predictions for the first half of 2016 are assessed in Table 4:
+
+![](figures/bands-table4.png)
+
+The table presents 15 or 16 positive cases for 2016-H1, depending on a minor coding decision. These numgers correspond to a positive rate of around 9.5% for the first half of 2016. 
+
+By comparison, the 6-month version of the full data from 2001 to 2015 contains only 20 positive cases, with a positive rate of around 0.5%. 
+
+The relevant variables in the data are "incidence_civil_ns" and "incidence_civli_ns_plus1", which appears to be a 1-period lead version of the DV that is used in the actual prediction models. The incidence DV contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. 
+
 The main data set covering 2001 - 2015 contains 20 civil war onsets. But there are 15 "Persistence" cases (top of table 4) and 16 "Change" cases (bottom of table 4)
 
-<!-- 
-AB: going to put some detailed technical notes in here. 
+By examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable back to incidence. 
 
-The 2016 forecasts are created in R and contained in pred_escalation_6mo_inc_civil_ns.
-That data frame actually has predictions for 2008 to 2016. 
+The actual data contains 0 new civil war onsets in 2016-H1. Using those data, the 2016-H1 forecasts would have retained a recall value of 1, but precision would have decreased from 13/30 = 0.76 to 1/30 = 0.03.  
 
-The data from which all this is created has the following values for the plus1 and non-lead DV:
+The second part of the Table 4 script manually codes onset in two countries, Turkey and Burundi. With this coding, the correct recall (bottom of Table 4) is 1 (not 14/16 = 0.88) and the precision changes from 14/30 = 0.47 to 2/30 = 0.07. 
 
-  incidence_civil_ns_plus1     n
-                     <dbl> <int>
-1                        0  4581
-2                        1    20
-3                       NA   483
-
-  incidence_civil_ns     n
-               <dbl> <int>
-1                  0  4562
-2                  1    20
-3                 NA   502
-
-Looking at the pattern of missing values, it is fairly clear that the incidence variables were originally incidence, but changed to onset such that the first value in a sequence of 1's remained a 1 while the rest were set to NA. Like:
-
-c(0, 1, 1, 1, 0) becomes (c(0, 1, NA, NA, 0))
-
-And it is also fairly clear that "incidence_civil_ns_plus1" is a 1-period lead indicator for the outcome that one can use as a prediction target insteaad of having to lag all inputs. 
-
-Anyways, in R training, "incidence_civil_ns_plus1" is used as the target for the models. It has 20 positive values for data ranging from 2001 to 2016.
-
-The predictions, including 2016 forecasts, are written to disk and then Stata picks up. The crucial coding for Table 4 is in `6mo_make_confusion_matrix.do`. 
-
-Two strange things happen there. 
-
-Sub-issue 1: First, the forecasts are assessed with "incidence_civil_ns", not "incidence_civil_ns_plus1". Based on the DV names, I would imagine that "plus1" is a lead version, so the actual predictions for 2016-H1 are contained in the predicted value for "incidence_civil_ns_plus1" in 2015-H2, since the plus 1 puts the time period to 2016-H1.  
-
-(It could be that the 2016-H1 data in "data/6mo_data_OOS.dta" are just a copy of 2015-H2, in which case ok. I haven't checked.)
-
-This is a relatively minor point. 
-
-Sub-issue 2: The second issue, and this is key, is that missing values in "incidence_civil_ns" are recoded to 1 in `6mo_make_confusion_matrix.do` line 52. This is what does all the heavy lifting in Table 4. Otherwise there are no 1 values in the data:
-
-  incidence_civil_ns     n
-  <chr>              <int>
-1 0                    149
-2 NA                    15
-
-So it appears that the variable is essentially changed back from the onset coding in which ongonig conflicts are NA, back to incidence coding. 
-
--->
+Another, minor issue or rather coding error, is related to using a lead version of the DV. With the lead version of the DV, "incidence_civil_ns_plus1", which is what the models are predicting, the predicted value for 2016-H1 actually indicates the risk of civil war onset in 2016-H2. In the Table 4 script referenced above, the 2016-H1 predictions (for 2016-H2) are assessed using the raw DV, "incidence_civil_ns", not the lead version. Essentially, the forecasts for 2016-H2 are assessed using observed outcomes for 2016-H1. In this case it probably doesn't make a difference since both the raw DV and lead version for 2016-H1 do not have any positive values. 
 
 ## Random forest model tuning
 
