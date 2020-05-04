@@ -87,7 +87,54 @@ Using AUC-ROC values from un-smoothed, original ROC curves reverses the original
 
 The main data set covering 2001 - 2015 contains 20 civil war onsets. But there are 15 "Persistence" cases (top of table 4) and 16 "Change" cases (bottom of table 4)
 
+<!-- 
+AB: going to put some detailed technical notes in here. 
 
+The 2016 forecasts are created in R and contained in pred_escalation_6mo_inc_civil_ns.
+That data frame actually has predictions for 2008 to 2016. 
+
+The data from which all this is created has the following values for the plus1 and non-lead DV:
+
+  incidence_civil_ns_plus1     n
+                     <dbl> <int>
+1                        0  4581
+2                        1    20
+3                       NA   483
+
+  incidence_civil_ns     n
+               <dbl> <int>
+1                  0  4562
+2                  1    20
+3                 NA   502
+
+Looking at the pattern of missing values, it is fairly clear that the incidence variables were originally incidence, but changed to onset such that the first value in a sequence of 1's remained a 1 while the rest were set to NA. Like:
+
+c(0, 1, 1, 1, 0) becomes (c(0, 1, NA, NA, 0))
+
+And it is also fairly clear that "incidence_civil_ns_plus1" is a 1-period lead indicator for the outcome that one can use as a prediction target insteaad of having to lag all inputs. 
+
+Anyways, in R training, "incidence_civil_ns_plus1" is used as the target for the models. It has 20 positive values for data ranging from 2001 to 2016.
+
+The predictions, including 2016 forecasts, are written to disk and then Stata picks up. The crucial coding for Table 4 is in `6mo_make_confusion_matrix.do`. 
+
+Two strange things happen there. 
+
+Sub-issue 1: First, the forecasts are assessed with "incidence_civil_ns", not "incidence_civil_ns_plus1". Based on the DV names, I would imagine that "plus1" is a lead version, so the actual predictions for 2016-H1 are contained in the predicted value for "incidence_civil_ns_plus1" in 2015-H2, since the plus 1 puts the time period to 2016-H1.  
+
+(It could be that the 2016-H1 data in "data/6mo_data_OOS.dta" are just a copy of 2015-H2, in which case ok. I haven't checked.)
+
+This is a relatively minor point. 
+
+Sub-issue 2: The second issue, and this is key, is that missing values in "incidence_civil_ns" are recoded to 1 in `6mo_make_confusion_matrix.do` line 52. This is what does all the heavy lifting in Table 4. Otherwise there are no 1 values in the data:
+
+  incidence_civil_ns     n
+  <chr>              <int>
+1 0                    149
+2 NA                    15
+
+So it appears that the variable is essentially changed back from the onset coding in which ongonig conflicts are NA, back to incidence coding. 
+
+-->
 
 ## Random forest model tuning
 
