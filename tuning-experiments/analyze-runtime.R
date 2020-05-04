@@ -40,28 +40,3 @@ plot(predict(fitted_mdl, newdata = with_time), with_time$time)
 
 
 
-tune_res <- all_tune %>%
-  group_by(tune_batch_id, tune_id, ntree, mtry, nodesize) %>%
-  summarize(mean_auc = mean(AUC),
-            sd_auc   = sd(AUC),
-            n = n())
-
-tune_res %>%
-  pivot_longer(ntree:nodesize) %>%
-  ggplot(aes(x = value, y = mean_auc, group = name)) +
-  facet_wrap(~ name, scales = "free_x") +
-  geom_point() +
-  geom_smooth(se = FALSE) +
-  theme_minimal() +
-  labs(title = sprintf("Specification: %s", spec))
-
-tune_res %>%
-  filter(mtry < 10, mtry > 1, nodesize < 20) %>%
-  pivot_longer(ntree:nodesize) %>%
-  ggplot(aes(x = value, y = mean_auc, group = name)) +
-  facet_wrap(~ name, scales = "free_x") +
-  geom_point() +
-  geom_smooth(se = FALSE) +
-  theme_minimal() +
-  labs(title = sprintf("Specification: %s", spec))
-
