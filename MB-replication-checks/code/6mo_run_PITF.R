@@ -28,3 +28,6 @@ AUC_obs <- data.frame(as.numeric(roc$auc))
 
 AUCs_PITF_6mo <- AUC_obs
 
+AUCs <- data.frame(specification = "PITF", horizon = "6 months",
+                   smoothed = as.numeric(AUC_obs), original = as.numeric(AUC_obs_noSmooth))
+write.csv(AUCs, "tables/PITF/AUCs-6mo-PITF.csv")

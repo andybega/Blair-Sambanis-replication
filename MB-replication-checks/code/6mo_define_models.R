@@ -1,7 +1,7 @@
 
 
   # Define model labels
-		
+
     			escalation_6mo <- c(
     				"gov_opp_low_level",
     				"gov_reb_low_level",
@@ -14,7 +14,7 @@
     				"reb_gov_demands",
     				"opp_gov_demands"
     				)
-		
+
     			quad_6mo <- c(
       			"gov_opp_vercf","gov_reb_vercf",
     				"gov_opp_matcf","gov_reb_matcf",
@@ -1193,18 +1193,18 @@
     				"reb_gov_cameo_2041",
     				"reb_gov_cameo_2042"
             )
-        
+
 
 
   # Define model features
 
 
   # for(model in c("escalation_6mo", "escalation_6mo_with_PITF", "PITF_6mo", "escalation_6mo_splitPITF", "escalation_6mo_highriskPITF", "escalation_6mo_lowriskPITF", "escalation_6mo_withlags", "escalation_6mo_simple", "quad_6mo", "goldstein_6mo", "all_CAMEO_6mo")){
-  #   
-      		
+  #
+
 # We are only running the base specification, for now... (RM: 4/29/2020)
-    for(model in c("escalation_6mo", "quad_6mo", "goldstein_6mo", "all_CAMEO_6mo")){
-      
+    for(model in c("escalation_6mo", "quad_6mo", "goldstein_6mo", "all_CAMEO_6mo", "escalation_6mo_with_PITF", "PITF_6mo", "escalation_6mo_splitPITF", "escalation_6mo_highriskPITF", "escalation_6mo_lowriskPITF")){
+
     if(model == "escalation_6mo"){
       variables <- c("gov_opp_low_level",
                      "gov_reb_low_level",
@@ -1216,91 +1216,91 @@
                      "gov_reb_accommodations",
                      "reb_gov_demands",
                      "opp_gov_demands")
-    } 
- 
-    # if(model == "escalation_6mo_with_PITF"){
-    #   variables <- c("gov_opp_low_level",
-    #                  "gov_reb_low_level",
-    #                  "opp_gov_low_level",
-    #                  "reb_gov_low_level",
-    #                  "gov_opp_nonviol_repression",
-    #                  "gov_reb_nonviol_repression",
-    #                  "gov_opp_accommodations",
-    #                  "gov_reb_accommodations",
-    #                  "reb_gov_demands",
-    #                  "opp_gov_demands",
-    #                  "region_africa",
-    #                  "region_easia",
-    #                  "region_europe",
-    #                  "region_latam",
-    #                  "region_neast",
-    #                  "disp4cat_minus1",
-    #                  "faction_minus1",
-    #                  "bnkv100cat_minus1",
-    #                  "lncimr_minus1",
-    #                  "lntpopx_minus1")
-    # }
-    #   
-    #   if(model == "PITF_6mo"){
-    #     variables <- c("region_africa",
-    #                    "region_easia",
-    #                    "region_europe",
-    #                    "region_latam",
-    #                    "region_neast",
-    #                    "disp4cat_minus1",
-    #                    "faction_minus1",
-    #                    "bnkv100cat_minus1",
-    #                    "lncimr_minus1",
-    #                    "lntpopx_minus1")
-    #   }
-    # 
-    # if(model == "escalation_6mo_highriskPITF"){
-    #   variables <- c("gov_opp_low_level",
-    #                  "gov_reb_low_level",
-    #                  "opp_gov_low_level",
-    #                  "reb_gov_low_level",
-    #                  "gov_opp_nonviol_repression",
-    #                  "gov_reb_nonviol_repression",
-    #                  "gov_opp_accommodations",
-    #                  "gov_reb_accommodations",
-    #                  "reb_gov_demands",
-    #                  "opp_gov_demands")
-    # } 
-    # 
-    # if(model == "escalation_6mo_lowriskPITF"){
-    #   variables <- c("gov_opp_low_level",
-    #                  "gov_reb_low_level",
-    #                  "opp_gov_low_level",
-    #                  "reb_gov_low_level",
-    #                  "gov_opp_nonviol_repression",
-    #                  "gov_reb_nonviol_repression",
-    #                  "gov_opp_accommodations",
-    #                  "gov_reb_accommodations",
-    #                  "reb_gov_demands",
-    #                  "opp_gov_demands")
-    # } 
-    # 
-    # if(model == "escalation_6mo_splitPITF"){
-    #   variables <- c("gov_opp_low_level",
-    #                  "gov_reb_low_level",
-    #                  "opp_gov_low_level",
-    #                  "reb_gov_low_level",
-    #                  "gov_opp_nonviol_repression",
-    #                  "gov_reb_nonviol_repression",
-    #                  "gov_opp_accommodations",
-    #                  "gov_reb_accommodations",
-    #                  "reb_gov_demands",
-    #                  "opp_gov_demands")
-    # } 
-    # 
-    # 
+    }
+
+    if(model == "escalation_6mo_with_PITF"){
+      variables <- c("gov_opp_low_level",
+                     "gov_reb_low_level",
+                     "opp_gov_low_level",
+                     "reb_gov_low_level",
+                     "gov_opp_nonviol_repression",
+                     "gov_reb_nonviol_repression",
+                     "gov_opp_accommodations",
+                     "gov_reb_accommodations",
+                     "reb_gov_demands",
+                     "opp_gov_demands",
+                     "region_africa",
+                     "region_easia",
+                     "region_europe",
+                     "region_latam",
+                     "region_neast",
+                     "disp4cat_minus1",
+                     "faction_minus1",
+                     "bnkv100cat_minus1",
+                     "lncimr_minus1",
+                     "lntpopx_minus1")
+    }
+
+      if(model == "PITF_6mo"){
+        variables <- c("region_africa",
+                       "region_easia",
+                       "region_europe",
+                       "region_latam",
+                       "region_neast",
+                       "disp4cat_minus1",
+                       "faction_minus1",
+                       "bnkv100cat_minus1",
+                       "lncimr_minus1",
+                       "lntpopx_minus1")
+      }
+
+    if(model == "escalation_6mo_highriskPITF"){
+      variables <- c("gov_opp_low_level",
+                     "gov_reb_low_level",
+                     "opp_gov_low_level",
+                     "reb_gov_low_level",
+                     "gov_opp_nonviol_repression",
+                     "gov_reb_nonviol_repression",
+                     "gov_opp_accommodations",
+                     "gov_reb_accommodations",
+                     "reb_gov_demands",
+                     "opp_gov_demands")
+    }
+
+    if(model == "escalation_6mo_lowriskPITF"){
+      variables <- c("gov_opp_low_level",
+                     "gov_reb_low_level",
+                     "opp_gov_low_level",
+                     "reb_gov_low_level",
+                     "gov_opp_nonviol_repression",
+                     "gov_reb_nonviol_repression",
+                     "gov_opp_accommodations",
+                     "gov_reb_accommodations",
+                     "reb_gov_demands",
+                     "opp_gov_demands")
+    }
+
+    if(model == "escalation_6mo_splitPITF"){
+      variables <- c("gov_opp_low_level",
+                     "gov_reb_low_level",
+                     "opp_gov_low_level",
+                     "reb_gov_low_level",
+                     "gov_opp_nonviol_repression",
+                     "gov_reb_nonviol_repression",
+                     "gov_opp_accommodations",
+                     "gov_reb_accommodations",
+                     "reb_gov_demands",
+                     "opp_gov_demands")
+    }
+    #
+    #
     # if(model == "escalation_6mo_simple"){
     #   variables <- c("gov_opp_low_level",
     #                  "gov_reb_low_level",
     #                  "opp_gov_low_level",
     #                  "reb_gov_low_level")
-    # } 
-    # 
+    # }
+    #
     # if(model == "escalation_6mo_withlags"){
     #   variables <- c("gov_opp_low_level",
     #                  "gov_opp_low_level_lag1",
@@ -1324,8 +1324,8 @@
     #                  "gov_reb_accommodations",
     #                  "reb_gov_demands",
     #                  "opp_gov_demands")
-    # } 
-    
+    # }
+
     if(model == "quad_6mo"){
       variables <- c(
         "gov_opp_vercf","gov_reb_vercf",
@@ -1337,13 +1337,13 @@
         "opp_gov_vercp","reb_gov_vercp",
         "opp_gov_matcp","reb_gov_matcp")
     }
-      
+
     if(model == "goldstein_6mo"){
       variables <- c(
       "gov_opp_gold","gov_reb_gold",
       "opp_gov_gold","reb_gov_gold")
     }
-    
+
       if(model == "all_CAMEO_6mo"){
         variables <- c(
         "gov_opp_cameo_010",
@@ -2507,80 +2507,80 @@
         "reb_gov_cameo_2041",
         "reb_gov_cameo_2042")
       }
-    
-    
-    
+
+
+
 
   # Define predictors for base specification
 
       assign(paste0(model, "_train_RHS"), train[variables])
       assign(paste0(model, "_test_RHS"), test[variables])
- 
+
   # # Define predictors for robustness checks using alternate start dates
-  # 
+  #
   #     assign(paste0(model, "_train_RHS_robust_traintest1"), train_robust_traintest1[variables])
   #     assign(paste0(model, "_test_RHS_robust_traintest1"), test_robust_traintest1[variables])
-  #   
+  #
   #     assign(paste0(model, "_train_RHS_robust_traintest2"), train_robust_traintest2[variables])
   #     assign(paste0(model, "_test_RHS_robust_traintest2"), test_robust_traintest2[variables])
-  #     
+  #
   #     assign(paste0(model, "_train_RHS_robust_traintest3"), train_robust_traintest3[variables])
   #     assign(paste0(model, "_test_RHS_robust_traintest3"), test_robust_traintest3[variables])
-  #     
+  #
 
-  
+
   # Append predictand for base specification
-  
-      assign(paste0(model, "_train_frame_civil_ns"), data.frame(train_DV_civil_ns, eval(parse(text=paste0(model, "_train_RHS")))))  
-      assign(paste0(model, "_test_frame_civil_ns"), data.frame(test_DV_civil_ns, eval(parse(text=paste0(model, "_test_RHS")))))  
-  
-  
+
+      assign(paste0(model, "_train_frame_civil_ns"), data.frame(train_DV_civil_ns, eval(parse(text=paste0(model, "_train_RHS")))))
+      assign(paste0(model, "_test_frame_civil_ns"), data.frame(test_DV_civil_ns, eval(parse(text=paste0(model, "_test_RHS")))))
+
+
   # # Append predictand for robustness checks using alternate start dates
-  # 
-  #     assign(paste0(model, "_train_frame_civil_ns_robust_traintest1"), data.frame(train_DV_civil_ns_robust_traintest1, eval(parse(text=paste0(model, "_train_RHS_robust_traintest1")))))  
-  #     assign(paste0(model, "_test_frame_civil_ns_robust_traintest1"), data.frame(test_DV_civil_ns_robust_traintest1, eval(parse(text=paste0(model, "_test_RHS_robust_traintest1")))))  
-  #   
-  #     assign(paste0(model, "_train_frame_civil_ns_robust_traintest2"), data.frame(train_DV_civil_ns_robust_traintest2, eval(parse(text=paste0(model, "_train_RHS_robust_traintest2")))))  
-  #     assign(paste0(model, "_test_frame_civil_ns_robust_traintest2"), data.frame(test_DV_civil_ns_robust_traintest2, eval(parse(text=paste0(model, "_test_RHS_robust_traintest2")))))  
-  #   
-  #     assign(paste0(model, "_train_frame_civil_ns_robust_traintest3"), data.frame(train_DV_civil_ns_robust_traintest3, eval(parse(text=paste0(model, "_train_RHS_robust_traintest3")))))  
-  #     assign(paste0(model, "_test_frame_civil_ns_robust_traintest3"), data.frame(test_DV_civil_ns_robust_traintest3, eval(parse(text=paste0(model, "_test_RHS_robust_traintest3")))))  
-  # 
+  #
+  #     assign(paste0(model, "_train_frame_civil_ns_robust_traintest1"), data.frame(train_DV_civil_ns_robust_traintest1, eval(parse(text=paste0(model, "_train_RHS_robust_traintest1")))))
+  #     assign(paste0(model, "_test_frame_civil_ns_robust_traintest1"), data.frame(test_DV_civil_ns_robust_traintest1, eval(parse(text=paste0(model, "_test_RHS_robust_traintest1")))))
+  #
+  #     assign(paste0(model, "_train_frame_civil_ns_robust_traintest2"), data.frame(train_DV_civil_ns_robust_traintest2, eval(parse(text=paste0(model, "_train_RHS_robust_traintest2")))))
+  #     assign(paste0(model, "_test_frame_civil_ns_robust_traintest2"), data.frame(test_DV_civil_ns_robust_traintest2, eval(parse(text=paste0(model, "_test_RHS_robust_traintest2")))))
+  #
+  #     assign(paste0(model, "_train_frame_civil_ns_robust_traintest3"), data.frame(train_DV_civil_ns_robust_traintest3, eval(parse(text=paste0(model, "_train_RHS_robust_traintest3")))))
+  #     assign(paste0(model, "_test_frame_civil_ns_robust_traintest3"), data.frame(test_DV_civil_ns_robust_traintest3, eval(parse(text=paste0(model, "_test_RHS_robust_traintest3")))))
+  #
   # # Append predictand for robustness checks using alternate coding of civil war
-  # 
-  #     assign(paste0(model, "_train_frame_civil_ns_alt1"), data.frame(train_DV_civil_ns_alt1, eval(parse(text=paste0(model, "_train_RHS")))))  
-  #     assign(paste0(model, "_test_frame_civil_ns_alt1"), data.frame(test_DV_civil_ns_alt1, eval(parse(text=paste0(model, "_test_RHS")))))  
-  #     
-  #     assign(paste0(model, "_train_frame_civil_ns_alt2"), data.frame(train_DV_civil_ns_alt2, eval(parse(text=paste0(model, "_train_RHS")))))  
-  #     assign(paste0(model, "_test_frame_civil_ns_alt2"), data.frame(test_DV_civil_ns_alt2, eval(parse(text=paste0(model, "_test_RHS")))))  
-  # 
-      
+  #
+  #     assign(paste0(model, "_train_frame_civil_ns_alt1"), data.frame(train_DV_civil_ns_alt1, eval(parse(text=paste0(model, "_train_RHS")))))
+  #     assign(paste0(model, "_test_frame_civil_ns_alt1"), data.frame(test_DV_civil_ns_alt1, eval(parse(text=paste0(model, "_test_RHS")))))
+  #
+  #     assign(paste0(model, "_train_frame_civil_ns_alt2"), data.frame(train_DV_civil_ns_alt2, eval(parse(text=paste0(model, "_train_RHS")))))
+  #     assign(paste0(model, "_test_frame_civil_ns_alt2"), data.frame(test_DV_civil_ns_alt2, eval(parse(text=paste0(model, "_test_RHS")))))
+  #
+
   # Define model for base specification
-  
+
       assign(paste0(model, "_train_formula_civil_ns"), as.formula(paste("train_DV_civil_ns",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
       assign(paste0(model, "_test_formula_civil_ns"), as.formula(paste("test_DV_civil_ns",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
 
   # # Define model for robustness checks using alternate start dates
-  # 
+  #
   #     assign(paste0(model, "_train_formula_civil_ns_robust_traintest1"), as.formula(paste("train_DV_civil_ns_robust_traintest1",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
   #     assign(paste0(model, "_test_formula_civil_ns_robust_traintest1"), as.formula(paste("test_DV_civil_ns_robust_traintest1",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
-  #     
+  #
   #     assign(paste0(model, "_train_formula_civil_ns_robust_traintest2"), as.formula(paste("train_DV_civil_ns_robust_traintest2",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
   #     assign(paste0(model, "_test_formula_civil_ns_robust_traintest2"), as.formula(paste("test_DV_civil_ns_robust_traintest2",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
-  #     
+  #
   #     assign(paste0(model, "_train_formula_civil_ns_robust_traintest3"), as.formula(paste("train_DV_civil_ns_robust_traintest3",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
   #     assign(paste0(model, "_test_formula_civil_ns_robust_traintest3"), as.formula(paste("test_DV_civil_ns_robust_traintest3",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
-  # 
+  #
   # # Define model for robustness checks using alternate coding of civil war
-  # 
+  #
   #     assign(paste0(model, "_train_formula_civil_ns_alt1"), as.formula(paste("train_DV_civil_ns_alt1",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
   #     assign(paste0(model, "_test_formula_civil_ns_alt1"), as.formula(paste("test_DV_civil_ns_alt1",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
-  #     
+  #
   #     assign(paste0(model, "_train_formula_civil_ns_alt2"), as.formula(paste("train_DV_civil_ns_alt2",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
   #     assign(paste0(model, "_test_formula_civil_ns_alt2"), as.formula(paste("test_DV_civil_ns_alt2",paste(variables, collapse=" + "), sep = "~", collapse=NULL)))
-    
+
       }
 
 
 
- 
+

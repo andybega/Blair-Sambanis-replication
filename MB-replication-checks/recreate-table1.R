@@ -1,5 +1,5 @@
 #
-#   Recreate table 1 with non-smoothed ROC
+#   Recreate table 2 with non-smoothed ROC
 #
 # install.packages("")
 library(readr)
