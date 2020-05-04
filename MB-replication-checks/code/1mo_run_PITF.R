@@ -15,13 +15,18 @@ train_model <- randomForest(PITF_train_formula_civil_ns,
 prediction <- as.numeric(predict(train_model, newdata = data.matrix(PITF_test_frame_civil_ns), type="response"))
 prediction[is.na(PITF_test_frame_civil_ns$test_DV_civil_ns)] <- NA
 
-
-
 # Calculate AUC
 
 performance <- prediction(prediction, test_DV_civil_ns)
 roc <- roc(test_DV_civil_ns, prediction, smooth=TRUE, auc = TRUE)
 AUC_obs <- data.frame(as.numeric(roc$auc))
+
+roc_noSmooth <- roc(test_DV_civil_ns, prediction, smooth = FALSE, auc = TRUE)
+AUC_obs_noSmooth <- data.frame(as.numeric(roc_noSmooth$auc))
+
+AUCs <- data.frame(specification = "PITF", horizon = "1 month",
+                   smoothed = as.numeric(AUC_obs), original = as.numeric(AUC_obs_noSmooth))
+write.csv(AUCs, "tables/PITF/AUCs-1mo-PITF.csv")
 
 
 # Compile AUCs

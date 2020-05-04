@@ -53,7 +53,6 @@ end_period = mean(data$period[which(data$month==12 & data$year==2015)])
 train <- data[data$period<=train_period,]
 test <- data[data$period>train_period & data$period<=end_period,]
 
-## We are only running the base specification, for now... (RM: 4/29/2020)
 # # Define training and testing sets for robustness checks using alternate start dates
 #
 #       train_period_robust_traintest1 = mean(data$period[which(data$month==12 & data$year==2008)])
@@ -71,27 +70,27 @@ test <- data[data$period>train_period & data$period<=end_period,]
 #       train_robust_traintest3 <- data[data$period<=train_period_robust_traintest3,]
 #       test_robust_traintest3 <- data[data$period>train_period_robust_traintest3 & data$period<=end_period,]
 #
-# # Define training and test sets for PITF split population model
-#
-#       country_mean_pred_prob <- aggregate(pred_prob~country_iso3, train, mean)
-#       overall_mean_pred_prob <- mean(country_mean_pred_prob$pred_prob)
-#       overall_bottom25_pred_prob <- quantile(country_mean_pred_prob$pred_prob, c(.25))
-#
-#       lowrisk_threshold <- (country_mean_pred_prob$pred_prob<overall_bottom25_pred_prob)
-#       lowrisk_matrix <- cbind(country_mean_pred_prob, lowrisk_threshold)
-#       highrisk_threshold <- (country_mean_pred_prob$pred_prob>=overall_bottom25_pred_prob)
-#       highrisk_matrix <- cbind(country_mean_pred_prob, highrisk_threshold)
-#
-#       train_highrisk <- merge(train, highrisk_matrix, by="country_iso3")
-#       train_highrisk <- train_highrisk[which(train_highrisk$highrisk_threshold==TRUE),]
-#       test_highrisk <- merge(test, highrisk_matrix, by="country_iso3")
-#       test_highrisk <- test_highrisk[which(test_highrisk$highrisk_threshold==TRUE),]
-#
-#       train_lowrisk <- merge(train, lowrisk_matrix, by="country_iso3")
-#       train_lowrisk <- train_lowrisk[which(train_lowrisk$lowrisk_threshold==TRUE),]
-#       test_lowrisk <- merge(test, lowrisk_matrix, by="country_iso3")
-#       test_lowrisk <- test_lowrisk[which(test_lowrisk$lowrisk_threshold==TRUE),]
-#
+# Define training and test sets for PITF split population model
+
+      country_mean_pred_prob <- aggregate(pred_prob~country_iso3, train, mean)
+      overall_mean_pred_prob <- mean(country_mean_pred_prob$pred_prob)
+      overall_bottom25_pred_prob <- quantile(country_mean_pred_prob$pred_prob, c(.25))
+
+      lowrisk_threshold <- (country_mean_pred_prob$pred_prob<overall_bottom25_pred_prob)
+      lowrisk_matrix <- cbind(country_mean_pred_prob, lowrisk_threshold)
+      highrisk_threshold <- (country_mean_pred_prob$pred_prob>=overall_bottom25_pred_prob)
+      highrisk_matrix <- cbind(country_mean_pred_prob, highrisk_threshold)
+
+      train_highrisk <- merge(train, highrisk_matrix, by="country_iso3")
+      train_highrisk <- train_highrisk[which(train_highrisk$highrisk_threshold==TRUE),]
+      test_highrisk <- merge(test, highrisk_matrix, by="country_iso3")
+      test_highrisk <- test_highrisk[which(test_highrisk$highrisk_threshold==TRUE),]
+
+      train_lowrisk <- merge(train, lowrisk_matrix, by="country_iso3")
+      train_lowrisk <- train_lowrisk[which(train_lowrisk$lowrisk_threshold==TRUE),]
+      test_lowrisk <- merge(test, lowrisk_matrix, by="country_iso3")
+      test_lowrisk <- test_lowrisk[which(test_lowrisk$lowrisk_threshold==TRUE),]
+
 # Define predictand for base specification
 
 train_DV_civil_ns <- train$incidence_civil_ns_plus1
@@ -116,13 +115,13 @@ test_DV_civil_ns <- test$incidence_civil_ns_plus1
 #       train_DV_civil_ns_alt2 <- train$incidence_civil_ns_alt2_plus1
 #       test_DV_civil_ns_alt2 <- test$incidence_civil_ns_alt2_plus1
 #
-# # Define predictand for PITF split population model
-#
-#       train_DV_civil_ns_highrisk <- train_highrisk$incidence_civil_ns_plus1
-#       test_DV_civil_ns_highrisk <- test_highrisk$incidence_civil_ns_plus1
-#
-#       train_DV_civil_ns_lowrisk <- train_lowrisk$incidence_civil_ns_plus1
-#       test_DV_civil_ns_lowrisk <- test_lowrisk$incidence_civil_ns_plus1
+# Define predictand for PITF split population model
+
+      train_DV_civil_ns_highrisk <- train_highrisk$incidence_civil_ns_plus1
+      test_DV_civil_ns_highrisk <- test_highrisk$incidence_civil_ns_plus1
+
+      train_DV_civil_ns_lowrisk <- train_lowrisk$incidence_civil_ns_plus1
+      test_DV_civil_ns_lowrisk <- test_lowrisk$incidence_civil_ns_plus1
 
 # Define models
 
@@ -179,28 +178,34 @@ write.csv(AUCs, file = "tables/table1_top.csv", row.names = T)
 #
 #       source("code/1mo_make_separation.R")
 #
-# # Run escalation model with PITF predictors
-#
-#       source("code/1mo_run_escalation_with_PITF.R")
-#
-# # Run escalation model weighted by PITF predicted probabilities
-#
-#       source("code/1mo_run_escalation_weighted_PITF.R")
-#
-# # Run split population escalation model using PITF predicted probabilities
-#
-#       source("code/1mo_run_escalation_split_PITF.R")
-#
-# # Run PITF model
-#
-#       source("code/1mo_run_PITF.R")
+# Run escalation model with PITF predictors
+
+      source("code/1mo_run_escalation_with_PITF.R")
+
+# Run escalation model weighted by PITF predicted probabilities
+## RM:
+## this model depends on predictions from the BASE 1 mon escalation model;
+## it's set up to assume those are still in memory
+## the name of the object it depends on is prediction_escalation_inc_civil_ns which is a vector of Pr(onset) -- no country_ids...
+exists("prediction_escalation_inc_civil_ns")
+
+## Hmm... I cannot replicate this finding.
+source("code/1mo_run_escalation_weighted_PITF.R")
+
+# Run split population escalation model using PITF predicted probabilities
+
+source("code/1mo_run_escalation_split_PITF.R")
+
+# Run PITF model
+
+source("code/1mo_run_PITF.R")
 
 # # Create top panel of Table 2
 #
-#       AUCs_escalation_PITF <- as.matrix(cbind(AUCs_escalation[1,],AUCs_escalation_with_PITF,AUCs_escalation_weighted_PITF,AUCs_escalation_split_PITF,AUCs_PITF))
-#         colnames(AUCs_escalation_PITF) <- c("escalation","with_PITF","weighted_PITF","split_PITF","PITF")
-#         rownames(AUCs_escalation_PITF) <- c("base")
-#
+      AUCs_escalation_PITF <- as.matrix(cbind(AUCs_escalation_check[1,],AUCs_escalation_with_PITF,AUCs_escalation_weighted_PITF,AUCs_escalation_split_PITF,AUCs_PITF))
+        colnames(AUCs_escalation_PITF) <- c("escalation","with_PITF","weighted_PITF","split_PITF","PITF")
+        rownames(AUCs_escalation_PITF) <- c("base")
+
 #       write.csv(AUCs_escalation_PITF, file = "tables/table2_top.csv", row.names = T)
 #
 # # Create top panel of Table A4

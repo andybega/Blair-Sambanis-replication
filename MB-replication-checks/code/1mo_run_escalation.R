@@ -220,9 +220,10 @@ colnames(pred_escalation_inc_civil_ns) <- c("country", "year", "month", "period"
                                             "prediction")
 
 # Rename and store performance and predictions
-
+AUCs_escalation_check <- AUC_obs
 AUCs_escalation <- AUCs
 prediction_escalation_inc_civil_ns <- prediction
+write.csv(prediction, "predictions/prediction_escalation_inc_civil_ns.csv")
 # prediction_robust_maxnodes_escalation_inc_civil_ns <- prediction_robust_maxnodes
 # prediction_robust_sampsize_escalation_inc_civil_ns <- prediction_robust_sampsize
 # prediction_robust_ntree_escalation_inc_civil_ns <- prediction_robust_ntree
