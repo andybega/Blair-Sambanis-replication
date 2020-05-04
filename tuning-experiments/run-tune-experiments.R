@@ -81,11 +81,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5234)
+set.seed(5235)
 
 spec <- "quad"
 
-hp_samples <- 70
+hp_samples <- 5
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -98,8 +98,8 @@ if (spec=="escalation") {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
     mtry     = as.integer(runif(hp_samples, 1, 6)),
-    ntree    = as.integer(runif(hp_samples, 1000, 20000)),
-    nodesize = as.integer(runif(hp_samples, 1, 40))
+    ntree    = as.integer(runif(hp_samples, 5000, 30000)),
+    nodesize = as.integer(runif(hp_samples, 1, 10))
   )
 } else {
   hp_grid <- tibble(
