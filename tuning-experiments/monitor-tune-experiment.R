@@ -10,4 +10,4 @@ n_chunks <- as.integer(readLines("output/chunks/n-chunks.txt"))
 
 done <- length(dir("output/chunks")) - 1L
 cat(sprintf("%s of %s chunks done\n", done, n_chunks))
-cat(sprintf("%s%% complete", round(done/n_chunks*100, 0)))
+cat(sprintf("%s%% complete\n", round(done/n_chunks*100, 0)))
