@@ -83,9 +83,9 @@ rm(df, test_df)
 
 set.seed(5234)
 
-spec <- "quad"
+spec <- "cameo"
 
-hp_samples <- 70
+hp_samples <- 1
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -138,7 +138,7 @@ lgr$info("Expected runtime with 8 workers: %s hours", round(et, 1))
 
 # Some of the models can take a long time to run. Chunk the output and write
 # it to files so that one can at least have some sense of progress.
-dir.create("output/chunks")
+dir.create("output/chunks", showWarnings = FALSE)
 writeLines(as.character(nrow(model_grid)), "output/chunks/n-chunks.txt")
 
 res <- foreach(i = 1:nrow(model_grid),
