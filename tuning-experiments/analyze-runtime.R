@@ -22,6 +22,11 @@ with_time %>%
   geom_point() +
   theme_minimal()
 
+with_time %>%
+  ggplot(aes(x = ntree, y = time, color = factor(mtry))) +
+  geom_point() +
+  theme_minimal()
+
 fitted_mdl <- lm(time ~ ntree + mtry + nodesize + ncol, data = with_time)
 
 summary(fitted_mdl)
