@@ -6,12 +6,14 @@ library(dplyr)
 library(readr)
 library(tidyr)
 
+setwd(here::here("tuning-experiments"))
+
 all_tune <- read_rds("output/tune-results-cumulative.rds")
 
 
 tune_res <- all_tune %>%
   group_by(spec, tune_batch_id, tune_id, ntree, mtry, nodesize) %>%
-  summarize(mean_auc = mean(AUC),
+  dplyr::summarize(mean_auc = mean(AUC),
             sd_auc   = sd(AUC),
             n = n())
 

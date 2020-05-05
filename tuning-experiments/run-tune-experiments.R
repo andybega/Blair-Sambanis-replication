@@ -61,6 +61,11 @@ quad <- c(
   "opp_gov_matcp","reb_gov_matcp"
 )
 
+goldstein <- c(
+  "gov_opp_gold","gov_reb_gold",
+  "opp_gov_gold","reb_gov_gold"
+)
+
 cameo <- c(
   names(df)[str_detect(names(df), "cameo_[0-9]+$")]
 )
@@ -81,11 +86,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5236)
+set.seed(5238)
 
-spec <- "cameo"
+spec <- "goldstein"
 
-hp_samples <- 1
+hp_samples <- 10
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -97,14 +102,21 @@ if (spec=="escalation") {
 } else if (spec=="quad") {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
-    mtry     = as.integer(runif(hp_samples, 1, 6)),
-    ntree    = as.integer(runif(hp_samples, 5000, 30000)),
+    mtry     = as.integer(runif(hp_samples, 2, 3)),
+    ntree    = as.integer(runif(hp_samples, 5000, 25000)),
+    nodesize = as.integer(runif(hp_samples, 1, 10))
+  )
+} else if (spec=="goldstein") {
+  hp_grid <- tibble(
+    tune_id  = 1:hp_samples,
+    mtry     = as.integer(runif(hp_samples, 1, 4)),
+    ntree    = as.integer(runif(hp_samples, 1000, 25000)),
     nodesize = as.integer(runif(hp_samples, 1, 10))
   )
 } else {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
-    mtry     = as.integer(runif(hp_samples, 5, 150)),
+    mtry     = as.integer(runif(hp_samples, 10, 60)),
     ntree    = as.integer(runif(hp_samples, 1000, 30000)),
     nodesize = as.integer(runif(hp_samples, 1, 100))
   )
@@ -143,7 +155,7 @@ writeLines(as.character(nrow(model_grid)), "output/chunks/n-chunks.txt")
 
 res <- foreach(i = 1:nrow(model_grid),
                .export = c("model_grid", "train_df", "spec", "cameo",
-                           "escalation", "quad"),
+                           "escalation", "quad", "goldstein"),
                .packages = c("randomForest", "tibble", "yardstick", "dplyr"),
                .inorder = FALSE) %dopar% {
 
