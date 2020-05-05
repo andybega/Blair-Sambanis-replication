@@ -88,7 +88,7 @@ auc %>%
 Using AUC-ROC values from un-smoothed, original ROC curves reverses the original conclusions from B&S Table 1. In both the 1 month-ahead and 6-month ahead forecasts, the escalation model is outperformed by alternative models. 
 
 
-<!-- \input{data/replicated-table-1.tex} -->
+<!-- \input{Tables/replicated-table-1.tex} -->
 
 ## Assessment of the 2016 forecasts
 
