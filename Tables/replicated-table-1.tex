@@ -1,7 +1,6 @@
 \begin{table}
 
-\begin{threeparttable}
-\caption{\label{tab:tab-1}}
+\caption{\label{tab:tab-1}Replication of Table 1 in Blair and Sambanis (2020) with and without ROC smoothers}
 \centering
 \begin{tabular}[t]{ll>{\bfseries}lccccc}
 \toprule
@@ -9,19 +8,14 @@
 \midrule
 \addlinespace[0.3em]
 \multicolumn{8}{l}{\textbf{Base Specification}}\\
-\addlinespace[0.3em]
-\hspace{1em} & 1 Month & Yes & 0.853 & 0.804 & 0.791 & 0.837 & 0.825\\
+\addlinespace[0.2em]
+\hspace{1em} & 1 Month & Yes & 0.85 & 0.80 & 0.79 & 0.84 & 0.82\\
 \cmidrule{3-8}
-\hspace{1em}\hspace{1em} &  & No & 0.786 & 0.786 & 0.794 & 0.809 & 0.822\\
+\hspace{1em}\hspace{1em} &  & No & 0.79 & 0.79 & 0.79 & 0.81 & 0.82\\
 \cmidrule{2-8}
-\hspace{1em} & 6 Months & Yes & 0.853 & 0.804 & 0.791 & 0.837 & 0.825\\
+\hspace{1em} & 6 Months & Yes & 0.85 & 0.80 & 0.79 & 0.84 & 0.82\\
 \cmidrule{3-8}
- &  & No & 0.786 & 0.786 & 0.794 & 0.809 & 0.822\\
+ &  & No & 0.79 & 0.79 & 0.79 & 0.81 & 0.82\\
 \bottomrule
 \end{tabular}
-\begin{tablenotes}
-\small
-\item [] To create Table 1, Blair and Sambanis use a non-standard "smoothing" function when creating their various Receiver Operating Characteristic Curves (ROC). These "smoothed" curves are then used to compute their model performance metric -- the Area Under the Receiver Operating Characteristic Curve (AUC-ROC). We recreate these AUC-ROC scores with and without the smoothing function (Blair and Sambanis' specification and the standard specification, respectively). This allows us to see if their findings are sensitive to the use of the smoothing function.
-\end{tablenotes}
-\end{threeparttable}
 \end{table}

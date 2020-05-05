@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 library(readr)
 library(dplyr)
+library(tidyr)
 library(kableExtra)
 ```
 
@@ -68,35 +69,51 @@ To assess forecast accuracy, Blair and Sambanis conduct the following procedures
 
 This is done for both 1-month ahead and 6-month ahead forecasts. Blair and Sambanis also conduct a series of robustness tests that (1) vary hyperparameters of the RF model, (2) change the split year for the training/test data split, and (3) alternative codings of the dependent variable. 
 
-The results for this analysis are summarized in Table 1 in @blair2020forecasting, which we reproduce here:
+The results for this analysis are summarized in Table 1 in @blair2020forecasting, which we copied in here:
 
 ![](figures/bands-table1.png)
 
 The escalation model generally out-performs the alternative models/specifications, and on that basis Blair and Sambanis conclude that theory does indeed provide better forecast accuracy when compared to models not informed by theory.
 
-After establishing that the escalation model they advance out-performs all other covariate specifications, Blair and Sambanis move to show how the inclusion of structural risk variable (using the set of indicators identified by the Political Instability Task Force (PITF) )
+After establishing that the escalation model they advance out-performs all other covariate specifications, Blair and Sambanis move to show how the inclusion of structural risk variables -- the set of structural variables identified by the Political Instability Task Force (PITF) that can contribute to an increased risk of civil conflict. The figure below is Table 2 from @blair2020forecasting, which presents these findings.
+
+![](figures/bands-table2.png)
 
 # Issues
 
-Below, we work through our issues we identified above, starting first with the unconventional use of a smoother when calculating the AUC-ROC scores. We then discusses 
+Below, we work through our issues we identified above, starting first with the unconventional use of a smoother when calculating the AUC-ROC scores. We reproduce Table 1 and Table 2 from @blair2020forecasting to show that their results are dependent on the unconventional use of a smoother. 
+
+We then discuss... (RM: I'll fill this out as I work through the evidence.) 
 
 ## Smoothed ROC curves
+
+One issue that stood out as we read @blair2020forecasting was how smooth their Receiver Operating Characteristic curves where in Figure 1 on page 14. A Receiver Operating Characteristic curve displays the balance between the true positive rate and the false positive rate, across a range of discrimination thresholds -- the value in which a zero to one probability is assumed to be an "onset". Given that the DV is civil conflict onset (1/0) and that this is a rare event, these curves should resemble a step-like function. Looking through the Blair/Sambanis replication code, we noticed that they use a smoothing function when producing their Receiver Operating Characteristic curves.  
+
+This is important because Blair and Sambanis use a common performance metric -- Area Under the Receiver Operating Characteristic Curves (AUC-ROC) -- as evidence that their escalation model out preforms all others. However, by smoothing the Receiver Operating Characteristic Curves, they are misrepresenting the true AUC-ROC scores of their various models. To help make this point clear, we replicate Figure 1 below. However, rather than a two panel figure (one ROC plot their one-month-ahead forecasts and one for their six-months-ahead forecasts, as is presented in the article), we now include four panels: one panel for the two forecast windows with the smoothed curve, as they produce, and one panel for the two forecast windows that are not smoothed.
+
+\clearpage
+
+Using these smoothed and non-smoothed curves, we then replicate Table 1 (page 13), but now the table reports the AUC-ROC scores for each model specification with and without the use of a smoother. If the non-smoothed AUC-ROC scores are drastically different from those of the smoothed AUC-ROC score (a difference of $\ge 0.05$) or if the non-smoothed AUC-ROC scores are < 0.8, would suggest the findings presented in @blair2020forecasting are fragile to the use of a non-standard procedure. 
+
 
 ```{r, message=FALSE}
 auc <- read_csv("data/table1-redone.csv") %>%
   mutate(specification = factor(specification, levels = c("escalation", "quad", "goldstein", "CAMEO", "avg"))) %>%
-  arrange(model, horizon, specification)
+  arrange(model, horizon, specification) %>% 
+  pivot_longer(-c(model, horizon, specification), names_to = "ROC Smoothed", values_to = "Value") %>% 
+  pivot_wider( names_from = "specification", values_from = "Value") %>% 
+  mutate(`ROC Smoothed` = ifelse(`ROC Smoothed` == "smoothed", "Yes", "No")) 
 
 auc %>%
-  knitr::kable(digits = 2, booktabs = TRUE, caption = "Comparison of smoothed and original AUC-ROC values")
+  knitr::kable(digits = 2, booktabs = TRUE, caption = "Comparison of smoothed and not smoothed AUC-ROC values") %>% 
+  # column_spec(c(3), bold = TRUE) %>%
+  collapse_rows(1:2, row_group_label_position = 'stack')
+  
 ```
 
+As the table above shows, the results presented in @blair2020forecasting are fragile to the use of a smoothing option when calculating the AUC-ROC performance metric. Further, even when we rely solely on the replication files provided by Blair and Sambanis, we cannot replicate their findings exactly. For example, in our replication, the AUC-ROC score for the 1-month CAMEO model with the use of the smoother is 0.84; however, in the paper, the reported score is 0.82. This is most likely a function of the version of `R` Blair and Sambanis used to conduct their analysis. The current replication project was done using `R version 4.0.0`, which updated their random number seeding procedure, so small differences should be expected.     
 
 
-Using AUC-ROC values from un-smoothed, original ROC curves reverses the original conclusions from Blair and Sambanis Table 1. In both the 1 month-ahead and 6-month ahead forecasts, the escalation model is outperformed by alternative models. 
-
-
-<!-- \input{Tables/replicated-table-1.tex} -->
 
 ## Assessment of the 2016 forecasts
 
