@@ -98,7 +98,7 @@ rm(df, test_df)
 
 set.seed(5240)
 
-spec <- "escalation"
+spec <- "goldstein"
 
 hp_samples <- 40
 
