@@ -9,7 +9,7 @@
 #   script to remove objects no longer needed.
 #
 
-WORKERS <- 6
+WORKERS <- 8
 
 library(readr)
 library(tibble)
@@ -28,6 +28,14 @@ library(lgr)
 
 lgr$info("Start tuning script")
 t0 = proc.time()
+
+# Determine machine this is running on (for timings)
+machine <- "unknown"
+if (Sys.info()["sysname"]=="Windows" & Sys.info()["user"]=="andybega") {
+  machine <- "andy msi"
+} else if (Sys.info()["sysname"]=="Darwin" & Sys.info()["user"]=="andybega") {
+  machine <- "andy mbp"
+}
 
 setwd(here::here("tuning-experiments"))
 
@@ -88,11 +96,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5238)
+set.seed(5240)
 
-spec <- "quad"
+spec <- "escalation"
 
-hp_samples <- 20
+hp_samples <- 40
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -161,7 +169,7 @@ writeLines(as.character(nrow(model_grid)), "output/chunks/n-chunks.txt")
 
 res <- foreach(i = 1:nrow(model_grid),
                .export = c("model_grid", "train_df", "spec", "cameo",
-                           "escalation", "quad", "goldstein"),
+                           "escalation", "quad", "goldstein", "machine"),
                .packages = c("randomForest", "tibble", "yardstick", "dplyr"),
                .inorder = FALSE) %dopar% {
 
@@ -195,7 +203,8 @@ res <- foreach(i = 1:nrow(model_grid),
       nodesize = model_grid[i, ][["nodesize"]],
       sampsize0 = model_grid[i, ][["sampsize0"]],
       AUC = roc_auc(test_preds, truth, preds)[[".estimate"]],
-      time = (proc.time() - t0)["elapsed"]
+      time = (proc.time() - t0)["elapsed"],
+      machine = machine
     )
 
     write_csv(res_i, path = sprintf("output/chunks/chunk-%s.csv", i))
@@ -211,7 +220,8 @@ res <- foreach(i = 1:nrow(model_grid),
       nodesize = model_grid[i, ][["nodesize"]],
       sampsize0 = model_grid[i, ][["sampsize0"]],
       AUC = NA_real_,
-      time = (proc.time() - t0)["elapsed"]
+      time = (proc.time() - t0)["elapsed"],
+      machine = machine
     )
     res_i
   })
