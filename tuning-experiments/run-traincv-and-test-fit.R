@@ -6,7 +6,8 @@
 #   information in Table 1.
 #
 
-RERUN   <- TRUE
+# Should existing models be re-run or overwritten?
+RERUN   <- FALSE
 WORKERS <- 7
 
 library(readr)
@@ -75,7 +76,7 @@ plan("multisession", workers = WORKERS)
 # # the correlation is a bit less than 1. This also happens with the examples
 # # in ?randomForest
 #
-rf_base <- function(data, features) {
+rf_base <- function(data, features, ...) {
   suppressWarnings({
     randomForest(y = as.integer(data$incidence_civil_ns_plus1=="1"),
                  x = data[, features],
@@ -105,7 +106,7 @@ predict.rf_base <- function(object, new_data, ...) {
 #
 # mdl    <- rf_default(train_df, escalation)
 # phat   <- predict.rf_default(mdl, train_df)
-rf_default <- function(data, features) {
+rf_default <- function(data, features, ...) {
   stopifnot(is.factor(data$incidence_civil_ns_plus1))
   randomForest(y = data$incidence_civil_ns_plus1,
                x = data[, features],
@@ -124,16 +125,25 @@ predict.rf_default <- function(object, new_data, ...) {
 #
 # example
 #
-# mdl    <- rf_tuned(train_df, escalation)
+# mdl    <- rf_tuned(train_df, escalation, spec = "Escalation")
 # phat   <- predict.rf_tuned(mdl, train_df)
-rf_tuned <- function(data, features) {
-  stopifnot(is.factor(data$incidence_civil_ns_plus1))
+rf_tuned <- function(data, features, spec, ...) {
+  stopifnot(is.factor(data$incidence_civil_ns_plus1),
+            spec %in% c("Escalation", "Quad", "Goldstein", "CAMEO"))
+  tune_values <- list(
+    Escalation = list(ntree = 8000, mtry = 3, nodesize = 5),
+    Quad       = list(ntree = 8000, mtry = 2, nodesize = 5),
+    Goldstein  = list(ntree = 8000, mtry = 2, nodesize = 5),
+    CAMEO      = list(ntree = 8000, mtry = 34, nodesize = 5)
+  )
+  tune_values <- tune_values[[spec]]
+
   randomForest(y = data$incidence_civil_ns_plus1,
                x = data[, features],
                type = "classification",
-               ntree = 10000,
-               mtry  = floor(sqrt(length(features))),
-               nodesize = 1,
+               ntree = tune_values[["ntree"]],
+               mtry  = tune_values[["mtry"]],
+               nodesize = tune_values[["nodesize"]],
                do.trace = FALSE)
 }
 
@@ -297,8 +307,8 @@ write_rds(full_model_grid, "output/table1-full-model-grid.rds")
 model_grid <- full_model_grid %>%
   filter(table1_rows=="Base specification",
          table1_columns!="Average",
-         table1_columns!="CAMEO",
-         hp_set!="Tuned")
+         (hp_set!= "Tuned" | (hp_set=="Tuned" & table1_columns %in% c("Escalation", "Quad", "Goldstein")))
+  )
 
 dir.create("output/table1-chunks/prediction", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/table1-chunks/roc", showWarnings = FALSE)
@@ -338,7 +348,8 @@ res <- foreach(
     test_i  <- df[model_grid$test_idx[[i]], ]
 
     dv      <- dv
-    x_names <- spec_list[[model_grid$table1_columns[[i]]]]
+    spec    <- model_grid$table1_columns[[i]]
+    x_names <- spec_list[[spec]]
 
     hp_set <- model_grid$hp_set[[i]]
 
@@ -356,7 +367,7 @@ res <- foreach(
         truth = test_i[, dv]
       )
     } else {
-      fitted_model <- rf_tuned(train_i, x_names)
+      fitted_model <- rf_tuned(train_i, x_names, spec)
       test_preds   <- tibble(
         preds = predict.rf_tuned(fitted_model, test_i),
         truth = test_i[, dv]
