@@ -9,6 +9,8 @@
 #   script to remove objects no longer needed.
 #
 
+WORKERS = 7
+
 library(readr)
 library(tibble)
 library(tidyr)
@@ -30,7 +32,7 @@ t0 = proc.time()
 setwd(here::here("tuning-experiments"))
 
 registerDoFuture()
-plan(multisession(workers = 8))
+plan("multisession", workers = WORKERS)
 
 df <- read_rds("trafo-data/1mo_data.rds") %>%
   mutate(incidence_civil_ns_plus1 = factor(incidence_civil_ns_plus1, levels = c("1", "0")))
@@ -88,37 +90,41 @@ rm(df, test_df)
 
 set.seed(5238)
 
-spec <- "goldstein"
+spec <- "cameo"
 
-hp_samples <- 10
+hp_samples <- 5
 
 if (spec=="escalation") {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
     mtry     = as.integer(runif(hp_samples, 2, 5)),
     ntree    = as.integer(runif(hp_samples, 5000, 25000)),
-    nodesize = as.integer(runif(hp_samples, 1, 15))
+    nodesize = as.integer(runif(hp_samples, 1, 15)),
+    sampsize0 = as.integer(runif(hp_samples, 500, 3000))
   )
 } else if (spec=="quad") {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
     mtry     = as.integer(runif(hp_samples, 2, 3)),
     ntree    = as.integer(runif(hp_samples, 5000, 25000)),
-    nodesize = as.integer(runif(hp_samples, 1, 10))
+    nodesize = as.integer(runif(hp_samples, 1, 10)),
+    sampsize0 = as.integer(runif(hp_samples, 500, 3000))
   )
 } else if (spec=="goldstein") {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
     mtry     = as.integer(runif(hp_samples, 1, 4)),
-    ntree    = as.integer(runif(hp_samples, 1000, 25000)),
-    nodesize = as.integer(runif(hp_samples, 1, 10))
+    ntree    = as.integer(runif(hp_samples, 5000, 25000)),
+    nodesize = as.integer(runif(hp_samples, 1, 10)),
+    sampsize0 = as.integer(runif(hp_samples, 500, 3000))
   )
 } else {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
     mtry     = as.integer(runif(hp_samples, 10, 60)),
     ntree    = as.integer(runif(hp_samples, 1000, 30000)),
-    nodesize = as.integer(runif(hp_samples, 1, 100))
+    nodesize = as.integer(runif(hp_samples, 1, 100)),
+    sampsize0 = as.integer(runif(hp_samples, 500, 3000))
   )
 }
 
@@ -145,8 +151,8 @@ model_grid <- model_grid[sample(1:nrow(model_grid)), ]
 
 # expected run-time
 time_model <- read_rds("output/runtime-model.rds")
-et <- sum(predict(time_model, cbind(ncol = length(get(spec)), model_grid)))/3600/(8*.9)
-lgr$info("Expected runtime with 8 workers: %s hours", round(et, 1))
+et <- sum(predict(time_model, cbind(ncol = length(get(spec)), model_grid)))/3600/(WORKERS*.9)
+lgr$info("Expected runtime with %s workers: %s hours", WORKERS, round(et, 1))
 
 # Some of the models can take a long time to run. Chunk the output and write
 # it to files so that one can at least have some sense of progress.
@@ -171,7 +177,9 @@ res <- foreach(i = 1:nrow(model_grid),
                              ntree = model_grid$ntree[[i]],
                              mtry  = model_grid[i, ][["mtry"]],
                              nodesize = model_grid[i, ][["nodesize"]],
-                             replace = TRUE,
+                             strata = train_i$incidence_civil_ns_plus1,
+                             sampsize = c(1, model_grid[i, ][["sampsize0"]]),
+                             replace = FALSE,
                              do.trace = FALSE)
 
   test_preds <- tibble(
@@ -184,6 +192,7 @@ res <- foreach(i = 1:nrow(model_grid),
     ntree = model_grid[i, ][["ntree"]],
     mtry  = model_grid[i, ][["mtry"]],
     nodesize = model_grid[i, ][["nodesize"]],
+    sampsize0 = model_grid[i, ][["sampsize0"]],
     AUC = roc_auc(test_preds, truth, preds)[[".estimate"]],
     time = (proc.time() - t0)["elapsed"]
   )
@@ -207,13 +216,13 @@ all_tune <- bind_rows(all_tune, res)
 write_rds(all_tune, "output/tune-results-cumulative.rds")
 
 tune_res <- res %>%
-  group_by(tune_id, ntree, mtry, nodesize) %>%
+  group_by(tune_id, ntree, mtry, nodesize, sampsize0) %>%
   summarize(mean_auc = mean(AUC),
             sd_auc   = sd(AUC),
             n = n())
 
 tune_res %>%
-  pivot_longer(ntree:nodesize) %>%
+  pivot_longer(ntree:sampsize0) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +
   geom_point() +
@@ -227,3 +236,5 @@ tune_res %>%
 
 tt <- (proc.time() - t0)["elapsed"]
 lgr$info("Tuning script finished (%ds)", as.integer(tt))
+
+warnings()
