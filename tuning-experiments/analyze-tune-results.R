@@ -8,11 +8,13 @@ library(tidyr)
 
 setwd(here::here("tuning-experiments"))
 
-all_tune <- read_rds("output/tune-results-cumulative.rds")
+all_tune <- read_rds("output/tune-results-cumulative.rds") %>%
+  # impute sampsize0 for older runs
+  mutate(sampsize0 = ifelse(is.na(sampsize0), 5930, sampsize0))
 
 
 tune_res <- all_tune %>%
-  group_by(spec, tune_batch_id, tune_id, ntree, mtry, nodesize) %>%
+  group_by(spec, tune_batch_id, tune_id, ntree, mtry, nodesize, sampsize0) %>%
   dplyr::summarize(mean_auc = mean(AUC),
             sd_auc   = sd(AUC),
             n = n())
@@ -24,7 +26,7 @@ escalation_tune <- tune_res %>%
   filter(spec=="escalation")
 
 escalation_tune %>%
-  pivot_longer(ntree:nodesize) %>%
+  pivot_longer(ntree:sampsize0) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +
   geom_point() +
@@ -33,8 +35,8 @@ escalation_tune %>%
   labs(title = sprintf("Specification: %s", "Escalation"))
 
 escalation_tune %>%
-  filter(mtry < 10, mtry > 1, nodesize < 20, ntree > 2000) %>%
-  pivot_longer(ntree:nodesize) %>%
+  filter(mtry < 10, mtry > 1, nodesize < 20, sampsize0 < 4000) %>%
+  pivot_longer(ntree:sampsize0) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +
   geom_point() +
@@ -54,7 +56,7 @@ quad_tune <- tune_res %>%
   filter(spec=="quad")
 
 quad_tune %>%
-  pivot_longer(ntree:nodesize) %>%
+  pivot_longer(ntree:sampsize0) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +
   geom_point() +
@@ -64,7 +66,7 @@ quad_tune %>%
 
 quad_tune %>%
   filter(mtry < 6, nodesize < 20) %>%
-  pivot_longer(ntree:nodesize) %>%
+  pivot_longer(ntree:sampsize0) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +
   geom_point() +

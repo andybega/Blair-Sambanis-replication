@@ -9,7 +9,7 @@
 #   script to remove objects no longer needed.
 #
 
-WORKERS <- 8
+WORKERS <- 6
 
 library(readr)
 library(tibble)
@@ -92,7 +92,7 @@ set.seed(5238)
 
 spec <- "quad"
 
-hp_samples <- 10
+hp_samples <- 20
 
 if (spec=="escalation") {
   hp_grid <- tibble(
