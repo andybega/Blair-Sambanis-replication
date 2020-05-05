@@ -81,15 +81,17 @@ After establishing that the escalation model they advance out-performs all other
 
 # Issues
 
-Below, we work through our issues we identified above, starting first with the unconventional use of a smoother when calculating the AUC-ROC scores. We reproduce Table 1 and Table 2 from @blair2020forecasting to show that their results are dependent on the unconventional use of a smoother. 
+<!-- Below, we work through our issues we identified above, starting first with the unconventional use of a smoother when calculating the AUC-ROC scores. We reproduce Table 1 and Table 2 from @blair2020forecasting to show that their results are dependent on the unconventional use of a smoother.  -->
 
-We then discuss... (RM: I'll fill this out as I work through the evidence.) 
+<!-- We then discuss... (RM: I'll fill this out as I work through the evidence.)  -->
 
 ## Smoothed ROC curves
 
 One issue that stood out as we read @blair2020forecasting was how smooth their Receiver Operating Characteristic curves where in Figure 1 on page 14. A Receiver Operating Characteristic curve displays the balance between the true positive rate and the false positive rate, across a range of discrimination thresholds -- the value in which a zero to one probability is assumed to be an "onset". Given that the DV is civil conflict onset (1/0) and that this is a rare event, these curves should resemble a step-like function. Looking through the Blair/Sambanis replication code, we noticed that they use a smoothing function when producing their Receiver Operating Characteristic curves.  
 
 This is important because Blair and Sambanis use a common performance metric -- Area Under the Receiver Operating Characteristic Curves (AUC-ROC) -- as evidence that their escalation model out preforms all others. However, by smoothing the Receiver Operating Characteristic Curves, they are misrepresenting the true AUC-ROC scores of their various models. To help make this point clear, we replicate Figure 1 below. However, rather than a two panel figure (one ROC plot their one-month-ahead forecasts and one for their six-months-ahead forecasts, as is presented in the article), we now include four panels: one panel for the two forecast windows with the smoothed curve, as they produce, and one panel for the two forecast windows that are not smoothed.
+
+![](figures/figure1-replicated.png)
 
 \clearpage
 
@@ -102,12 +104,17 @@ auc <- read_csv("data/table1-redone.csv") %>%
   arrange(model, horizon, specification) %>% 
   pivot_longer(-c(model, horizon, specification), names_to = "ROC Smoothed", values_to = "Value") %>% 
   pivot_wider( names_from = "specification", values_from = "Value") %>% 
-  mutate(`ROC Smoothed` = ifelse(`ROC Smoothed` == "smoothed", "Yes", "No")) 
+  mutate(`ROC Smoothed` = ifelse(`ROC Smoothed` == "smoothed", "Yes", "No"), 
+         model = "Base Specification") %>% 
+  rename(Escalation = escalation, 
+         Quad = quad, 
+         Goldstein = goldstein, 
+         Avg = avg)
 
 auc %>%
-  knitr::kable(digits = 2, booktabs = TRUE, caption = "Comparison of smoothed and not smoothed AUC-ROC values") %>% 
+  knitr::kable(digits = 2, booktabs = TRUE, caption = "Comparison of smoothed and not smoothed AUC-ROC values", align = c(rep("l", 2), rep("c", 6))) %>% 
   # column_spec(c(3), bold = TRUE) %>%
-  collapse_rows(1:2, row_group_label_position = 'stack')
+  kableExtra::collapse_rows(1:2, row_group_label_position = 'stack')
   
 ```
 
@@ -141,13 +148,13 @@ Another, minor issue or rather coding error, is related to using a lead version 
 
 3. Unorthodox RF hyperparameter choices that may be driving the OOS test prediction results. There are two issues here. One is that the RF models are so unorthodox. I'm not sure that this in itself is a problem. But the second potential problem is that the hyperparameter values may not have been tuned in a way that works the best for the non-escalation model, and especially the CAMEO model with 1,100+ features. 
 
-- Improperly tuning of models
-  - RM: In a twitter DM, I asked Blair to clarify -- "[I] was wondering how you all came to your tuning procedure for the RF model hyper-parameters?" He responded "mostly trial and error, honestly. ... Trial and error was on early data. Forecasts were for much later data"
-- Using a regression framework in a classification problem
-- Rounding of AUC/ROC scores
-    + AB: smoothing or rounding? I think rounding is ok. 
-- Treating the output of a RF regression model as Pr() -- (RM: I guess this is akin to a Linear Probability Model, but I'm not sure if this is possible in a RF framework
-    + It's hacky but it works. The resulting forecasts are within the 0-1 interval.
+<!-- - Improperly tuning of models -->
+<!--   - RM: In a twitter DM, I asked Blair to clarify -- "[I] was wondering how you all came to your tuning procedure for the RF model hyper-parameters?" He responded "mostly trial and error, honestly. ... Trial and error was on early data. Forecasts were for much later data" -->
+<!-- - Using a regression framework in a classification problem -->
+<!-- - smoothing of AUC/ROC scores -->
+<!--     + AB: smoothing or rounding? I think rounding is ok.  -->
+<!-- - Treating the output of a RF regression model as Pr() -- (RM: I guess this is akin to a Linear Probability Model, but I'm not sure if this is possible in a RF framework -->
+<!--     + It's hacky but it works. The resulting forecasts are within the 0-1 interval. -->
 
 The table below shows the randomForest package default hyperparameter values for a binary classification problem like the one at hand and compares them to the Blair and Sambanis base settings. Some hyperparameters have heuristics that determine the default value based on characteristics of the input data; we note these in the second column and what the realized default setting would be for the basic Escalation model (first row in Table 1 in the paper) in the 3rd column. The last column has the settings Blair and Sambanis use. 
 
@@ -204,30 +211,30 @@ The results show that:
 
 This suggests that the base RF specifications are (over-)fit to the test data. 
 
-4. Design choices
+<!-- 4. Design choices -->
 
-Rick, I think the points below are more subjective choices. The first two points above are IMO potentially objectively incorrect technical errors that could undermine the original Blair and Sambanis findings. The 3rd point about the RF models is somewhere between objective error and subjective choice. I'm not sure. But the points below I would say are subjective choices that could alter their findings and that I think are justifiable criticisms, but I think it'll be easier for someone to push back on this if they wanted to. 
+<!-- Rick, I think the points below are more subjective choices. The first two points above are IMO potentially objectively incorrect technical errors that could undermine the original Blair and Sambanis findings. The 3rd point about the RF models is somewhere between objective error and subjective choice. I'm not sure. But the points below I would say are subjective choices that could alter their findings and that I think are justifiable criticisms, but I think it'll be easier for someone to push back on this if they wanted to.  -->
 
-- Their train/test approach 
-  - 5-year forecasts for sep plots and AUC scores)
-- Smoothing of AUC/ROC scores
-- Lack of yearly test forecasts in favor of a single 5-year test forecast
-- The lack of procedures to account for rare events in an RF model
+<!-- - Their train/test approach  -->
+<!--   - 5-year forecasts for sep plots and AUC scores) -->
+<!-- - Smoothing of AUC/ROC scores -->
+<!-- - Lack of yearly test forecasts in favor of a single 5-year test forecast -->
+<!-- - The lack of procedures to account for rare events in an RF model -->
 
-To-do
+<!-- To-do -->
 
-1. Full replication
-    - Can we get their results
-    - RM: maybe I can go through their code and bring it "up-to-date" i.e. make it tidy... 
-        + AB: that sounds like a lot of work
-    - Figure out how they built table 4 (It looks like this is done in STATA)
-    - Check to see if it matter that they are using regression for a classification problem
-        + AB: i tried switching the models as they have them just from regression to classification and it breaks because the data samples end up being all 0's. 
-2. Address tuning 
-    - Does properly tuning the CAMEO model improve its performance?
-3. Address AUC/ROC smoothing... 
-    - How drastic is the change; does it change their conclusions? 
-4. Run a yearly test forecast -- as is the current standard in TSCS forecasts (Is it the current standard?) 
-5. 
+<!-- 1. Full replication -->
+<!--     - Can we get their results -->
+<!--     - RM: maybe I can go through their code and bring it "up-to-date" i.e. make it tidy...  -->
+<!--         + AB: that sounds like a lot of work -->
+<!--     - Figure out how they built table 4 (It looks like this is done in STATA) -->
+<!--     - Check to see if it matter that they are using regression for a classification problem -->
+<!--         + AB: i tried switching the models as they have them just from regression to classification and it breaks because the data samples end up being all 0's.  -->
+<!-- 2. Address tuning  -->
+<!--     - Does properly tuning the CAMEO model improve its performance? -->
+<!-- 3. Address AUC/ROC smoothing...  -->
+<!--     - How drastic is the change; does it change their conclusions?  -->
+<!-- 4. Run a yearly test forecast -- as is the current standard in TSCS forecasts (Is it the current standard?)  -->
+<!-- 5.  -->
 
 # References
