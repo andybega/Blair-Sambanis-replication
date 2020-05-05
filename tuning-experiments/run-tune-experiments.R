@@ -96,11 +96,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5240)
+set.seed(5241)
 
-spec <- "escalation"
+spec <- "goldstein"
 
-hp_samples <- 40
+hp_samples <- 60
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -108,7 +108,7 @@ if (spec=="escalation") {
     mtry     = as.integer(round(runif(hp_samples, 2, 5))),
     ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
     nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-    sampsize0 = as.integer(round(runif(hp_samples, 500, 3000)))
+    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
   )
 } else if (spec=="quad") {
   hp_grid <- tibble(
@@ -116,7 +116,7 @@ if (spec=="escalation") {
     mtry     = as.integer(round(runif(hp_samples, 2, 4))),
     ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
     nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-    sampsize0 = as.integer(round(runif(hp_samples, 500, 3000)))
+    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
   )
 } else if (spec=="goldstein") {
   hp_grid <- tibble(
@@ -124,15 +124,15 @@ if (spec=="escalation") {
     mtry     = as.integer(round(runif(hp_samples, 1, 4))),
     ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
     nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-    sampsize0 = as.integer(round(runif(hp_samples, 500, 3000)))
+    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
   )
 } else {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
     mtry     = as.integer(round(runif(hp_samples, 10, 60))),
     ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
-    nodesize = as.integer(round(runif(hp_samples, 1, 100))),
-    sampsize0 = as.integer(round(runif(hp_samples, 500, 3000)))
+    nodesize = as.integer(round(runif(hp_samples, 1, 20))),
+    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
   )
 }
 
