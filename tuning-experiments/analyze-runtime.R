@@ -17,11 +17,13 @@ with_time <- all_tune %>%
     spec=="cameo" ~ 1159L,
     TRUE ~ NA_integer_)) %>%
   # impute sampsize0 for older runs
-  mutate(sampsize0 = ifelse(is.na(sampsize0), 5930, sampsize0))
+  mutate(sampsize0 = ifelse(is.na(sampsize0), 5930, sampsize0)) %>%
+  # impute machine for older runs
+  mutate(machine = ifelse(is.na(machine), "other", machine))
 
 with_time %>%
   pivot_longer(all_of(c("ntree", "mtry", "nodesize", "sampsize0", "ncol"))) %>%
-  ggplot(aes(x = value, y = time)) +
+  ggplot(aes(x = value, y = time, color = factor(machine))) +
   facet_wrap(~ name, scales = "free_x") +
   geom_point() +
   theme_minimal()
@@ -31,7 +33,7 @@ with_time %>%
   geom_point() +
   theme_minimal()
 
-fitted_mdl <- lm(time ~ ntree*sampsize0 + ntree*ncol + mtry + nodesize + ncol, data = with_time)
+fitted_mdl <- lm(time ~ ntree*sampsize0 + ntree*ncol, data = with_time)
 
 summary(fitted_mdl)
 
