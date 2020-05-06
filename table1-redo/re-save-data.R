@@ -9,6 +9,8 @@ library(here)
 
 setwd(here::here("table1-redo"))
 
+dir.create("trafo-data", showWarnings = FALSE)
+
 data_1mo <- read.dta13("input-data/1mo_data.dta")
 write_rds(data_1mo, "trafo-data/1mo_data.rds")
 
