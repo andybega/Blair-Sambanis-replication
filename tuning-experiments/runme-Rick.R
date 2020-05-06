@@ -32,7 +32,7 @@ lgr$info("Start tuning script")
 t0 = proc.time()
 
 # Determine machine this is running on (for timings)
-machine <- "rick pc"
+machine <- "rick gaming laptop"
 
 setwd(here::here("tuning-experiments"))
 
@@ -93,11 +93,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5242)
+set.seed(5243)
 
 spec <- "cameo"
 
-hp_samples <- 95
+hp_samples <- 5
 
 if (spec=="escalation") {
   hp_grid <- tibble(
