@@ -5,6 +5,7 @@
 library(dplyr)
 library(readr)
 library(tidyr)
+library(ggplot2)
 
 setwd(here::here("tuning-experiments"))
 
@@ -19,11 +20,23 @@ tune_res <- all_tune %>%
             sd_auc   = sd(AUC),
             n = n())
 
+# How many new-style samples do i have for each spec? (with reduced sampsize0)
+tune_res %>%
+  filter(sampsize0 < 5000) %>%
+  ungroup() %>%
+  count(spec)
+
 
 # Escalation specification ------------------------------------------------
+#
+#   Escalation has 10 features.
+#
 
 escalation_tune <- tune_res %>%
   filter(spec=="escalation")
+
+escalation_tune %>%
+  arrange(desc(mean_auc))
 
 escalation_tune %>%
   pivot_longer(ntree:sampsize0) %>%
@@ -35,7 +48,7 @@ escalation_tune %>%
   labs(title = sprintf("Specification: %s", "Escalation"))
 
 escalation_tune %>%
-  filter(mtry < 10, mtry > 1, nodesize < 20, sampsize0 < 4000) %>%
+  filter(sampsize0 < 4000) %>%
   pivot_longer(ntree:sampsize0) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +
@@ -46,33 +59,71 @@ escalation_tune %>%
 
 # TODO add some pair matrices here
 
-escalation_tune %>%
-  arrange(desc(mean_auc))
+
 
 
 # Quad specification ------------------------------------------------------
+#
+#   Quad has 16 features.
+#
 
 quad_tune <- tune_res %>%
   filter(spec=="quad")
 
 quad_tune %>%
-  pivot_longer(ntree:sampsize0) %>%
-  ggplot(aes(x = value, y = mean_auc, group = name)) +
-  facet_wrap(~ name, scales = "free_x") +
-  geom_point() +
-  geom_smooth(se = FALSE) +
-  theme_minimal() +
-  labs(title = sprintf("Specification: %s", "Quad"))
-
-quad_tune %>%
-  filter(mtry < 6, nodesize < 20) %>%
-  pivot_longer(ntree:sampsize0) %>%
-  ggplot(aes(x = value, y = mean_auc, group = name)) +
-  facet_wrap(~ name, scales = "free_x") +
-  geom_point() +
-  geom_smooth(se = FALSE) +
-  theme_minimal() +
-  labs(title = sprintf("Specification: %s", "Quad"))
-
-quad_tune %>%
   arrange(desc(mean_auc))
+
+quad_tune %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: %s", "Quad"))
+
+quad_tune %>%
+  filter(sampsize0 < 5000) %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: %s", "Quad"))
+
+
+
+
+
+# Goldstein specification -------------------------------------------------
+#
+#   Goldstein has only 4 features.
+#
+
+goldstein_tune <- tune_res %>%
+  filter(spec=="goldstein")
+
+goldstein_tune %>%
+  arrange(desc(mean_auc))
+
+goldstein_tune %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: %s", "goldstein"))
+
+goldstein_tune %>%
+  filter(sampsize0 < 5000) %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: %s", "goldstein"))
+
+

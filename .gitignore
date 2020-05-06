@@ -13,5 +13,5 @@ tuning-experiments/trafo-data
 tuning-experiments/output/chunks
 
 
-tuning-experiments/output/table1-full-model-grid.rds
-tuning-experiments/output/table1-chunks
+table1-redo/output/full-model-grid.rds
+table1-redo/output/chunks

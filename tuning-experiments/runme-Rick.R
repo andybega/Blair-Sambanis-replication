@@ -9,7 +9,9 @@
 #   script to remove objects no longer needed.
 #
 
-WORKERS <- 6
+# AB: adjust this based on how many cores you have. Or N cores - 1 if you want
+# to use the PC for anything else :)
+WORKERS <- 8
 
 library(readr)
 library(tibble)
@@ -30,12 +32,7 @@ lgr$info("Start tuning script")
 t0 = proc.time()
 
 # Determine machine this is running on (for timings)
-machine <- "unknown"
-if (Sys.info()["sysname"]=="Windows" & Sys.info()["user"]=="andybega") {
-  machine <- "andy msi"
-} else if (Sys.info()["sysname"]=="Darwin" & Sys.info()["user"]=="andybega") {
-  machine <- "andy mbp"
-}
+machine <- "rick pc"
 
 setwd(here::here("tuning-experiments"))
 
@@ -98,9 +95,9 @@ rm(df, test_df)
 
 set.seed(5242)
 
-spec <- "quad"
+spec <- "cameo"
 
-hp_samples <- 30
+hp_samples <- 95
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -113,7 +110,7 @@ if (spec=="escalation") {
 } else if (spec=="quad") {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
-    mtry     = as.integer(round(runif(hp_samples, 2, 5))),
+    mtry     = as.integer(round(runif(hp_samples, 2, 4))),
     ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
     nodesize = as.integer(round(runif(hp_samples, 1, 20))),
     sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
@@ -173,93 +170,68 @@ res <- foreach(i = 1:nrow(model_grid),
                .packages = c("randomForest", "tibble", "yardstick", "dplyr"),
                .inorder = FALSE) %dopar% {
 
-  # keep track of run time
-  t0 <- proc.time()
+                 # keep track of run time
+                 t0 <- proc.time()
 
-  res_i <- tryCatch({
-    train_i <- train_df[model_grid$train_idx[[i]], ]
-    test_i  <- train_df[model_grid$test_idx[[i]], ]
+                 res_i <- tryCatch({
+                   train_i <- train_df[model_grid$train_idx[[i]], ]
+                   test_i  <- train_df[model_grid$test_idx[[i]], ]
 
-    fitted_mdl <- randomForest(y = train_i$incidence_civil_ns_plus1,
-                               x = train_i[, get(spec)],
-                               type = "classification",
-                               ntree = model_grid$ntree[[i]],
-                               mtry  = model_grid[i, ][["mtry"]],
-                               nodesize = model_grid[i, ][["nodesize"]],
-                               strata = train_i$incidence_civil_ns_plus1,
-                               sampsize = c(1, model_grid[i, ][["sampsize0"]]),
-                               replace = FALSE,
-                               do.trace = FALSE)
+                   fitted_mdl <- randomForest(y = train_i$incidence_civil_ns_plus1,
+                                              x = train_i[, get(spec)],
+                                              type = "classification",
+                                              ntree = model_grid$ntree[[i]],
+                                              mtry  = model_grid[i, ][["mtry"]],
+                                              nodesize = model_grid[i, ][["nodesize"]],
+                                              strata = train_i$incidence_civil_ns_plus1,
+                                              sampsize = c(1, model_grid[i, ][["sampsize0"]]),
+                                              replace = FALSE,
+                                              do.trace = FALSE)
 
-    test_preds <- tibble(
-      preds = as.vector(predict(fitted_mdl, newdata = test_i[, get(spec)], type = "prob")[, "1"]),
-      truth = test_i[, dv])
-    res_i <- tibble(
-      i = i,
-      spec = spec,
-      tune_id = model_grid[i, ][["tune_id"]],
-      ntree = model_grid[i, ][["ntree"]],
-      mtry  = model_grid[i, ][["mtry"]],
-      nodesize = model_grid[i, ][["nodesize"]],
-      sampsize0 = model_grid[i, ][["sampsize0"]],
-      AUC = roc_auc(test_preds, truth, preds)[[".estimate"]],
-      time = (proc.time() - t0)["elapsed"],
-      machine = machine
-    )
+                   test_preds <- tibble(
+                     preds = as.vector(predict(fitted_mdl, newdata = test_i[, get(spec)], type = "prob")[, "1"]),
+                     truth = test_i[, dv])
+                   res_i <- tibble(
+                     i = i,
+                     spec = spec,
+                     tune_id = model_grid[i, ][["tune_id"]],
+                     ntree = model_grid[i, ][["ntree"]],
+                     mtry  = model_grid[i, ][["mtry"]],
+                     nodesize = model_grid[i, ][["nodesize"]],
+                     sampsize0 = model_grid[i, ][["sampsize0"]],
+                     AUC = roc_auc(test_preds, truth, preds)[[".estimate"]],
+                     time = (proc.time() - t0)["elapsed"],
+                     machine = machine
+                   )
 
-    write_csv(res_i, path = sprintf("output/chunks/chunk-%s.csv", i))
+                   write_csv(res_i, path = sprintf("output/chunks/chunk-%s.csv", i))
 
-    res_i
-  }, error = function(e) {
-    res_i <- tibble(
-      i = i,
-      spec = spec,
-      tune_id = model_grid[i, ][["tune_id"]],
-      ntree = model_grid[i, ][["ntree"]],
-      mtry  = model_grid[i, ][["mtry"]],
-      nodesize = model_grid[i, ][["nodesize"]],
-      sampsize0 = model_grid[i, ][["sampsize0"]],
-      AUC = NA_real_,
-      time = (proc.time() - t0)["elapsed"],
-      machine = machine
-    )
-    res_i
-  })
+                   res_i
+                 }, error = function(e) {
+                   res_i <- tibble(
+                     i = i,
+                     spec = spec,
+                     tune_id = model_grid[i, ][["tune_id"]],
+                     ntree = model_grid[i, ][["ntree"]],
+                     mtry  = model_grid[i, ][["mtry"]],
+                     nodesize = model_grid[i, ][["nodesize"]],
+                     sampsize0 = model_grid[i, ][["sampsize0"]],
+                     AUC = NA_real_,
+                     time = (proc.time() - t0)["elapsed"],
+                     machine = machine
+                   )
+                   res_i
+                 })
 
-  res_i
-}
+                 res_i
+               }
 
 res <- bind_rows(res)
 
-write_rds(res, "output/tune-results-quad-1.rds")
+write_rds(res, "output/tune-results-Rick.rds")
 
 # clean up / remove the chunks
 unlink("output/chunks", recursive = TRUE)
-
-# # Append to cumulative tuning results
-# all_tune <- read_rds("output/tune-results-cumulative.rds")
-# res$tune_batch_id <- max(all_tune$tune_batch_id, na.rm = TRUE) + 1L
-# all_tune <- bind_rows(all_tune, res)
-# write_rds(all_tune, "output/tune-results-cumulative.rds")
-#
-# tune_res <- res %>%
-#   group_by(tune_id, ntree, mtry, nodesize, sampsize0) %>%
-#   summarize(mean_auc = mean(AUC),
-#             sd_auc   = sd(AUC),
-#             n = n())
-#
-# tune_res %>%
-#   pivot_longer(ntree:sampsize0) %>%
-#   ggplot(aes(x = value, y = mean_auc, group = name)) +
-#   facet_wrap(~ name, scales = "free_x") +
-#   geom_point() +
-#   geom_smooth(se = FALSE) +
-#   theme_minimal() +
-#   labs(title = sprintf("Specification: %s", spec))
-# ggsave(filename = "output/tune-results.png")
-#
-# tune_res %>%
-#   arrange(desc(mean_auc))
 
 tt <- (proc.time() - t0)["elapsed"]
 lgr$info("Tuning script finished (%ds vs %dh expected)",
