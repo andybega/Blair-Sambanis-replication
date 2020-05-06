@@ -96,11 +96,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5240)
+set.seed(5250)
 
-spec <- "cameo"
+spec <- "escalation"
 
-hp_samples <- 5
+hp_samples <- 65
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -231,13 +231,13 @@ res <- foreach(i = 1:nrow(model_grid),
 
 res <- bind_rows(res)
 
-write_rds(res, "output/tune-results-quad-1.rds")
+write_rds(res, "output/tune-results-escalation-1.rds")
 
 # clean up / remove the chunks
 unlink("output/chunks", recursive = TRUE)
 
 tt <- (proc.time() - t0)["elapsed"]
-lgr$info("Tuning script finished (%ds vs %dh expected)",
+lgr$info("Tuning script finished (%.0fs vs %.0fh expected)",
          round(as.integer(tt)/3600, 1), et)
 
 warnings()
