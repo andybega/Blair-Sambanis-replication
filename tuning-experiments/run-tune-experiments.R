@@ -9,7 +9,7 @@
 #   script to remove objects no longer needed.
 #
 
-WORKERS <- 6
+WORKERS <- 8
 
 library(readr)
 library(tibble)
@@ -96,11 +96,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5242)
+set.seed(5243)
 
 spec <- "quad"
 
-hp_samples <- 30
+hp_samples <- 40
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -235,31 +235,6 @@ write_rds(res, "output/tune-results-quad-1.rds")
 
 # clean up / remove the chunks
 unlink("output/chunks", recursive = TRUE)
-
-# # Append to cumulative tuning results
-# all_tune <- read_rds("output/tune-results-cumulative.rds")
-# res$tune_batch_id <- max(all_tune$tune_batch_id, na.rm = TRUE) + 1L
-# all_tune <- bind_rows(all_tune, res)
-# write_rds(all_tune, "output/tune-results-cumulative.rds")
-#
-# tune_res <- res %>%
-#   group_by(tune_id, ntree, mtry, nodesize, sampsize0) %>%
-#   summarize(mean_auc = mean(AUC),
-#             sd_auc   = sd(AUC),
-#             n = n())
-#
-# tune_res %>%
-#   pivot_longer(ntree:sampsize0) %>%
-#   ggplot(aes(x = value, y = mean_auc, group = name)) +
-#   facet_wrap(~ name, scales = "free_x") +
-#   geom_point() +
-#   geom_smooth(se = FALSE) +
-#   theme_minimal() +
-#   labs(title = sprintf("Specification: %s", spec))
-# ggsave(filename = "output/tune-results.png")
-#
-# tune_res %>%
-#   arrange(desc(mean_auc))
 
 tt <- (proc.time() - t0)["elapsed"]
 lgr$info("Tuning script finished (%ds vs %dh expected)",
