@@ -6,12 +6,11 @@
 .DS_Store
 .Rapp.history
 
-# >100 MB
-tuning-experiments/trafo-data
-
 # chunks are only used for monitoring progress
+table1-redo/output/chunks
 tuning-experiments/output/chunks
 
-
+# > 100 MB
+table1-redo/trafo-data
 table1-redo/output/full-model-grid.rds
-table1-redo/output/chunks
+tuning-experiments/trafo-data
