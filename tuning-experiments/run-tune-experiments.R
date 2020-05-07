@@ -159,7 +159,7 @@ model_grid <- model_grid[sample(1:nrow(model_grid)), ]
 
 # expected run-time
 time_model <- read_rds("output/runtime-model.rds")
-et <- sum(predict(time_model, cbind(ncol = length(get(spec)), model_grid)))/3600/(WORKERS*.9)
+et <- sum(exp(predict(time_model, cbind(ncol = length(get(spec)), machine = machine, model_grid))))/3600/(WORKERS*.9)
 lgr$info("Expected runtime with %s workers: %s hours", WORKERS, round(et, 1))
 
 # Some of the models can take a long time to run. Chunk the output and write
