@@ -11,7 +11,9 @@
 
 # AB: adjust this based on how many cores you have. Or N cores - 1 if you want
 # to use the PC for anything else :)
-WORKERS <- 8
+WORKERS <- 7
+
+# install.packages("lgr")
 
 library(readr)
 library(tibble)
@@ -32,7 +34,7 @@ lgr$info("Start tuning script")
 t0 = proc.time()
 
 # Determine machine this is running on (for timings)
-machine <- "rick gaming laptop"
+machine <- "rick PC"
 
 setwd(here::here("tuning-experiments"))
 
