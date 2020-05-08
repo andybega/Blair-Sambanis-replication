@@ -8,6 +8,18 @@
 #   This script in essence generates AUC-ROC values to complement the
 #   information in Table 1.
 #
+#   The models run in this script are based on a model grid that is created
+#   in setup-model-grid.R.
+#
+#     - The reason for using a table to define models is to make it easier to
+#       run this stuff in parallel.
+#     - The reason to setup the model grid in a separate script is that it does
+#       not (should not) change between different model runs. The set of models
+#       we want to run is fixed, but also, crucially, the model grid is setup
+#       so that each model is uniqued identified. This is so that this script
+#       can be started and stopped without loosing progress. Models that have
+#       already been run are saved and do not need to be re-run again.
+#
 
 # Should existing models be re-run or overwritten?
 RERUN   <- TRUE

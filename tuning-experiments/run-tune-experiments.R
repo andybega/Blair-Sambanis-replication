@@ -96,11 +96,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5243)
+set.seed(5250)
 
-spec <- "quad"
+spec <- "escalation"
 
-hp_samples <- 40
+hp_samples <- 65
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -129,7 +129,7 @@ if (spec=="escalation") {
 } else {
   hp_grid <- tibble(
     tune_id  = 1:hp_samples,
-    mtry     = as.integer(round(runif(hp_samples, 10, 60))),
+    mtry     = as.integer(round(runif(hp_samples, 10, 45))),
     ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
     nodesize = as.integer(round(runif(hp_samples, 1, 20))),
     sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
@@ -159,7 +159,7 @@ model_grid <- model_grid[sample(1:nrow(model_grid)), ]
 
 # expected run-time
 time_model <- read_rds("output/runtime-model.rds")
-et <- sum(predict(time_model, cbind(ncol = length(get(spec)), model_grid)))/3600/(WORKERS*.9)
+et <- sum(exp(predict(time_model, cbind(ncol = length(get(spec)), machine = machine, model_grid))))/3600/(WORKERS*.9)
 lgr$info("Expected runtime with %s workers: %s hours", WORKERS, round(et, 1))
 
 # Some of the models can take a long time to run. Chunk the output and write
@@ -231,13 +231,13 @@ res <- foreach(i = 1:nrow(model_grid),
 
 res <- bind_rows(res)
 
-write_rds(res, "output/tune-results-quad-1.rds")
+write_rds(res, "output/tune-results-escalation-1.rds")
 
 # clean up / remove the chunks
 unlink("output/chunks", recursive = TRUE)
 
 tt <- (proc.time() - t0)["elapsed"]
-lgr$info("Tuning script finished (%ds vs %dh expected)",
+lgr$info("Tuning script finished (%.0fs vs %.0fh expected)",
          round(as.integer(tt)/3600, 1), et)
 
 warnings()

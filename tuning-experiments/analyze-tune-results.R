@@ -127,3 +127,35 @@ goldstein_tune %>%
   labs(title = sprintf("Specification: %s", "goldstein"))
 
 
+# Cameo specification -------------------------------------------------
+#
+#   Cameo has 1,159 features (sqrt = 34)
+#
+
+cameo_tune <- tune_res %>%
+  filter(spec=="cameo")
+
+cameo_tune %>%
+  arrange(desc(mean_auc))
+
+cameo_tune %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: %s", "cameo"))
+
+cameo_tune %>%
+  filter(sampsize0 < 5000) %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: %s", "cameo"))
+
+
+

@@ -11,7 +11,5 @@ setwd(here::here("tuning-experiments"))
 
 data_1mo <- read.dta13("input-data/1mo_data.dta")
 
-if (!file.exists("trafo-data")){
-  dir.create(file.path("trafo-data"))
-}
+dir.create("trafo-data", showWarnings = FALSE)
 write_rds(data_1mo, "trafo-data/1mo_data.rds")
