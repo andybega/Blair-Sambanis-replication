@@ -96,11 +96,11 @@ rm(df, test_df)
 #   HP tuning ----
 #   _______________
 
-set.seed(5250)
+set.seed(5253)
 
-spec <- "escalation"
+spec <- "cameo"
 
-hp_samples <- 65
+hp_samples <- 3
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -231,7 +231,7 @@ res <- foreach(i = 1:nrow(model_grid),
 
 res <- bind_rows(res)
 
-write_rds(res, "output/tune-results-escalation-1.rds")
+write_rds(res, "output/tune-results-cameo-2.rds")
 
 # clean up / remove the chunks
 unlink("output/chunks", recursive = TRUE)
