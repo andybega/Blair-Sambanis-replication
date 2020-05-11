@@ -291,10 +291,10 @@ rf_tuned <- function(data, features, spec, ...) {
   stopifnot(is.factor(data$incidence_civil_ns_plus1),
             spec %in% c("Escalation", "Quad", "Goldstein", "CAMEO"))
   tune_values <- list(
-    Escalation = list(ntree = 20000, mtry = 4,  nodesize = 2, sampsize0 = 1000),
-    Quad       = list(ntree = 20000, mtry = 4,  nodesize = 2, sampsize0 = 500),
-    Goldstein  = list(ntree = 20000, mtry = 2,  nodesize = 4, sampsize0 = 500),
-    CAMEO      = list(ntree = 20000, mtry = 34, nodesize = 5, sampsize0 = 500)
+    Escalation = list(ntree = 20000, mtry = 4,  nodesize = 5, sampsize0 = 500),
+    Quad       = list(ntree = 20000, mtry = 4,  nodesize = 5, sampsize0 = 500),
+    Goldstein  = list(ntree = 20000, mtry = 2,  nodesize = 5, sampsize0 = 500),
+    CAMEO      = list(ntree = 17000, mtry = 18, nodesize = 25, sampsize0 = 800)
   )
   tune_values <- tune_values[[spec]]
 
