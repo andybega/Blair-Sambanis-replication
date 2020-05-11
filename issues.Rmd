@@ -118,7 +118,7 @@ auc %>%
   
 ```
 
-As the table above shows, the results presented in @blair2020forecasting are fragile to the use of a smoothing option when calculating the AUC-ROC performance metric. Further, even when we rely solely on the replication files provided by Blair and Sambanis, we cannot replicate their findings exactly. For example, in our replication, the AUC-ROC score for the 1-month CAMEO model with the use of the smoother is 0.84; however, in the paper, the reported score is 0.82. This is most likely a function of the version of `R` Blair and Sambanis used to conduct their analysis. The current replication project was done using `R version 4.0.0`, which updated their random number seeding procedure, so small differences should be expected.     
+As the table above shows, the results presented in @blair2020forecasting are fragile to the use of a smoothing option when calculating the AUC-ROC performance metric. Further, even when we rely solely on the replication files provided by Blair and Sambanis, we cannot replicate their findings exactly. For example, in our replication, the AUC-ROC score for the 1-month CAMEO model with the use of the smoother is 0.84; however, in the paper, the reported score is 0.82. This is most likely a function of the version of `R` Blair and Sambanis used to conduct their analysis. The current replication project was done using `R version 4.0.0`, which updated their random number seeding procedure, so small differences should be expected. (RM: I mention this last part because later when we replicate the PITF table, the results are very far off, beyond what we would expect from random fluctuations)
 
 
 
