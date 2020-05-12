@@ -10,6 +10,9 @@
 #
 
 WORKERS <- 8
+horizon <- "6 months"
+spec    <- "quad"
+hp_samples <- 60
 
 library(readr)
 library(tibble)
@@ -41,6 +44,18 @@ setwd(here::here("tuning-experiments"))
 
 registerDoFuture()
 plan("multisession", workers = WORKERS)
+
+
+# tune result output file name
+tune_res_filename <- paste(horizon, spec, sep = "-")
+tune_res_filename <- gsub("[_ ]", "-", tune_res_filename)
+# determine batch id
+files <- dir("output/batches")
+files <- files[str_detect(files, tune_res_filename)]
+batch_id <- length(files) + 1
+tune_res_filename <- paste0(tune_res_filename, "-", batch_id, ".rds")
+
+
 
 df <- read_rds("trafo-data/1mo_data.rds") %>%
   mutate(incidence_civil_ns_plus1 = factor(incidence_civil_ns_plus1, levels = c("1", "0")))
@@ -80,61 +95,122 @@ cameo <- c(
   names(df)[str_detect(names(df), "cameo_[0-9]+$")]
 )
 
-# Make sure we are operating on same df for both specs
-df <- df[complete.cases(df[, unique(c(dv, escalation, cameo))]), ]
 
-# Define training and testing sets for base specification
-train_period = mean(df$period[which(df$month==12 & df$year==2007)])
-end_period = mean(df$period[which(df$month==12 & df$year==2015)])
+# Setup 1-month or 6-month data -------------------------------------------
 
-train_df <- df[df$period<=train_period,]
-test_df  <- df[df$period>train_period & df$period<=end_period,]
+if (horizon=="1 month") {
 
-rm(df, test_df)
+  # Make sure we are operating on same df for both specs
+  df <- df[complete.cases(df[, unique(c(dv, escalation, cameo))]), ]
+
+  # Need to sort the df by year and month (implicitly period, which is a unique
+  # ID for year-month), otherwise the train/test indices will be wrong
+  data_1mo <- data_1mo %>% arrange(year, month, country_iso3)
+
+  # Define training and testing sets for base specification
+  train_period = mean(df$period[which(df$month==12 & df$year==2007)])
+  end_period = mean(df$period[which(df$month==12 & df$year==2015)])
+
+  train_df <- df[df$period<=train_period,]
+  test_df  <- df[df$period>train_period & df$period<=end_period,]
+
+} else {
+
+  data_6mo <- read_rds("trafo-data/6mo_data.rds") %>%
+    mutate(incidence_civil_ns_plus1 = factor(incidence_civil_ns_plus1, levels = c("1", "0")))
+
+  # Make sure we are operating on same df for both specs
+  data_6mo <- data_6mo[complete.cases(data_6mo[, unique(c(dv, escalation, cameo))]), ]
+
+  # Need to sort the df by year and period (implicitly period, which is a unique
+  # ID for half-year), otherwise the train/test indices will be wrong
+  data_6mo <- data_6mo %>% arrange(year, period, country_iso3)
+
+  # Define training and testing sets for base specification
+  # periods are from +master.R
+  train_df <- data_6mo[data_6mo$period<=14, ]
+  test_df  <- data_6mo[data_6mo$period>14 & data_6mo$period<=30, ]
+
+}
+
+rm(df, test_df, data_6mo)
 
 #
 #   HP tuning ----
 #   _______________
 
-set.seed(5253)
+#set.seed(5253)
 
-spec <- "cameo"
-
-hp_samples <- 3
-
-if (spec=="escalation") {
-  hp_grid <- tibble(
-    tune_id  = 1:hp_samples,
-    mtry     = as.integer(round(runif(hp_samples, 2, 5))),
-    ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
-    nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
-  )
-} else if (spec=="quad") {
-  hp_grid <- tibble(
-    tune_id  = 1:hp_samples,
-    mtry     = as.integer(round(runif(hp_samples, 2, 5))),
-    ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
-    nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
-  )
-} else if (spec=="goldstein") {
-  hp_grid <- tibble(
-    tune_id  = 1:hp_samples,
-    mtry     = as.integer(round(runif(hp_samples, 1, 4))),
-    ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
-    nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
-  )
+if (horizon=="1 month") {
+  if (spec=="escalation") {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 2, 5))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 20))),
+      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+    )
+  } else if (spec=="quad") {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 2, 5))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 20))),
+      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+    )
+  } else if (spec=="goldstein") {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 1, 4))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 20))),
+      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+    )
+  } else {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 10, 45))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 20))),
+      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+    )
+  }
 } else {
-  hp_grid <- tibble(
-    tune_id  = 1:hp_samples,
-    mtry     = as.integer(round(runif(hp_samples, 10, 45))),
-    ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
-    nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-    sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
-  )
+  if (spec=="escalation") {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 2, 5))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 40000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 50))),
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 1000)))
+    )
+  } else if (spec=="quad") {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 2, 5))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 40000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 50))),
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 1000)))
+    )
+  } else if (spec=="goldstein") {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 1, 4))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 40000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 50))),
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 1000)))
+    )
+  } else {
+    hp_grid <- tibble(
+      tune_id  = 1:hp_samples,
+      mtry     = as.integer(round(runif(hp_samples, 10, 45))),
+      ntree    = as.integer(round(runif(hp_samples, 5000, 40000))),
+      nodesize = as.integer(round(runif(hp_samples, 1, 50))),
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 1000)))
+    )
+  }
 }
+
 
 
 folds <- vfold_cv(train_df, v = 2, repeats = 7*2) %>%
@@ -169,7 +245,8 @@ writeLines(as.character(nrow(model_grid)), "output/chunks/n-chunks.txt")
 
 res <- foreach(i = 1:nrow(model_grid),
                .export = c("model_grid", "train_df", "spec", "cameo",
-                           "escalation", "quad", "goldstein", "machine"),
+                           "escalation", "quad", "goldstein", "machine",
+                           "horizon"),
                .packages = c("randomForest", "tibble", "yardstick", "dplyr"),
                .inorder = FALSE) %dopar% {
 
@@ -196,6 +273,7 @@ res <- foreach(i = 1:nrow(model_grid),
       truth = test_i[, dv])
     res_i <- tibble(
       i = i,
+      horizon = horizon,
       spec = spec,
       tune_id = model_grid[i, ][["tune_id"]],
       ntree = model_grid[i, ][["ntree"]],
@@ -213,6 +291,7 @@ res <- foreach(i = 1:nrow(model_grid),
   }, error = function(e) {
     res_i <- tibble(
       i = i,
+      horizon = horizon,
       spec = spec,
       tune_id = model_grid[i, ][["tune_id"]],
       ntree = model_grid[i, ][["ntree"]],
@@ -223,6 +302,9 @@ res <- foreach(i = 1:nrow(model_grid),
       time = (proc.time() - t0)["elapsed"],
       machine = machine
     )
+
+    write_csv(res_i, path = sprintf("output/chunks/chunk-%s.csv", i))
+
     res_i
   })
 
@@ -231,13 +313,14 @@ res <- foreach(i = 1:nrow(model_grid),
 
 res <- bind_rows(res)
 
-write_rds(res, "output/tune-results-cameo-2.rds")
+path <- file.path("output/batches", tune_res_filename)
+write_rds(res, path)
 
 # clean up / remove the chunks
 unlink("output/chunks", recursive = TRUE)
 
 tt <- (proc.time() - t0)["elapsed"]
-lgr$info("Tuning script finished (%.0fs vs %.0fh expected)",
-         round(as.integer(tt)/3600, 1), et)
+lgr$info("Tuning script finished (%.02fh vs %.02fh expected)",
+         as.integer(tt)/3600, et)
 
 warnings()

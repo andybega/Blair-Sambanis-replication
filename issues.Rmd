@@ -81,25 +81,23 @@ After establishing that the escalation model they advance out-performs all other
 
 # Issues
 
-<!-- Below, we work through our issues we identified above, starting first with the unconventional use of a smoother when calculating the AUC-ROC scores. We reproduce Table 1 and Table 2 from @blair2020forecasting to show that their results are dependent on the unconventional use of a smoother.  -->
-
-<!-- We then discuss... (RM: I'll fill this out as I work through the evidence.)  -->
-
 ## Smoothed ROC curves
 
-One issue that stood out as we read @blair2020forecasting was how smooth their Receiver Operating Characteristic curves where in Figure 1 on page 14. A Receiver Operating Characteristic curve displays the balance between the true positive rate and the false positive rate, across a range of discrimination thresholds -- the value in which a zero to one probability is assumed to be an "onset". Given that the DV is civil conflict onset (1/0) and that this is a rare event, these curves should resemble a step-like function. Looking through the Blair/Sambanis replication code, we noticed that they use a smoothing function when producing their Receiver Operating Characteristic curves.  
+One issue that stood out as we read @blair2020forecasting was how smooth their Receiver Operating Characteristic curves where in Figure 1 on page 14. A Receiver Operating Characteristic curve displays the balance between the true positive rate and the false positive rate, across a range of discrimination thresholds -- the value in which a zero to one probability is assumed to be an "onset". Given that the DV is civil conflict onset (1/0) and that this is a rare event, these curves should resemble a step-like function. Looking through the Blair/Sambanis replication code, we noticed that they use a smoothing option when producing their Receiver Operating Characteristic curves.  
 
-This is important because Blair and Sambanis use a common performance metric -- Area Under the Receiver Operating Characteristic Curves (AUC-ROC) -- as evidence that their escalation model out preforms all others. However, by smoothing the Receiver Operating Characteristic Curves, they are misrepresenting the true AUC-ROC scores of their various models. To help make this point clear, we replicate Figure 1 below. However, rather than a two panel figure (one ROC plot their one-month-ahead forecasts and one for their six-months-ahead forecasts, as is presented in the article), we now include four panels: one panel for the two forecast windows with the smoothed curve, as they produce, and one panel for the two forecast windows that are not smoothed.
+This is important because Blair and Sambanis use a common performance metric -- Area Under the Receiver Operating Characteristic Curves (AUC-ROC) -- as evidence that their escalation model out preforms all others. However, by smoothing the Receiver Operating Characteristic Curves, they are misrepresenting the true AUC-ROC scores of their various models. To help make this point clear, we replicate Figure 1 below. Rather than a two panel figure (one ROC plot their one-month-ahead forecasts and one for their six-months-ahead forecasts, as is presented in the article), we now include four panels: one panel for the two forecast windows with the smoothed curve, as they produce, and one panel for the two forecast windows that are not smoothed.
 
 ![](figures/figure1-replicated.png)
 
 \clearpage
 
+### Comparison of the escalation specification to alternatives (Table 1)
+
 Using these smoothed and non-smoothed curves, we then replicate Table 1 (page 13), but now the table reports the AUC-ROC scores for each model specification with and without the use of a smoother. If the non-smoothed AUC-ROC scores are drastically different from those of the smoothed AUC-ROC score (a difference of $\ge 0.05$) or if the non-smoothed AUC-ROC scores are < 0.8, would suggest the findings presented in @blair2020forecasting are fragile to the use of a non-standard procedure. 
 
 
 ```{r, message=FALSE}
-auc <- read_csv("data/table1-redone.csv") %>%
+table1 <- read_csv("data/table1-redone.csv") %>%
   mutate(specification = factor(specification, levels = c("escalation", "quad", "goldstein", "CAMEO", "avg"))) %>%
   arrange(model, horizon, specification) %>% 
   pivot_longer(-c(model, horizon, specification), names_to = "ROC Smoothed", values_to = "Value") %>% 
@@ -111,7 +109,7 @@ auc <- read_csv("data/table1-redone.csv") %>%
          Goldstein = goldstein, 
          Avg = avg)
 
-auc %>%
+table1 %>%
   knitr::kable(digits = 2, booktabs = TRUE, caption = "Comparison of smoothed and not smoothed AUC-ROC values", align = c(rep("l", 2), rep("c", 6))) %>% 
   # column_spec(c(3), bold = TRUE) %>%
   kableExtra::collapse_rows(1:2, row_group_label_position = 'stack')
@@ -120,7 +118,58 @@ auc %>%
 
 As the table above shows, the results presented in @blair2020forecasting are fragile to the use of a smoothing option when calculating the AUC-ROC performance metric. Further, even when we rely solely on the replication files provided by Blair and Sambanis, we cannot replicate their findings exactly. For example, in our replication, the AUC-ROC score for the 1-month CAMEO model with the use of the smoother is 0.84; however, in the paper, the reported score is 0.82. This is most likely a function of the version of `R` Blair and Sambanis used to conduct their analysis. The current replication project was done using `R version 4.0.0`, which updated their random number seeding procedure, so small differences should be expected. (RM: I mention this last part because later when we replicate the PITF table, the results are very far off, beyond what we would expect from random fluctuations)
 
+### Comparison of the escalation model to structural extensions (Table 2)
 
+Table 2 in the B&S paper (p. 19) compares the escalation model, based only on ICEWS-derived indicators, to alternatives that incorporate aspects of a structural model in different ways. 
+
+![](figures/bands-table2.png)
+
+On page 20:
+
+> Overall, our results suggest that while measures of structural risk may improve predictive performance, the value they add is marginal and inconsistent. Of the approaches we test, the split-population analog is most promising, with AUCs of .84 and .83 over one-month and six-month windows, respectively.
+
+Below is a recreation of this table with AUC values for both smoothed and the original ROC curves. 
+
+```{r, message=FALSE}
+escalation_only <- read_csv("data/table1-redone.csv") %>%
+  filter(specification=="escalation") %>%
+  select(-model) %>%
+  mutate(horizon = case_when(horizon=="6 month" ~ "6 months", TRUE ~ horizon))
+
+table2 <- read_csv("data/table2-redone.csv") %>%
+  bind_rows(escalation_only) %>%
+  mutate(
+    specification = factor(
+      specification, 
+      levels = c("escalation", "escalation with PITF", 
+                 "escalation with PITF weights", 
+                 "escalation with Split PITF", "PITF"),
+      labels = c("Escalation\nOnly", "With PITF Predictors", "Weighted by PITF", "PITF Split Population", "PITF Only"))
+  ) %>%
+  arrange(horizon, specification) %>% 
+  pivot_longer(-c(horizon, specification), names_to = "ROC Smoothed") %>% 
+  pivot_wider(names_from = "specification") %>% 
+  mutate(`ROC Smoothed` = ifelse(`ROC Smoothed` == "smoothed", "Yes", "No")) %>%
+  rename(Horizon = horizon)
+
+table2 %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Comparison of smoothed and not smoothed AUC-ROC values", 
+    align = c(rep("l", 2), rep("c", 6))
+  ) %>% 
+  kableExtra::column_spec(c(2, 5, 7), width = "1.5cm") %>%
+  kableExtra::column_spec(3, width = "1.8cm") %>%
+  kableExtra::column_spec(c(4, 6), width = "2.2cm") %>%
+  kableExtra::collapse_rows(1) 
+  
+```
+
+Note that we were unable to reproduce some of the AUC values in Table 2. Values that are notably different are 1-month "Weighted by PITF" and "PITF Split Population", and 6-month "PITF Split Population". For all three of these, the AUC-ROC values we obtained are much better than those in the original Table 2. The values for 6-month "PITF Only" and "With PITF Predictors" are slightly off but could be rounding errors.
+
+Despite these reproduction differences, the original interpretation mostly still stands. The various efforts to incorporate structural variables into the forecasts largely do not work or do not add much predictive value. In the 6-month forecasts, the value added by simply adding the annual structural predictors to the existing random forest model is more pronounced than before, while the PITF split population approach fares much worse. 
+
+Although the substantive interpretation does not change much as a result of using ROC curve smoothing, the absolute AUC-ROC values between the smoothed and original versions do differe by quite a bit in several instances. The AUC-ROC values differ by 0.05 or more in 5 of the 10 cells in the original Table 2, and the direction of change is in all cases such that using smoothed ROC curves present more optimistic performance values. 
 
 ## Assessment of the 2016 forecasts
 
@@ -128,33 +177,44 @@ The predictions for the first half of 2016 are assessed in Table 4:
 
 ![](figures/bands-table4.png)
 
-The table presents 15 or 16 positive cases for 2016-H1, depending on a minor coding decision. These numbers correspond to a positive rate of around 9.5% for the first half of 2016. 
-
-By comparison, the 6-month version of the full data from 2001 to 2015 contains only 20 positive cases, with a positive rate of around 0.5%. 
+The table presents 15 or 16 positive cases for 2016-H1, depending on a minor coding decision. This is the difference between the top and bottom confusion matrices. From the confusion matrices we can infer that the test data had a reported positive rate of around 9.5% for the first half of 2016. In contrast, the corresponding 6-month version of the data from 2001 to 2015, with 30 half-years, has in total 20 civil war onset events, for a positive rate of around 0.5%. This suggests that the civil war onset forecasts are erranously assessed using civil war incidence, not onset. 
 
 The relevant variables in the data are "incidence_civil_ns" and "incidence_civil_ns_plus1", which appears to be a 1-period lead version of the DV that is used in the actual prediction models. The incidence DV contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. 
 
-The main data set covering 2001 - 2015 contains 20 civil war onsets. But there are 15 "Persistence" cases (top of table 4) and 16 "Change" cases (bottom of table 4)
-
 By examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable back to incidence. 
 
-The actual data contains 0 new civil war onsets in 2016-H1. Using those data, the 2016-H1 forecasts would have retained a recall value of 1, but precision would have decreased from 13/30 = 0.76 to 1/30 = 0.03.  
+The correct confusion matrices when using observed onset (or the lack of it) are shown below. 
 
-The second part of the Table 4 script manually codes onset in two countries, Turkey and Burundi. With this coding, the correct recall (bottom of Table 4) is 1 (not 14/16 = 0.88) and the precision changes from 14/30 = 0.47 to 2/30 = 0.07. 
+```{r, message=FALSE}
+tab4 <- read_csv("data/tab4-fixed.csv")
+
+tab4 %>%
+  knitr::kable(
+    caption = "2016 Confusion Matrices for Six-month Escalation Model.",
+    booktabs = TRUE
+  ) %>%
+  kableExtra::collapse_rows(1)
+```
+
+There are no civil war onsets in the data for 2016-H1. Thus the recall values is undefined, while the precision is 0/30 = 0, compared to recall and precision values of 13/15 = 0.87 and 13/30 = 0.43 before. The the alternative coding ("Assuming Change") at the bottom of Table 4, there are 2 civil war onsets. Recall is 1 compared to 14/16 = 0.88 before, and precision is 2/30 = 0.07 instead of 14/30 = 0.47. 
 
 Another, minor issue or rather coding error, is related to using a lead version of the DV. With the lead version of the DV, "incidence_civil_ns_plus1", which is what the models are predicting, the predicted value for 2016-H1 actually indicates the risk of civil war onset in 2016-H2. In the Table 4 script referenced above, the 2016-H1 predictions (for 2016-H2) are assessed using the raw DV, "incidence_civil_ns", not the lead version. Essentially, the forecasts for 2016-H2 are assessed using observed outcomes for 2016-H1. In this case it probably doesn't make a difference since both the raw DV and lead version for 2016-H1 do not have any positive values. 
 
-## Random forest model tuning
+## Discussion
 
-3. Unorthodox RF hyperparameter choices that may be driving the OOS test prediction results. There are two issues here. One is that the RF models are so unorthodox. I'm not sure that this in itself is a problem. But the second potential problem is that the hyperparameter values may not have been tuned in a way that works the best for the non-escalation model, and especially the CAMEO model with 1,100+ features. 
+When using the standard method of calculating AUC-ROC values, i.e. without smoothing the ROC curve beforehand, one of the principal B&S results reverses. The theory-driven escalation model does not in fact outperform the models that use alternative covariate specifications. In both the 1-month and 6-month versions of the base specification, all four other alternatives achieve equal or better AUC-ROC values compared to the escalation model. This includes the 1,159 covariate kitchen-sink CAMEO model. 
 
-<!-- - Improperly tuning of models -->
-<!--   - RM: In a twitter DM, I asked Blair to clarify -- "[I] was wondering how you all came to your tuning procedure for the RF model hyper-parameters?" He responded "mostly trial and error, honestly. ... Trial and error was on early data. Forecasts were for much later data" -->
-<!-- - Using a regression framework in a classification problem -->
-<!-- - smoothing of AUC/ROC scores -->
-<!--     + AB: smoothing or rounding? I think rounding is ok.  -->
-<!-- - Treating the output of a RF regression model as Pr() -- (RM: I guess this is akin to a Linear Probability Model, but I'm not sure if this is possible in a RF framework -->
-<!--     + It's hacky but it works. The resulting forecasts are within the 0-1 interval. -->
+We find no general change in the results regarding whether adding structural factors to the escalation model's forecasts improves performance, although the gain from incorporating the PITF structural variables into the 6-month escalation model is much more pronounced. There is no reason to rule out the possibility that the escalation model alternatives would not also similarly gain from incorporating structural variables in their 6-month versions. 
+
+Furthermore, it appears that the forecasts for the risk of civil war onset in the first half of 2016 were erroneously evaluated using *incidence*, not *onset*. When correcting this mistake, the forecast evaluation changes significantly. There were no onsets in 2016, resulting in a precision of 0 and undefined recall; while with the manual re-coding reflected in the bottom portion of Table 4, the forecasts capture both civil war onsets for a recall of 1 and precision of 0.07. 
+
+Both of these issues are relatively objective problems. It seems relatively clear to us that using incidence to assess onset forecasts is simply incorrect. Using smoothed ROC curves to calculate AUC is non-standard to the extent of our knowledge, and the decision to use them is not discussed or justified in the paper. Maybe it is possible to defend this choice, but given that one of the principal findings rests on it, this should be done explicitly. 
+
+There are also other, more subjective concerns that we did not raise. For example, the paper does not explain how the random forest model hyperparemeters were selected. Although they do evaluate several changes in the hyperparameters as part of the robustness tests, the overall choice of hyperparameter values is unusual. Of note is also that this unusual approach only works (with warnings issued by the software) because B&S use random forests based on regression, not decision, trees. The concern to rule out would be that the hyperparameters are (over-) fit on the test data and that the reported performance values do not generalize.[^On page 10, B&S write that they use classification trees; this is strictly speaking incorrect and the random forest is built using regression tress on the 0 or 1 outcome.] 
+
+We do not disagree with the overall point that theory is important for recognizing which variables or indicators might be important for forecasting. But it does not appear that B&S analysis demonstrates this, and that the paper's conclusions to this effect rest on faulty results. 
+
+<!--
 
 The table below shows the randomForest package default hyperparameter values for a binary classification problem like the one at hand and compares them to the Blair and Sambanis base settings. Some hyperparameters have heuristics that determine the default value based on characteristics of the input data; we note these in the second column and what the realized default setting would be for the basic Escalation model (first row in Table 1 in the paper) in the 3rd column. The last column has the settings Blair and Sambanis use. 
 
@@ -211,6 +271,8 @@ The results show that:
 
 This suggests that the base RF specifications are (over-)fit to the test data. 
 
+-->
+
 <!-- 4. Design choices -->
 
 <!-- Rick, I think the points below are more subjective choices. The first two points above are IMO potentially objectively incorrect technical errors that could undermine the original Blair and Sambanis findings. The 3rd point about the RF models is somewhere between objective error and subjective choice. I'm not sure. But the points below I would say are subjective choices that could alter their findings and that I think are justifiable criticisms, but I think it'll be easier for someone to push back on this if they wanted to.  -->
@@ -236,5 +298,7 @@ This suggests that the base RF specifications are (over-)fit to the test data.
 <!--     - How drastic is the change; does it change their conclusions?  -->
 <!-- 4. Run a yearly test forecast -- as is the current standard in TSCS forecasts (Is it the current standard?)  -->
 <!-- 5.  -->
+
+-->
 
 # References

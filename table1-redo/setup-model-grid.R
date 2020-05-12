@@ -252,7 +252,7 @@ full_model_grid <- full_model_grid %>%
 # file.
 full_model_grid %>%
   select(model_id:id2) %>%
-  write_csv("output/table1-model-id-mapping.csv")
+  write_csv("output/model-id-mapping.csv")
 
 # And the first and second train/test indices just to make sure they don't change
 # THESE SHOULD NOT CHANGE
@@ -260,14 +260,14 @@ full_model_grid %>%
   pull(train_idx) %>%
   `[[`(1) %>%
   as.character() %>%
-  writeLines("output/table1-full-model-grid-train-idx-1.txt")
+  writeLines("output/full-model-grid-train-idx-1.txt")
 full_model_grid %>%
   pull(train_idx) %>%
   `[[`(2) %>%
   as.character() %>%
-  writeLines("output/table1-full-model-grid-train-idx-2.txt")
+  writeLines("output/full-model-grid-train-idx-2.txt")
 
 # Save the full model grid
-write_rds(full_model_grid, "output/table1-full-model-grid.rds")
+write_rds(full_model_grid, "output/full-model-grid.rds")
 
 
