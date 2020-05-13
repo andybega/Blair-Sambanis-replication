@@ -139,7 +139,6 @@ rm(df, test_df, data_6mo)
 #   HP tuning ----
 #   _______________
 
-#set.seed(5253)
 
 if (horizon=="1 month") {
   if (spec=="escalation") {
