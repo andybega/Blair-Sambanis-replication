@@ -11,8 +11,8 @@
 
 WORKERS <- 8
 horizon <- "6 months"
-spec    <- "quad"
-hp_samples <- 60
+spec    <- "cameo"
+hp_samples <- 100
 
 library(readr)
 library(tibble)
@@ -175,6 +175,7 @@ if (horizon=="1 month") {
     )
   }
 } else {
+  # 6-months horizon
   if (spec=="escalation") {
     hp_grid <- tibble(
       tune_id  = 1:hp_samples,
