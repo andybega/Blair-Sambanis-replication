@@ -147,7 +147,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 2, 5))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   } else if (spec=="quad") {
     hp_grid <- tibble(
@@ -155,7 +155,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 2, 5))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   } else if (spec=="goldstein") {
     hp_grid <- tibble(
@@ -163,7 +163,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 1, 4))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   } else {
     hp_grid <- tibble(
@@ -171,7 +171,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 10, 45))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   }
 } else {

@@ -270,7 +270,7 @@ model_grid <- full_model_grid %>%
   filter(table1_row=="Base specification",
          horizon=="1 month",
          table1_column %in% c("Quad", "Escalation", "Goldstein"),
-         hp_set %in% c("Tuned")
+         hp_set %in% c("B&S", "Default", "Tuned")
   )
 
 dir.create("output/chunks/prediction", showWarnings = FALSE, recursive = TRUE)
