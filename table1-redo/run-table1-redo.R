@@ -86,7 +86,7 @@ goldstein <- c(
 )
 
 cameo <- c(
-  names(df)[str_detect(names(df), "cameo_[0-9]+$")]
+  names(data_1mo)[str_detect(names(data_1mo), "cameo_[0-9]+$")]
 )
 
 # Map the Table 1 columns names to specifications
@@ -266,8 +266,9 @@ full_model_grid <- read_rds("output/full-model-grid.rds")
 # on that. The average model also requires special treatment, so take it out.
 model_grid <- full_model_grid %>%
   filter(table1_row=="Base specification",
-         horizon=="1 month",  # I haven't set this nor the tune stuff up to work with the 6month data yet.
-         table1_column %in% c("Escalation", "Quad", "Goldstein")
+         horizon=="6 months",  # I haven't set this nor the tune stuff up to work with the 6month data yet.
+         table1_column %in% c("Escalation", "Goldstein", "Quad"),
+         hp_set %in% c("B&S", "Default")
   )
 
 dir.create("output/chunks/prediction", showWarnings = FALSE, recursive = TRUE)
