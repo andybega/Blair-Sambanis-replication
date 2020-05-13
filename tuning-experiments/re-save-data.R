@@ -9,7 +9,10 @@ library(here)
 
 setwd(here::here("tuning-experiments"))
 
-data_1mo <- read.dta13("input-data/1mo_data.dta")
-
 dir.create("trafo-data", showWarnings = FALSE)
+
+data_1mo <- read.dta13("input-data/1mo_data.dta")
 write_rds(data_1mo, "trafo-data/1mo_data.rds")
+
+data_6mo <- read.dta13("input-data/6mo_data.dta")
+write_rds(data_6mo, "trafo-data/6mo_data.rds")

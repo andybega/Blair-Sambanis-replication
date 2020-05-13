@@ -159,3 +159,26 @@ cameo_tune %>%
 
 
 
+# 6-month Quad ------------------------------------------------------------
+
+tune_res <- dir("output/batches", pattern = "quad", full.names = TRUE) %>%
+  map(., read_rds) %>%
+  bind_rows() %>%
+  group_by(spec, tune_id, ntree, mtry, nodesize, sampsize0) %>%
+  dplyr::summarize(mean_auc = mean(AUC),
+                   sd_auc   = sd(AUC),
+                   n = n()) %>%
+  filter(!is.na(mean_auc))
+
+
+tune_res %>%
+  arrange(desc(mean_auc))
+
+tune_res %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: Quad"))
