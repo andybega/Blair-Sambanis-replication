@@ -15,3 +15,4 @@
 |6 months |Goldstein     |Default |     0.61|         0.73|
 |6 months |Quad          |B&S     |     0.66|         0.78|
 |6 months |Quad          |Default |     0.62|         0.70|
+|6 months |Quad          |Tuned   |     0.70|         0.74|

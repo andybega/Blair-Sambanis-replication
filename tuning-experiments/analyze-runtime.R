@@ -10,7 +10,10 @@ library(ggplot2)
 
 setwd(here::here("tuning-experiments"))
 
-all_tune <- read_rds("output/tune-results-cumulative.rds")
+all_tune <- read_rds("output/all-tune-results.rds") %>%
+  # impute sampsize0 for older runs
+  mutate(sampsize0 = ifelse(is.na(sampsize0), 5930, sampsize0),
+         horizon = ifelse(is.na(horizon), "1 month", horizon))
 
 with_time <- all_tune %>%
   filter(!is.na(time)) %>%
@@ -20,18 +23,17 @@ with_time <- all_tune %>%
     spec=="goldstein" ~ 4L,
     spec=="cameo" ~ 1159L,
     TRUE ~ NA_integer_)) %>%
-  # impute sampsize0 for older runs
-  mutate(sampsize0 = ifelse(is.na(sampsize0), 5930, sampsize0)) %>%
   # impute machine for older runs
   mutate(machine = ifelse(is.na(machine), "other", machine))
 
 with_time %>%
+  mutate(supercol = as.integer(ncol > 20),
+         supercol = factor(supercol, labels = c("other specs", "CAMEO"))) %>%
   pivot_longer(all_of(c("ntree", "mtry", "nodesize", "sampsize0", "ncol"))) %>%
   ggplot(aes(x = value, y = time, color = factor(machine))) +
-  facet_wrap(~ name, scales = "free_x") +
-  geom_point() +
-  theme_minimal() +
-  scale_y_log10()
+  facet_wrap(supercol ~ name, scales = "free", ncol = 5) +
+  geom_point(alpha = 0.2) +
+  theme_bw()
 
 with_time %>%
   ggplot(aes(x = ntree, y = time, color = factor(ncol))) +
@@ -76,19 +78,52 @@ ggplot(with_time, aes(x = ncol, y = time, color = ntree)) +
   geom_point() +
   scale_y_log10()
 
-fitted_mdl <- lm(log(time) ~ log(ntree)*log(sampsize0)*ncol + machine, data = with_time)
-
+fitted_mdl <- lm(log(time) ~ log(ntree)*log(sampsize0)*ncol*horizon + machine, data = with_time)
 yhat <- exp(predict(fitted_mdl, newdata = with_time, type = "response"))
 y    <- with_time$time
 cor(yhat, y)^2
 
-fitted_mdl <- glm(time ~ ntree*sampsize0*ncol + machine, data = with_time, family = Gamma)
 
-yhat <- predict(fitted_mdl, newdata = with_time, type = "response")
-y    <- with_time$time
+# non-CAMEO only
+non_cameo <- with_time %>%
+  filter(ncol < 20) %>%
+  mutate(machine = fct_drop(machine))
+
+# baseline
+fitted_mdl <- lm(log(time) ~ log(ntree)*log(sampsize0)*ncol + machine,
+                 data = non_cameo)
+yhat <- exp(predict(fitted_mdl, newdata = non_cameo, type = "response"))
+y    <- non_cameo$time
 cor(yhat, y)^2
 
-summary(fitted_mdl)
+# improved
+fitted_mdl <- lm(time ~ ntree*sampsize0*ncol + machine + horizon,
+                 data = non_cameo)
+yhat <- predict(fitted_mdl, newdata = non_cameo, type = "response")
+y    <- non_cameo$time
+cor(yhat, y)^2
+
+mdl_non_cameo <- fitted_mdl
+
+# CAMEO only
+cameo <- with_time %>%
+  filter(ncol > 20) %>%
+  mutate(machine = fct_drop(machine))
+
+# baseline
+fitted_mdl <- lm(log(time) ~ log(ntree)*log(sampsize0) + machine,
+                 data = cameo)
+yhat <- exp(predict(fitted_mdl, newdata = cameo, type = "response"))
+y    <- cameo$time
+cor(yhat, y)^2
+
+# improved
+fitted_mdl <- lm(time ~ ntree*sampsize0*mtry*nodesize + machine,
+                 data = cameo)
+yhat <- predict(fitted_mdl, newdata = cameo, type = "response")
+y    <- cameo$time
+cor(yhat, y)^2
+
 
 write_rds(fitted_mdl, "output/runtime-model.rds")
 
