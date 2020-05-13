@@ -100,7 +100,7 @@ set.seed(5253)
 
 spec <- "cameo"
 
-hp_samples <- 3
+hp_samples <- 10
 
 if (spec=="escalation") {
   hp_grid <- tibble(
@@ -231,7 +231,7 @@ res <- foreach(i = 1:nrow(model_grid),
 
 res <- bind_rows(res)
 
-write_rds(res, "output/tune-results-cameo-2.rds")
+write_rds(res, "output/tune-results-cameo-3.rds")
 
 # clean up / remove the chunks
 unlink("output/chunks", recursive = TRUE)
