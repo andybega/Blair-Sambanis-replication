@@ -40,6 +40,7 @@ library(doFuture)
 library(here)
 library(lgr)
 library(boot)
+library(ranger)
 
 setwd(here::here("table1-redo"))
 
@@ -258,6 +259,19 @@ predict.rf_tuned <- function(object, new_data, ...) {
   as.vector(predict(object, newdata = new_data, type = "prob")[, "1"])
 }
 
+# Balanced random forest
+brf <- function(data, features) {
+  ranger(y = data$incidence_civil_ns_plus1,
+         x = data[, features],
+         probability = TRUE,
+         num.trees = 10000,
+         sample.fraction = c(0.05, 0.1),
+         num.threads = 1)
+}
+
+predict.brf <- function(object, new_data, ...) {
+  predict(object, data = new_data)$prediction[, "1"]
+}
 
 # Excecute the model runs -------------------------------------------------
 
@@ -268,9 +282,9 @@ hp_dict <- read_rds("input-data/hyperparameter-dictionary.rds")
 # on that. The average model also requires special treatment, so take it out.
 model_grid <- full_model_grid %>%
   filter(table1_row=="Base specification",
-         horizon=="1 month",
+         horizon=="6 months",
          table1_column %in% c("Quad", "Escalation", "Goldstein"),
-         hp_set %in% c("B&S", "Default", "Tuned")
+         hp_set %in% c("BRF")
   )
 
 dir.create("output/chunks/prediction", showWarnings = FALSE, recursive = TRUE)
@@ -338,11 +352,17 @@ res <- foreach(
         preds = predict.rf_default(fitted_model, test_i),
         truth = test_i[, dv]
       )
-    } else {
+    } else if (hp_set=="Tuned") {
       fitted_model <- rf_tuned(train_i, x_names, spec, horizon = horizon_i,
                                hp_dict = hp_dict)
       test_preds   <- tibble(
         preds = predict.rf_tuned(fitted_model, test_i),
+        truth = test_i[, dv]
+      )
+    } else {
+      fitted_model <- brf(train_i, x_names)
+      test_preds   <- tibble(
+        preds = predict.brf(fitted_model, test_i),
         truth = test_i[, dv]
       )
     }
