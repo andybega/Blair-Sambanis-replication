@@ -69,7 +69,7 @@ table1 <- table1 %>% filter(table1_row=="Base specification")
 #   set.
 #
 
-hp_set <- c("B&S", "Default", "Tuned")
+hp_set <- c("B&S", "Default", "Tuned", "BRF")
 hp_set <- factor(hp_set, levels = hp_set)
 
 

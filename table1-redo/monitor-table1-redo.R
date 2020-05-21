@@ -4,10 +4,10 @@
 
 library(here)
 
-suppressMessages(setwd(here::here("tuning-experiments")))
+suppressMessages(setwd(here::here("table1-redo")))
 
-n_chunks <- as.integer(readLines("output/table1-chunks/n-chunks.txt"))
+n_chunks <- as.integer(readLines("output/chunks/n-chunks.txt"))
 
-done <- length(dir("output/table1-chunks/prediction"))
+done <- length(dir("output/chunks/prediction", pattern = "brf"))
 cat(sprintf("%s of %s chunks done\n", done, n_chunks))
 cat(sprintf("%s%% complete", round(done/n_chunks*100, 0)))
