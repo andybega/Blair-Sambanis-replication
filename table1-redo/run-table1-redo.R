@@ -86,7 +86,7 @@ goldstein <- c(
 )
 
 cameo <- c(
-  names(df)[str_detect(names(df), "cameo_[0-9]+$")]
+  names(data_1mo)[str_detect(names(data_1mo), "cameo_[0-9]+$")]
 )
 
 # Map the Table 1 columns names to specifications
@@ -225,20 +225,21 @@ predict.rf_default <- function(object, new_data, ...) {
 #
 # RF with tuned hyperparameters
 #
+# @param horizon forecast horizon, "1 month" or "6 months"
+# @param hp_dict Hyperparameter dictionary from the tuning experiments
+#
 # example
 #
 # mdl    <- rf_tuned(train_df, escalation, spec = "Escalation")
 # phat   <- predict.rf_tuned(mdl, train_df)
-rf_tuned <- function(data, features, spec, ...) {
+rf_tuned <- function(data, features, spec, horizon, hp_dict, ...) {
   stopifnot(is.factor(data$incidence_civil_ns_plus1),
             spec %in% c("Escalation", "Quad", "Goldstein", "CAMEO"))
-  tune_values <- list(
-    Escalation = list(ntree = 20000, mtry = 4,  nodesize = 5, sampsize0 = 500),
-    Quad       = list(ntree = 20000, mtry = 4,  nodesize = 5, sampsize0 = 500),
-    Goldstein  = list(ntree = 20000, mtry = 2,  nodesize = 5, sampsize0 = 500),
-    CAMEO      = list(ntree = 17000, mtry = 18, nodesize = 25, sampsize0 = 800)
-  )
-  tune_values <- tune_values[[spec]]
+
+  tune_values <- hp_dict[[horizon]][[tolower(spec)]]
+  if (is.null(tune_values)) {
+    stop("Hyperparameter values not available in hp_dict for this horizon and specification")
+  }
 
   randomForest(y = data$incidence_civil_ns_plus1,
                x = data[, features],
@@ -261,13 +262,15 @@ predict.rf_tuned <- function(object, new_data, ...) {
 # Excecute the model runs -------------------------------------------------
 
 full_model_grid <- read_rds("output/full-model-grid.rds")
+hp_dict <- read_rds("input-data/hyperparameter-dictionary.rds")
 
 # For now I'm only interested in running the base specification row, so filter
 # on that. The average model also requires special treatment, so take it out.
 model_grid <- full_model_grid %>%
   filter(table1_row=="Base specification",
-         horizon=="1 month",  # I haven't set this nor the tune stuff up to work with the 6month data yet.
-         table1_column %in% c("Escalation", "Quad", "Goldstein")
+         horizon=="1 month",
+         table1_column %in% c("Quad", "Escalation", "Goldstein"),
+         hp_set %in% c("B&S", "Default", "Tuned")
   )
 
 dir.create("output/chunks/prediction", showWarnings = FALSE, recursive = TRUE)
@@ -298,7 +301,7 @@ set.seed(5235)
 
 res <- foreach(
   i = 1:nrow(model_grid),
-  .export = c("model_grid", "data_1mo", "data_6mo", "spec_list", "dv"),
+  .export = c("model_grid", "data_1mo", "data_6mo", "spec_list", "dv", "hp_dict"),
   .packages = c("randomForest", "tibble", "yardstick", "dplyr"),
   .inorder = FALSE) %dopar% {
     # keep track of run time
@@ -336,7 +339,8 @@ res <- foreach(
         truth = test_i[, dv]
       )
     } else {
-      fitted_model <- rf_tuned(train_i, x_names, spec)
+      fitted_model <- rf_tuned(train_i, x_names, spec, horizon = horizon_i,
+                               hp_dict = hp_dict)
       test_preds   <- tibble(
         preds = predict.rf_tuned(fitted_model, test_i),
         truth = test_i[, dv]

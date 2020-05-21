@@ -9,22 +9,22 @@ library(ggplot2)
 
 setwd(here::here("tuning-experiments"))
 
-all_tune <- read_rds("output/tune-results-cumulative.rds") %>%
+all_tune <- read_rds("output/all-tune-results.rds") %>%
   # impute sampsize0 for older runs
-  mutate(sampsize0 = ifelse(is.na(sampsize0), 5930, sampsize0))
-
+  mutate(sampsize0 = ifelse(is.na(sampsize0), 5930, sampsize0),
+         horizon = ifelse(is.na(horizon), "1 month", horizon))
 
 tune_res <- all_tune %>%
-  group_by(spec, tune_batch_id, tune_id, ntree, mtry, nodesize, sampsize0) %>%
+  group_by(horizon, spec, tune_id, ntree, mtry, nodesize, sampsize0) %>%
   dplyr::summarize(mean_auc = mean(AUC),
-            sd_auc   = sd(AUC),
-            n = n())
+                   sd_auc   = sd(AUC),
+                   n = n())
 
 # How many new-style samples do i have for each spec? (with reduced sampsize0)
 tune_res %>%
   filter(sampsize0 < 5000) %>%
   ungroup() %>%
-  count(spec)
+  count(horizon, spec)
 
 
 # Escalation specification ------------------------------------------------
@@ -161,20 +161,31 @@ cameo_tune %>%
 
 # 6-month Quad ------------------------------------------------------------
 
-tune_res <- dir("output/batches", pattern = "quad", full.names = TRUE) %>%
-  map(., read_rds) %>%
-  bind_rows() %>%
-  group_by(spec, tune_id, ntree, mtry, nodesize, sampsize0) %>%
-  dplyr::summarize(mean_auc = mean(AUC),
-                   sd_auc   = sd(AUC),
-                   n = n()) %>%
-  filter(!is.na(mean_auc))
+tr <- tune_res %>%
+  filter(horizon=="6 months", spec=="quad")
 
-
-tune_res %>%
+tr %>%
   arrange(desc(mean_auc))
 
-tune_res %>%
+tr %>%
+  pivot_longer(ntree:sampsize0) %>%
+  ggplot(aes(x = value, y = mean_auc, group = name)) +
+  facet_wrap(~ name, scales = "free_x") +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(title = sprintf("Specification: Quad"))
+
+
+# 6-month CAMEO ------------------------------------------------------------
+
+tr <- tune_res %>%
+  filter(horizon=="6 months", spec=="cameo")
+
+tr %>%
+  arrange(desc(mean_auc))
+
+tr %>%
   pivot_longer(ntree:sampsize0) %>%
   ggplot(aes(x = value, y = mean_auc, group = name)) +
   facet_wrap(~ name, scales = "free_x") +

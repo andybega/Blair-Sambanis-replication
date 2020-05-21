@@ -9,7 +9,7 @@
 #   script to remove objects no longer needed.
 #
 
-WORKERS <- 8
+WORKERS <- 7
 horizon <- "6 months"
 spec    <- "cameo"
 hp_samples <- 100
@@ -147,7 +147,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 2, 5))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   } else if (spec=="quad") {
     hp_grid <- tibble(
@@ -155,7 +155,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 2, 5))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   } else if (spec=="goldstein") {
     hp_grid <- tibble(
@@ -163,7 +163,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 1, 4))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   } else {
     hp_grid <- tibble(
@@ -171,7 +171,7 @@ if (horizon=="1 month") {
       mtry     = as.integer(round(runif(hp_samples, 10, 45))),
       ntree    = as.integer(round(runif(hp_samples, 5000, 30000))),
       nodesize = as.integer(round(runif(hp_samples, 1, 20))),
-      sampsize0 = as.integer(round(runif(hp_samples, 200, 3000)))
+      sampsize0 = as.integer(round(runif(hp_samples, 50, 3000)))
     )
   }
 } else {
@@ -235,7 +235,7 @@ model_grid <- model_grid[sample(1:nrow(model_grid)), ]
 
 # expected run-time
 time_model <- read_rds("output/runtime-model.rds")
-et <- sum(exp(predict(time_model, cbind(ncol = length(get(spec)), machine = machine, model_grid))))/3600/(WORKERS*.9)
+et <- sum(exp(predict(time_model, cbind(ncol = length(get(spec)), machine = machine, horizon = horizon, model_grid))))/3600/(WORKERS*.9)
 lgr$info("Expected runtime with %s workers: %s hours", WORKERS, round(et, 1))
 
 # Some of the models can take a long time to run. Chunk the output and write
@@ -308,10 +308,24 @@ res <- foreach(i = 1:nrow(model_grid),
     res_i
   })
 
-  res_i
+  NULL
 }
 
-res <- bind_rows(res)
+res <- dir("output/chunks", patter = ".csv", full.names = TRUE) %>%
+  purrr::map(read_csv, col_types = cols(
+    i = col_double(),
+    horizon = col_character(),
+    spec = col_character(),
+    tune_id = col_double(),
+    ntree = col_double(),
+    mtry = col_double(),
+    nodesize = col_double(),
+    sampsize0 = col_double(),
+    AUC = col_double(),
+    time = col_double(),
+    machine = col_character()
+  )) %>%
+  bind_rows()
 
 path <- file.path("output/batches", tune_res_filename)
 write_rds(res, path)
