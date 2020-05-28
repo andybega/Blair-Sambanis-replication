@@ -11,7 +11,7 @@ set.seed(92382)
 ## RM: ADDED 4/29/2020
 library(here) ##
 
-setwd(here::here("MB-replication-checks"))
+setwd(here::here("rep_nosmooth"))
 
 # Load packages
 
