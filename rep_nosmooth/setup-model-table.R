@@ -62,6 +62,18 @@ model_table <- bind_rows(table1, table2) %>%
   mutate(row = factor(row, levels = unique(row)),
          column = factor(column, levels = unique(column)))
 
+# add a unique ID to the model table so that saving models is easier
+model_table <- model_table %>%
+  ungroup() %>%
+  mutate(model_id = 1:n())
+
+# mark models that are not implemented as random forests
+model_table <- model_table %>%
+  mutate(non_RF = column %in% c("Average", "Weighted by PITF",
+                                "PITF Split Population"))
+
+model_table <- model_table %>%
+  select(model_id, everything())
 
 # Model definitions / feature sets ----------------------------------------
 
