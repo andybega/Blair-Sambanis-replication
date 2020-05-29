@@ -10,6 +10,9 @@
 table1-redo/output/chunks
 tuning-experiments/output/chunks
 
+rep_nosmooth/output/predictions
+rep_nosmooth/trafo-data
+
 # > 100 MB
 table1-redo/trafo-data
 table1-redo/output/full-model-grid.rds

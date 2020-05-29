@@ -9,69 +9,69 @@ train_model <- randomForest(escalation_train_formula_civil_ns,
                             replace = FALSE, do.trace = FALSE ,
                             data = escalation_train_frame_civil_ns, forest = TRUE)
 
-#   			train_model_robust_maxnodes <- randomForest(escalation_train_formula_civil_ns,
-# 												  type = regression, importance = TRUE,
-# 												  na.action = na.omit, ntree = 100000, maxnodes = 10,
-# 												  sampsize = 100,
-# 												  replace = FALSE, do.trace = FALSE ,
-# 												  data = escalation_train_frame_civil_ns, forest = TRUE
-# 												  )
-#
-#     		train_model_robust_sampsize <- randomForest(escalation_train_formula_civil_ns,
-# 												  type = regression, importance = TRUE,
-# 												  na.action = na.omit, ntree = 100000, maxnodes = 5,
-# 												  sampsize = 500,
-# 												  replace = FALSE, do.trace = FALSE ,
-# 												  data = escalation_train_frame_civil_ns, forest = TRUE
-# 												  )
-#
-#   			train_model_robust_ntree <- randomForest(escalation_train_formula_civil_ns,
-# 												  type = regression, importance = TRUE,
-# 												  na.action = na.omit, ntree = 1000000, maxnodes = 5,
-# 												  sampsize = 100,
-# 												  replace = FALSE, do.trace = FALSE ,
-# 												  data = escalation_train_frame_civil_ns, forest = TRUE
-# 												  )
-#
-#     		train_model_robust_traintest1 <- randomForest(escalation_train_formula_civil_ns_robust_traintest1,
-# 												  type = regression, importance = TRUE,
-# 												  na.action = na.omit, ntree = 100000, maxnodes = 5,
-# 												  sampsize = 100,
-# 												  replace = FALSE, do.trace = FALSE ,
-# 												  data = escalation_train_frame_civil_ns_robust_traintest1, forest = TRUE
-# 												  )
-#
-#     		train_model_robust_traintest2 <- randomForest(escalation_train_formula_civil_ns_robust_traintest2,
-#     		                  type = regression, importance = TRUE,
-#     		                  na.action = na.omit, ntree = 100000, maxnodes = 5,
-#     		                  sampsize = 100,
-#     		                  replace = FALSE, do.trace = FALSE ,
-#     		                  data = escalation_train_frame_civil_ns_robust_traintest2, forest = TRUE
-#     		                  )
-#
-#     		train_model_robust_traintest3 <- randomForest(escalation_train_formula_civil_ns_robust_traintest3,
-#     		                  type = regression, importance = TRUE,
-#     		                  na.action = na.omit, ntree = 100000, maxnodes = 5,
-#     		                  sampsize = 100,
-#     		                  replace = FALSE, do.trace = FALSE ,
-#     		                  data = escalation_train_frame_civil_ns_robust_traintest3, forest = TRUE
-#     		                  )
-#
-#       	train_model_robust_civil_ns_alt1 <- randomForest(escalation_train_formula_civil_ns_alt1,
-#       	                  type = regression, importance = TRUE,
-#       	                  na.action = na.omit, ntree = 100000, maxnodes = 5,
-#       	                  sampsize = 100,
-#       	                  replace = FALSE, do.trace = FALSE ,
-#       	                  data = escalation_train_frame_civil_ns_alt1, forest = TRUE
-#       	                  )
-#
-#       	train_model_robust_civil_ns_alt2 <- randomForest(escalation_train_formula_civil_ns_alt2,
-#       	                  type = regression, importance = TRUE,
-#       	                  na.action = na.omit, ntree = 100000, maxnodes = 5,
-#       	                  sampsize = 100,
-#       	                  replace = FALSE, do.trace = FALSE ,
-#       	                  data = escalation_train_frame_civil_ns_alt2, forest = TRUE
-#       	                  )
+train_model_robust_maxnodes <- randomForest(escalation_train_formula_civil_ns,
+                                            type = regression, importance = TRUE,
+                                            na.action = na.omit, ntree = 100000, maxnodes = 10,
+                                            sampsize = 100,
+                                            replace = FALSE, do.trace = FALSE ,
+                                            data = escalation_train_frame_civil_ns, forest = TRUE
+)
+
+train_model_robust_sampsize <- randomForest(escalation_train_formula_civil_ns,
+                                            type = regression, importance = TRUE,
+                                            na.action = na.omit, ntree = 100000, maxnodes = 5,
+                                            sampsize = 500,
+                                            replace = FALSE, do.trace = FALSE ,
+                                            data = escalation_train_frame_civil_ns, forest = TRUE
+)
+
+train_model_robust_ntree <- randomForest(escalation_train_formula_civil_ns,
+                                         type = regression, importance = TRUE,
+                                         na.action = na.omit, ntree = 1000000, maxnodes = 5,
+                                         sampsize = 100,
+                                         replace = FALSE, do.trace = FALSE ,
+                                         data = escalation_train_frame_civil_ns, forest = TRUE
+)
+
+train_model_robust_traintest1 <- randomForest(escalation_train_formula_civil_ns_robust_traintest1,
+                                              type = regression, importance = TRUE,
+                                              na.action = na.omit, ntree = 100000, maxnodes = 5,
+                                              sampsize = 100,
+                                              replace = FALSE, do.trace = FALSE ,
+                                              data = escalation_train_frame_civil_ns_robust_traintest1, forest = TRUE
+)
+
+train_model_robust_traintest2 <- randomForest(escalation_train_formula_civil_ns_robust_traintest2,
+                                              type = regression, importance = TRUE,
+                                              na.action = na.omit, ntree = 100000, maxnodes = 5,
+                                              sampsize = 100,
+                                              replace = FALSE, do.trace = FALSE ,
+                                              data = escalation_train_frame_civil_ns_robust_traintest2, forest = TRUE
+)
+
+train_model_robust_traintest3 <- randomForest(escalation_train_formula_civil_ns_robust_traintest3,
+                                              type = regression, importance = TRUE,
+                                              na.action = na.omit, ntree = 100000, maxnodes = 5,
+                                              sampsize = 100,
+                                              replace = FALSE, do.trace = FALSE ,
+                                              data = escalation_train_frame_civil_ns_robust_traintest3, forest = TRUE
+)
+
+train_model_robust_civil_ns_alt1 <- randomForest(escalation_train_formula_civil_ns_alt1,
+                                                 type = regression, importance = TRUE,
+                                                 na.action = na.omit, ntree = 100000, maxnodes = 5,
+                                                 sampsize = 100,
+                                                 replace = FALSE, do.trace = FALSE ,
+                                                 data = escalation_train_frame_civil_ns_alt1, forest = TRUE
+)
+
+train_model_robust_civil_ns_alt2 <- randomForest(escalation_train_formula_civil_ns_alt2,
+                                                 type = regression, importance = TRUE,
+                                                 na.action = na.omit, ntree = 100000, maxnodes = 5,
+                                                 sampsize = 100,
+                                                 replace = FALSE, do.trace = FALSE ,
+                                                 data = escalation_train_frame_civil_ns_alt2, forest = TRUE
+)
 
 # Extract importance scores
 

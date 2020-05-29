@@ -65,7 +65,7 @@ model_table <- bind_rows(table1, table2) %>%
 # add a unique ID to the model table so that saving models is easier
 model_table <- model_table %>%
   ungroup() %>%
-  mutate(model_id = 1:n())
+  mutate(cell_id = 1:n())
 
 # mark models that are not implemented as random forests
 model_table <- model_table %>%
@@ -73,7 +73,7 @@ model_table <- model_table %>%
                                 "PITF Split Population"))
 
 model_table <- model_table %>%
-  select(model_id, everything())
+  select(cell_id, everything())
 
 # Model definitions / feature sets ----------------------------------------
 

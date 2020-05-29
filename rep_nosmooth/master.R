@@ -4,17 +4,13 @@ set.seed(92382)
 
 # Clear environment
 
-# rm(list = ls())
+rm(list = ls())
 
 # Set working directory
-
-## RM: ADDED 4/29/2020
-library(here) ##
 
 setwd(here::here("rep_nosmooth"))
 
 # Load packages
-
 
 library(foreign)
 library(separationplot)
@@ -53,23 +49,23 @@ end_period = mean(data$period[which(data$month==12 & data$year==2015)])
 train <- data[data$period<=train_period,]
 test <- data[data$period>train_period & data$period<=end_period,]
 
-# # Define training and testing sets for robustness checks using alternate start dates
-#
-#       train_period_robust_traintest1 = mean(data$period[which(data$month==12 & data$year==2008)])
-#       end_period = mean(data$period[which(data$month==12 & data$year==2015)])
-#       train_robust_traintest1 <- data[data$period<=train_period_robust_traintest1,]
-#       test_robust_traintest1 <- data[data$period>train_period_robust_traintest1 & data$period<=end_period,]
-#
-#       train_period_robust_traintest2 = mean(data$period[which(data$month==12 & data$year==2009)])
-#       end_period = mean(data$period[which(data$month==12 & data$year==2015)])
-#       train_robust_traintest2 <- data[data$period<=train_period_robust_traintest2,]
-#       test_robust_traintest2 <- data[data$period>train_period_robust_traintest2 & data$period<=end_period,]
-#
-#       train_period_robust_traintest3 = mean(data$period[which(data$month==12 & data$year==2010)])
-#       end_period = mean(data$period[which(data$month==12 & data$year==2015)])
-#       train_robust_traintest3 <- data[data$period<=train_period_robust_traintest3,]
-#       test_robust_traintest3 <- data[data$period>train_period_robust_traintest3 & data$period<=end_period,]
-#
+# Define training and testing sets for robustness checks using alternate start dates
+
+      train_period_robust_traintest1 = mean(data$period[which(data$month==12 & data$year==2008)])
+      end_period = mean(data$period[which(data$month==12 & data$year==2015)])
+      train_robust_traintest1 <- data[data$period<=train_period_robust_traintest1,]
+      test_robust_traintest1 <- data[data$period>train_period_robust_traintest1 & data$period<=end_period,]
+
+      train_period_robust_traintest2 = mean(data$period[which(data$month==12 & data$year==2009)])
+      end_period = mean(data$period[which(data$month==12 & data$year==2015)])
+      train_robust_traintest2 <- data[data$period<=train_period_robust_traintest2,]
+      test_robust_traintest2 <- data[data$period>train_period_robust_traintest2 & data$period<=end_period,]
+
+      train_period_robust_traintest3 = mean(data$period[which(data$month==12 & data$year==2010)])
+      end_period = mean(data$period[which(data$month==12 & data$year==2015)])
+      train_robust_traintest3 <- data[data$period<=train_period_robust_traintest3,]
+      test_robust_traintest3 <- data[data$period>train_period_robust_traintest3 & data$period<=end_period,]
+
 # Define training and test sets for PITF split population model
 
       country_mean_pred_prob <- aggregate(pred_prob~country_iso3, train, mean)
@@ -95,26 +91,26 @@ test <- data[data$period>train_period & data$period<=end_period,]
 
 train_DV_civil_ns <- train$incidence_civil_ns_plus1
 test_DV_civil_ns <- test$incidence_civil_ns_plus1
-#
-# # Define predictand for robustness checks using alternate start dates
-#
-#       train_DV_civil_ns_robust_traintest1 <- train_robust_traintest1$incidence_civil_ns_plus1
-#       test_DV_civil_ns_robust_traintest1 <- test_robust_traintest1$incidence_civil_ns_plus1
-#
-#       train_DV_civil_ns_robust_traintest2 <- train_robust_traintest2$incidence_civil_ns_plus1
-#       test_DV_civil_ns_robust_traintest2 <- test_robust_traintest2$incidence_civil_ns_plus1
-#
-#       train_DV_civil_ns_robust_traintest3 <- train_robust_traintest3$incidence_civil_ns_plus1
-#       test_DV_civil_ns_robust_traintest3 <- test_robust_traintest3$incidence_civil_ns_plus1
-#
-# # Define predictand for robustness checks using alternate coding of civil war
-#
-#       train_DV_civil_ns_alt1 <- train$incidence_civil_ns_alt1_plus1
-#       test_DV_civil_ns_alt1 <- test$incidence_civil_ns_alt1_plus1
-#
-#       train_DV_civil_ns_alt2 <- train$incidence_civil_ns_alt2_plus1
-#       test_DV_civil_ns_alt2 <- test$incidence_civil_ns_alt2_plus1
-#
+
+# Define predictand for robustness checks using alternate start dates
+
+      train_DV_civil_ns_robust_traintest1 <- train_robust_traintest1$incidence_civil_ns_plus1
+      test_DV_civil_ns_robust_traintest1 <- test_robust_traintest1$incidence_civil_ns_plus1
+
+      train_DV_civil_ns_robust_traintest2 <- train_robust_traintest2$incidence_civil_ns_plus1
+      test_DV_civil_ns_robust_traintest2 <- test_robust_traintest2$incidence_civil_ns_plus1
+
+      train_DV_civil_ns_robust_traintest3 <- train_robust_traintest3$incidence_civil_ns_plus1
+      test_DV_civil_ns_robust_traintest3 <- test_robust_traintest3$incidence_civil_ns_plus1
+
+# Define predictand for robustness checks using alternate coding of civil war
+
+      train_DV_civil_ns_alt1 <- train$incidence_civil_ns_alt1_plus1
+      test_DV_civil_ns_alt1 <- test$incidence_civil_ns_alt1_plus1
+
+      train_DV_civil_ns_alt2 <- train$incidence_civil_ns_alt2_plus1
+      test_DV_civil_ns_alt2 <- test$incidence_civil_ns_alt2_plus1
+
 # Define predictand for PITF split population model
 
       train_DV_civil_ns_highrisk <- train_highrisk$incidence_civil_ns_plus1
