@@ -1,6 +1,6 @@
 ---
 title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
-author: Richard K. Morgan and Andreas Beger
+author: Richard K. Morgan and Andreas Beger and Michael D. Ward
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
   pdf_document:
@@ -20,7 +20,7 @@ references:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message=FALSE)
 
 library(readr)
 library(dplyr)
@@ -68,7 +68,6 @@ This is done for both 1-month ahead and 6-month ahead forecasts. Blair and Samba
 
 The results for the core analysis are summarized in Table 1 in @blair2020forecasting, which we copied in Figure 1 below.
 
-![Copy of B&S Table 1](figures/bands-table1.png)
 
 The first row, each, for the one-month and 6-month forecasts are the core base specification. The additional rows reflect various robustness tests. 
 
@@ -82,25 +81,7 @@ A small detail, which is mentioned in the text and visually obvious in the ROC c
 
 Using these smoothed and non-smoothed curves, we then replicate B&S Table 1 (page 13), but now the table reports the AUC-ROC scores for each model specification with and without the use of a smoother. We focus on the core "Base specification" models only, not the additional robustness checks shown in the other rows in the table. The results of this are shown in our Table 1 above.
 
-```{r, message=FALSE}
-table1 <- read_csv("data/table1-redone.csv") %>%
-  mutate(specification = factor(specification, levels = c("escalation", "quad", "goldstein", "CAMEO", "avg"))) %>%
-  arrange(model, horizon, specification) %>% 
-  pivot_longer(-c(model, horizon, specification), names_to = "ROC Smoothed", values_to = "Value") %>% 
-  pivot_wider( names_from = "specification", values_from = "Value") %>% 
-  mutate(`ROC Smoothed` = ifelse(`ROC Smoothed` == "smoothed", "Yes", "No"), 
-         model = "Base Specification") %>% 
-  rename(Escalation = escalation, 
-         Quad = quad, 
-         Goldstein = goldstein, 
-         Avg = avg)
 
-table1 %>%
-  knitr::kable(digits = 2, booktabs = TRUE, caption = "Comparison of smoothed and not smoothed AUC-ROC values", align = c(rep("l", 2), rep("c", 6))) %>% 
-  # column_spec(c(3), bold = TRUE) %>%
-  kableExtra::collapse_rows(1:2, row_group_label_position = 'stack')
-  
-```
 
 First, note that we were unable to exactly reproduce the AUC-ROC values for all models. For example, in B&S the 1-month CAMEO has a AUC-ROC of 0.82, while our reproduction has a AUC-ROC value (using the smoothed version) of 0.84. This is most likely a function of the version of `R` Blair and Sambanis used to conduct their analysis. The current replication project was done using `R version 4.0.0`, which updated their random number seeding procedure, so small differences should be expected. Despite these small differences, the way we would interpret the smoothed-version results does not change. In the 1-month version of the Base Specification, the Escalation model outperforms all alternatives; in the 6-month version it outperforms all but one alternative and has equal performance with the Goldstein model. 
 
@@ -113,7 +94,6 @@ When we calculate the AUC-ROC values using the original, non-smoothed curves, th
 
 After establishing that the escalation model they advance out-performs all other covariate specifications, Blair and Sambanis move to show how the inclusion of structural risk variables -- the set of structural variables identified by the Political Instability Task Force (PITF) that can contribute to an increased risk of civil conflict. A copy of B&S Table 2 is included in Figure 3. 
 
-![Copy of B&S Table 2](figures/bands-table2.png)
 
 On page 20:
 
@@ -121,42 +101,7 @@ On page 20:
 
 Table 2 is our recreation of B&S Table 2, copied in Figure 3, with AUC values for both smoothed and the original ROC curves. 
 
-\newpage
 
-```{r, message=FALSE}
-escalation_only <- read_csv("data/table1-redone.csv") %>%
-  filter(specification=="escalation") %>%
-  select(-model) %>%
-  mutate(horizon = case_when(horizon=="6 month" ~ "6 months", TRUE ~ horizon))
-
-table2 <- read_csv("data/table2-redone.csv") %>%
-  bind_rows(escalation_only) %>%
-  mutate(
-    specification = factor(
-      specification, 
-      levels = c("escalation", "escalation with PITF", 
-                 "escalation with PITF weights", 
-                 "escalation with Split PITF", "PITF"),
-      labels = c("Escalation\nOnly", "With PITF Predictors", "Weighted by PITF", "PITF Split Population", "PITF Only"))
-  ) %>%
-  arrange(horizon, specification) %>% 
-  pivot_longer(-c(horizon, specification), names_to = "ROC Smoothed") %>% 
-  pivot_wider(names_from = "specification") %>% 
-  mutate(`ROC Smoothed` = ifelse(`ROC Smoothed` == "smoothed", "Yes", "No")) %>%
-  rename(Horizon = horizon)
-
-table2 %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Comparison of smoothed and not smoothed AUC-ROC values for B\\&S Table 2", 
-    align = c(rep("l", 2), rep("c", 6))
-  ) %>% 
-  kableExtra::column_spec(c(2, 5, 7), width = "1.5cm") %>%
-  kableExtra::column_spec(3, width = "1.8cm") %>%
-  kableExtra::column_spec(c(4, 6), width = "2.2cm") %>%
-  kableExtra::collapse_rows(1) 
-  
-```
 
 Note that we were again unable to reproduce some of the AUC values in Table 2. Values that are notably different are 1-month "Weighted by PITF" and "PITF Split Population", and 6-month "PITF Split Population". For all three of these, the AUC-ROC values we obtained are much better than those in the original Table 2. The values for 6-month "PITF Only" and "With PITF Predictors" are slightly off but could be rounding errors.
 
@@ -206,5 +151,49 @@ Both of these issues are relatively objective problems. It seems relatively clea
 There are also other, more subjective concerns that we did not raise. For example, the paper does not explain how the random forest model hyperparemeters were selected. Although they do evaluate several changes in the hyperparameters as part of the robustness tests, the overall choice of hyperparameter values is unusual. Of note is also that this unusual approach only works (with warnings issued by the software) because B&S use random forests based on regression, not decision, trees. The concern to rule out would be that the hyperparameters are (over-) fit on the test data and that the reported performance values do not generalize.^[On page 10, B&S write that they use classification trees; this is strictly speaking incorrect and the random forest is built using regression tress on the 0 or 1 outcome.] 
 
 We do not disagree with the overall point that theory is important for recognizing which variables or indicators might be important for forecasting. But it does not appear that B&S analysis demonstrates this, and that the paper's conclusions to this effect rest on faulty analysis. 
+
+```{r table1-smooth}
+table1_smooth <- read_csv("data/table1-smooth.csv")
+
+table1_smooth %>%
+  select(-horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Test set AUC-ROC; replication of the original Table 1 with smoothed ROC curves.") %>% 
+  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
+```
+
+```{r table1-nosmooth}
+table1_nosmooth <- read_csv("data/table1-nosmooth.csv")
+
+table1_nosmooth %>%
+  select(-horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Test set AUC-ROC; replication of the original Table 1 \\textit{without} smoothed ROC curves.") %>% 
+  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
+```
+
+```{r table2-smooth}
+table2_smooth <- read_csv("data/table2-smooth.csv")
+
+table2_smooth %>%
+  dplyr::select(-Model) %>%
+  rename(Horizon = horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Test set AUC-ROC for Models including PITF; original version based on smoothed ROC curves") 
+```
+
+```{r table2-nosmooth}
+table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
+
+table2_nosmooth %>%
+  dplyr::select(-Model) %>%
+  rename(Horizon = horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Test set AUC-ROC for Models including PITF; version \\textit{without} smoothed ROC curves") 
+```
 
 # References
