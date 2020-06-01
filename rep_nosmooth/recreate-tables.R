@@ -8,43 +8,52 @@ results <- read_rds("output/model-table-w-results.rds")
 
 table1_smooth <- results %>%
   filter(table=="Table 1") %>%
-  select(horizon, row, column, auc_roc_smoothed) %>%
+  dplyr::select(horizon, row, column, auc_roc_smoothed) %>%
   arrange(horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "auc_roc_smoothed") %>%
-  select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
+  dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
 write_csv(table1_smooth, "output/table1-smooth.csv")
+table1_smooth %>%
+  knitr::kable("markdown", digits = 2) %>%
+  writeLines("output/table1-smooth.md")
 
 table1_nosmooth <- results %>%
   filter(table=="Table 1") %>%
-  select(horizon, row, column, auc_roc) %>%
+  dplyr::select(horizon, row, column, auc_roc) %>%
   arrange(horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "auc_roc") %>%
-  select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
+  dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
 write_csv(table1_nosmooth, "output/table1-nosmooth.csv")
+table1_nosmooth %>%
+  knitr::kable("markdown", digits = 2) %>%
+  writeLines("output/table1-nosmooth.md")
 
 smooth_benefit <- results %>%
   filter(table=="Table 1") %>%
   mutate(diff = auc_roc_smoothed - auc_roc) %>%
-  select(horizon, row, column, diff) %>%
+  dplyr::select(horizon, row, column, diff) %>%
   arrange(horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "diff") %>%
-  select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
+  dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
 write_csv(smooth_benefit, "output/table1-smooth-benefit.csv")
+smooth_benefit %>%
+  knitr::kable("markdown", digits = 2) %>%
+  writeLines("output/table1-smooth-benefit.md")
 
 # N_train
 
 results %>%
   filter(table=="Table 1") %>%
-  select(table, horizon, row, column, N_train) %>%
+  dplyr::select(table, horizon, row, column, N_train) %>%
   arrange(table, horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "N_train") %>%
-  select(table, horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
+  dplyr::select(table, horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
 results %>%
