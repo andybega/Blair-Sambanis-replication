@@ -6,6 +6,9 @@ library(kableExtra)
 
 results <- read_rds("output/model-table-w-results.rds")
 
+
+# Table 1 -----------------------------------------------------------------
+
 table1_smooth <- results %>%
   filter(table=="Table 1") %>%
   dplyr::select(horizon, row, column, auc_roc_smoothed) %>%
@@ -81,3 +84,44 @@ results %>%
   pivot_wider(names_from = "column", values_from = "N_test") %>%
   select(table, horizon, row, everything()) %>%
   rename(Model = row)
+
+
+
+# Table 2 -----------------------------------------------------------------
+
+table2_smooth <- results %>%
+  filter(table=="Table 2") %>%
+  dplyr::select(horizon, row, column, auc_roc_smoothed) %>%
+  arrange(horizon, row) %>%
+  pivot_wider(names_from = "column", values_from = "auc_roc_smoothed") %>%
+  rename(Model = row)
+
+write_csv(table2_smooth, "output/table2-smooth.csv")
+table2_smooth %>%
+  knitr::kable("markdown", digits = 2) %>%
+  writeLines("output/table2-smooth.md")
+
+table2_nosmooth <- results %>%
+  filter(table=="Table 2") %>%
+  dplyr::select(horizon, row, column, auc_roc) %>%
+  arrange(horizon, row) %>%
+  pivot_wider(names_from = "column", values_from = "auc_roc") %>%
+  rename(Model = row)
+
+write_csv(table2_nosmooth, "output/table2-nosmooth.csv")
+table2_nosmooth %>%
+  knitr::kable("markdown", digits = 2) %>%
+  writeLines("output/table2-nosmooth.md")
+
+table2_smooth_benefit <- results %>%
+  filter(table=="Table 2") %>%
+  mutate(diff = auc_roc_smoothed - auc_roc) %>%
+  dplyr::select(horizon, row, column, diff) %>%
+  arrange(horizon, row) %>%
+  pivot_wider(names_from = "column", values_from = "diff") %>%
+  rename(Model = row)
+
+write_csv(smooth_benefit, "output/table2-smooth-benefit.csv")
+table2_smooth_benefit %>%
+  knitr::kable("markdown", digits = 2) %>%
+  writeLines("output/table2-smooth-benefit.md")
