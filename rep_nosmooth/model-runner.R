@@ -2,9 +2,11 @@
 #   Run all the models behind Tables 1 and 2
 #
 
-WORKERS <- 7
+WORKERS  <- 7
+RNG_SEED <- 1234
 
 setwd(here::here("rep_nosmooth"))
+set.seed(RNG_SEED)
 
 library(dplyr)
 library(readr)
@@ -313,7 +315,13 @@ non_rf_models <- results
 model_table_w_results <- bind_rows(rf_model_table, non_rf_models) %>%
   arrange(cell_id)
 
-write_rds(model_table_w_results, "output/model-table-w-results.rds")
+if (exists("RNG_SEED")) {
+  out_file <- sprintf("output/model-table-w-results-%s.rds", RNG_SEED)
+  write_rds(model_table_w_results, out_file)
+} else {
+  write_rds(model_table_w_results, "output/model-table-w-results.rds")
+}
+
 
 # Write a summary of just the AUC-ROC for git
 model_table_w_results %>%
