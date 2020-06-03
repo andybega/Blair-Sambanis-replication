@@ -35,7 +35,7 @@ library(stringr)
 @bdm:2011 , @ward:2016 , @montgomery:etal:PS:2012, @chiba:etal:2015, @brandt:2015  @mhw:2012,@ward:etal:2013,@chadefaux:2015,@weidmann:ward:2010,@pilster:bohmelt:2014,@Brandt_etal_2011,@gleditsch:2015,@bennett:stam:2009,@shellman:etal:2013,@hegre:etal:2011,@ward:etal:2010,@freeman:job:1979,@gneiting:raftery:2005
 @choucri:1974,@choucri:robinson:1979,@goldstone:etal:2010,tetlock:etal:2017,
 
-
+@rost:etal:2009,  GLOBUS, 
 # Review of Blair and Sambanis 2020
 
 @blair2020forecasting (BS for the sake of brevity hereafter) aim to examine whether theory adds value to a forecasting model when compared to non-parametric machine learning models, and specifically random forests, whose specifications are not theory-informed. They find that it does. They arrive at this conclusion by examining the problem of predicting civil war onset, and find that a parsimonious model using a small number of covariates derived from escalation theories of conflict can forecast civil war onset better than alternative specifications based on generic covariates not specifically informed by theory and a kitchen sink model with more than 1,000 covariates. 
