@@ -6,7 +6,6 @@ WORKERS  <- 7
 RNG_SEED <- 1234
 
 setwd(here::here("rep_nosmooth"))
-set.seed(RNG_SEED)
 
 library(dplyr)
 library(readr)
@@ -16,11 +15,13 @@ library(jsonlite)
 library(pROC)
 library(foreach)
 library(doFuture)
+library(doRNG)
 library(lgr)
 
 dir.create("output/predictions", recursive = TRUE, showWarnings = FALSE)
 
 registerDoFuture()
+registerDoRNG(RNG_SEED)
 plan("multisession", workers = WORKERS)
 
 # Function to wrap the AUC-ROC calculation
