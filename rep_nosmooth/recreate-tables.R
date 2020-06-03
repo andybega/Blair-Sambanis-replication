@@ -7,7 +7,7 @@ library(kableExtra)
 library(purrr)
 
 setwd(here::here("rep_nosmooth"))
-results <- read_rds("output/model-table-w-results.rds")
+results <- read_rds("output/model-table-w-results-1234.rds")
 
 
 # Table 1 -----------------------------------------------------------------
@@ -49,7 +49,7 @@ table1_nosmooth %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table1-nosmooth.md")
 
-smooth_benefit <- results %>%
+table1_smooth_benefit <- results %>%
   filter(table=="Table 1") %>%
   mutate(diff = auc_roc_smoothed - auc_roc) %>%
   dplyr::select(horizon, row, column, diff) %>%
@@ -58,8 +58,8 @@ smooth_benefit <- results %>%
   dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
-write_csv(smooth_benefit, "output/tables/table1-smooth-benefit.csv")
-smooth_benefit %>%
+write_csv(table1_smooth_benefit, "output/tables/table1-smooth-benefit.csv")
+table1_smooth_benefit %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table1-smooth-benefit.md")
 
@@ -99,6 +99,10 @@ common_subset <- preds %>%
       select(year, period, country_iso3)
     out
   }))
+common_subset %>%
+  group_by(horizon, column, preds) %>%
+  summarize(n = map_int(preds, nrow)) %>%
+  select(-preds)
 # Since we need to calculate common subsets by horizon, split the data frame
 # by horizon, then use inner_join on the row ID tibbles in each preds column
 # to get the case subsets
@@ -187,3 +191,17 @@ full_table2 <- bind_rows(orig, adj) %>%
 write_csv(full_table2, "output/tables/table2-for-appendix.csv")
 
 
+# Average smooth benefit --------------------------------------------------
+#
+#   This is mentioned in the text
+#
+
+table1_smooth_benefit %>%
+  pivot_longer(Escalation:Average) %>%
+  group_by(name) %>%
+  summarize(Avg_benefit = mean(value))
+
+table2_smooth_benefit %>%
+  pivot_longer(-c(horizon, Model)) %>%
+  group_by(name) %>%
+  summarize(Avg_benefit = mean(value))
