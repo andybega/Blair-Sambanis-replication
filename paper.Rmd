@@ -262,7 +262,7 @@ The RF approach BS use is essentially similar to the probability forests propose
 
 We tried to create versions of the RF models that use the regular framework for classification forests, but were unable to create models that approach the BS RFs test set performance. 
 
-How were these hyper-parameter values determined?
+How were these hyper-parameter values determined? Do they work better for some models than others?
 
 ## AUC-ROC sensitivity
 
