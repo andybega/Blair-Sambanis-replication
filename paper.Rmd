@@ -26,8 +26,31 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(kableExtra)
+library(stringr)
+
+# function to adjust the "cases" labels in Table 2
+fix_case_labels <- function(x) {
+  # escape the opening and closing parentheses
+  stringr::str_replace_all(x, "([\\(\\)])", "\\\\\\1")
+}
+
+# function to adjust the model/column labels in Table 2
 ```
 
+
+Issues in the B&S replication:
+
+- The AUC-ROC statistics are calculated using smoothed ROC curves
+- The "Weighted by PITF" model is incorrectly implemented
+- The "PITF Split Population" model is incorrectly implemented
+- The forecasts are scored using incidence, not onset
+
+Pre-registration should have had:
+
+- The escalation model specification, prior to looking at data!
+- The hyper-parameter tuning strategy. 
+
+With rare events, also a lot of variance over RNG state. 
 
 We highlight some issues with the analysis in the recent @blair2020forecasting paper that undermine their main empirical finding -- that a theoretically-informed escalation model can forecast civil war onsets better than more inductive alternatives. Their paper has two key results: 
 
@@ -174,26 +197,55 @@ table1_nosmooth %>%
   pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
 ```
 
-```{r table2-smooth}
-table2_smooth <- read_csv("data/table2-smooth.csv")
-
-table2_smooth %>%
-  dplyr::select(-Model) %>%
-  rename(Horizon = horizon) %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Test set AUC-ROC for Models including PITF; original version based on smoothed ROC curves") 
-```
 
 ```{r table2-nosmooth}
 table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
 
 table2_nosmooth %>%
-  dplyr::select(-Model) %>%
-  rename(Horizon = horizon) %>%
+  dplyr::select(-Model, -horizon) %>%
   knitr::kable(
     digits = 2, booktabs = TRUE, 
-    caption = "Test set AUC-ROC for Models including PITF; version \\textit{without} smoothed ROC curves") 
+    caption = "Replication of BS Table 2: Test set AUC-ROC for Escalation model with and without structural PITF contribution") %>%
+  column_spec(2:6, width = "2cm") %>%
+  pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1)) %>%
+  footnote("Differences from the original BS Table 2: (1) AUC-ROC values are computed on the common subset of cases, meaning that N is equal in each row; (2) AUC-ROC values are computed using original, non-smoothed ROC curves.", footnote_as_chunk = TRUE, threeparttable = TRUE)
 ```
+
+
+```{r}
+table2_full <- read_csv("data/table2-for-appendix.csv")
+
+table2_full %>%
+  select(horizon, column, N_test, cases) %>%
+  pivot_wider(names_from = column, values_from = N_test) %>%
+  arrange(horizon, desc(cases)) %>%
+  rename(Cases = cases, Horizon = horizon) %>%
+  select(Cases, Horizon, everything()) %>%
+  arrange(desc(Cases), Horizon) %>%
+  knitr::kable("latex", booktabs = TRUE, digits = 0,
+               caption = "Number of valid test predictions for each cell in BS Table 2") %>%
+  column_spec(3:7, width = "2cm") %>%
+  collapse_rows(1:2, row_group_label_position = "stack") 
+  
+table2_full %>%
+  pivot_longer(auc_roc:auc_roc_smoothed, names_to = "Smoothed ROC",
+               values_to = "auc_roc") %>%
+  mutate(`Smoothed ROC` = case_when(
+    `Smoothed ROC`=="auc_roc" ~ "No",
+    TRUE ~ "Yes")
+  ) %>%
+  select(horizon, column, cases, `Smoothed ROC`, auc_roc) %>%
+  pivot_wider(names_from = column, values_from = auc_roc) %>%
+  rename(Cases = cases, Horizon = horizon) %>%
+  select(Cases, Horizon, `Smoothed ROC`, everything()) %>%
+  arrange(desc(Cases), Horizon, desc(`Smoothed ROC`)) %>%
+  knitr::kable("latex", booktabs = TRUE, digits = 2,
+               caption = "Replication of BS Table 2 with smoothed/original ROC and with original varying N cases or adjusting for common case set with constant N") %>%
+  column_spec(3, width = "1.5cm") %>%
+  column_spec(4:8, width = "2cm") %>%
+  collapse_rows(1:3, row_group_label_position = "stack")
+
+```
+
 
 # References

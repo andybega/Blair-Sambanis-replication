@@ -301,7 +301,7 @@ for (i in 1:nrow(non_rf_models)) {
       # The number of non-missing rows in the training data used to fit the mdl
       N_train = nrow(train_data),
       # The number of non-missing predictions
-      N_test  = sum(!is.na(preds$pred)),
+      N_test  = sum(complete.cases(preds)),
       time    = as.numeric((proc.time() - t0)["elapsed"])
     )
   results[[i]] <- res_i

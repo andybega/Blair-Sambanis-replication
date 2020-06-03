@@ -1,13 +1,27 @@
 
+library(here)
 library(readr)
 library(dplyr)
 library(tidyr)
 library(kableExtra)
+library(purrr)
 
-results <- read_rds("output/model-table-w-results-1234.rds")
+setwd(here::here("rep_nosmooth"))
+results <- read_rds("output/model-table-w-results.rds")
 
 
 # Table 1 -----------------------------------------------------------------
+
+# Note that all rows in Table 1 operate, correctly, on the same test
+# set N
+results %>%
+  filter(table=="Table 1") %>%
+  select(table, horizon, row, column, N_test) %>%
+  arrange(table, horizon, row) %>%
+  pivot_wider(names_from = "column", values_from = "N_test") %>%
+  select(table, horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
+  rename(Model = row)
+
 
 table1_smooth <- results %>%
   filter(table=="Table 1") %>%
@@ -17,7 +31,7 @@ table1_smooth <- results %>%
   dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
-write_csv(table1_smooth, "output/table1-smooth.csv")
+write_csv(table1_smooth, "output/tables/table1-smooth.csv")
 table1_smooth %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table1-smooth.md")
@@ -30,7 +44,7 @@ table1_nosmooth <- results %>%
   dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
-write_csv(table1_nosmooth, "output/table1-nosmooth.csv")
+write_csv(table1_nosmooth, "output/tables/table1-nosmooth.csv")
 table1_nosmooth %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table1-nosmooth.md")
@@ -44,76 +58,103 @@ smooth_benefit <- results %>%
   dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
-write_csv(smooth_benefit, "output/table1-smooth-benefit.csv")
+write_csv(smooth_benefit, "output/tables/table1-smooth-benefit.csv")
 smooth_benefit %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table1-smooth-benefit.md")
 
-# N_train
-
-results %>%
-  filter(table=="Table 1") %>%
-  dplyr::select(table, horizon, row, column, N_train) %>%
-  arrange(table, horizon, row) %>%
-  pivot_wider(names_from = "column", values_from = "N_train") %>%
-  dplyr::select(table, horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
-  rename(Model = row)
-
-results %>%
-  filter(table=="Table 2") %>%
-  select(table, horizon, row, column, N_train) %>%
-  arrange(table, horizon, row) %>%
-  pivot_wider(names_from = "column", values_from = "N_train") %>%
-  select(table, horizon, row, everything()) %>%
-  rename(Model = row)
-
-# N_test
-
-results %>%
-  filter(table=="Table 1") %>%
-  select(table, horizon, row, column, N_test) %>%
-  arrange(table, horizon, row) %>%
-  pivot_wider(names_from = "column", values_from = "N_test") %>%
-  select(table, horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
-  rename(Model = row)
-
-results %>%
-  filter(table=="Table 2") %>%
-  select(table, horizon, row, column, N_test) %>%
-  arrange(table, horizon, row) %>%
-  pivot_wider(names_from = "column", values_from = "N_test") %>%
-  select(table, horizon, row, everything()) %>%
-  rename(Model = row)
 
 
 
 # Table 2 -----------------------------------------------------------------
+#
+#   The test set predictions for the various models in Table 2 do not cover the
+#   same set of cases, so the AUC-ROC values need to be recreated from the
+#   common subset of cases. (See below for a comparison of test set N.)
+#
 
-table2_smooth <- results %>%
+# Function to wrap the AUC-ROC calculation
+auc_roc_vec <- function(pred, truth, smooth) {
+  roc_obj <- pROC::roc(truth, pred, auc = TRUE, quiet = TRUE, smooth = smooth)
+  as.numeric(roc_obj$auc)
+}
+
+# Identify the cell IDs for the saved predictions so we can load them
+cell_ids <- results %>%
+  filter(table=="Table 2") %>%
+  select(cell_id, horizon, row, column) %>%
+  mutate(pred_file = sprintf("output/predictions/model-%02s.rds", cell_id))
+preds <- cell_ids %>%
+  mutate(preds = purrr::map(pred_file, read_rds)) %>%
+  select(-cell_id, -pred_file)
+
+# Filter out cases with both non-missing prediction and non-missing outcome
+# Either one missing will cause it to drop out of AUC-ROC calculation.
+# Only keep the country-[time period] row identifier variables so that ID'ing
+# the common subset is easier.
+common_subset <- preds %>%
+  mutate(preds = purrr::map(preds, function(x) {
+    out <- x %>%
+      filter(complete.cases(.)) %>%
+      select(year, period, country_iso3)
+    out
+  }))
+# Since we need to calculate common subsets by horizon, split the data frame
+# by horizon, then use inner_join on the row ID tibbles in each preds column
+# to get the case subsets
+common_subset <- common_subset %>%
+  base::split(., f = as.factor(.$horizon)) %>%
+  # extract only the tibbles with row info; then reduce through inner joins
+  # into common subsets
+  map(., "preds") %>%
+  lapply(., purrr::reduce, .f = inner_join, by = c("year", "period", "country_iso3")) %>%
+  map(., as_tibble)
+sapply(common_subset, nrow)
+# Combine them; this is now a list of cases we can check against using semi_join
+common_subset <- common_subset %>%
+  bind_rows(., .id = "horizon")
+
+results_table2 <- preds %>%
+  # reduce each prediction set down to the common case set; after this step
+  # the predictions in each horizon group will have same N.
+  mutate(preds = map(preds, semi_join, y = common_subset,
+                     by = c("year", "period", "country_iso3"))) %>%
+  mutate(
+    N_test = map_dbl(preds, nrow),
+    auc_roc = map_dbl(
+      preds, ~auc_roc_vec(.x$pred, .x$incidence_civil_ns_plus1, smooth = FALSE)
+    ),
+    auc_roc_smoothed = map_dbl(
+      preds, ~auc_roc_vec(.x$pred, .x$incidence_civil_ns_plus1, smooth = TRUE)
+    ),
+    table = "Table 2"
+  ) %>%
+  select(-preds)
+
+table2_smooth <- results_table2 %>%
   filter(table=="Table 2") %>%
   dplyr::select(horizon, row, column, auc_roc_smoothed) %>%
   arrange(horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "auc_roc_smoothed") %>%
   rename(Model = row)
 
-write_csv(table2_smooth, "output/table2-smooth.csv")
+write_csv(table2_smooth, "output/tables/table2-smooth.csv")
 table2_smooth %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table2-smooth.md")
 
-table2_nosmooth <- results %>%
+table2_nosmooth <- results_table2 %>%
   filter(table=="Table 2") %>%
   dplyr::select(horizon, row, column, auc_roc) %>%
   arrange(horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "auc_roc") %>%
   rename(Model = row)
-
-write_csv(table2_nosmooth, "output/table2-nosmooth.csv")
+write_csv(table2_nosmooth, "output/tables/table2-nosmooth.csv")
 table2_nosmooth %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table2-nosmooth.md")
 
-table2_smooth_benefit <- results %>%
+table2_smooth_benefit <- results_table2 %>%
   filter(table=="Table 2") %>%
   mutate(diff = auc_roc_smoothed - auc_roc) %>%
   dplyr::select(horizon, row, column, diff) %>%
@@ -121,7 +162,28 @@ table2_smooth_benefit <- results %>%
   pivot_wider(names_from = "column", values_from = "diff") %>%
   rename(Model = row)
 
-write_csv(smooth_benefit, "output/table2-smooth-benefit.csv")
+write_csv(table2_smooth_benefit, "output/tables/table2-smooth-benefit.csv")
 table2_smooth_benefit %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/table2-smooth-benefit.md")
+
+
+# Appendix Table 2 --------------------------------------------------------
+#
+#   Construct a comprehensive version of Table 2 showing values both across
+#   smooth/nosmooth and case adjustment/original N.
+#
+
+orig <- results %>%
+  filter(table=="Table 2") %>%
+  mutate(cases = "Original model-specific cases")
+
+adj <- results_table2 %>%
+  mutate(cases = "Cases adjusted to common subset")
+
+full_table2 <- bind_rows(orig, adj) %>%
+  select(-cell_id, -table, -non_RF, -N_train, -time)
+
+write_csv(full_table2, "output/tables/table2-for-appendix.csv")
+
+
