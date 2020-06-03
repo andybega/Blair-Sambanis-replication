@@ -17,7 +17,7 @@ references:
   type: article-journal
   issued:
     year: 2020
-bibliography: ~/Git/whistle/master.bib
+bibliography: /Users/mdw/Git/whistle/master.bib
 ---
 
 ```{r setup, include=FALSE}
