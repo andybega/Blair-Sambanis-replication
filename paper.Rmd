@@ -234,6 +234,36 @@ The use of smoothed ROC curves to calculate AUC-ROC values only clearly benefits
 
 ## Random forest hyperparameters
 
+What initially sparked our interest in the paper was the unusual choice of hyperparameter settings for the random forest models estimated. 
+
+|Hyperparameter|Default heuristic|Default values (Escalation)|B&S value|
+|--------------|-----------------|--------------------------|---------|
+|type          |                 | classification           | regression|
+|ntree         |                 | 500                      | 100,000 or 1e6 |
+|mtry          |`floor(sqrt(ncol(x)))`|3|3|
+|replace       |                 | true | false |
+|sampsize | `nrow(x)` if replace, | 11,869 | 100 or 500 |
+||else `ceiling(.632*nrow(x))`|||
+|nodesize | 1 for classification | 1 | 1 |
+|maxnodes | | null | 5 or 10 |
+
+
+There is a stark contrast in the default RF settings and the way Blair and Sambanis use the RF models. The default approach is to train a relatively small number (ntree; 500) of classification trees, but where each tree is fairly big in that it is trained on data that has the same number of rows as the training data, albeit sampled with replacement (replace is true; sampsize is 11,869), and allowed to grow fairly deep (this is governed by nodesize (1), which is the minimum size a terminal node must have). In contrast, Blair and Sambanis grow very extensive forests with a large number of trees (100,000 compared to 500), but each tree is very small and shallow; only a 100 rows are sampled from the training data for each tree, and the trees are constrained to at most 5 terminal nodes (maxnodes). 
+
+This approach only works due to the other unorthodox choice, which is to use regression, not classification, trees. Trying to use classification trees with the other parameter settings in fact does not work at all because it is almost guaranteed that a sample of 100 from the 11,869 training data rows with 9 positive cases will only include 0 (negative) outcomes in the sample. As it is, using regression with a 0 or 1 outcome produces warnings when estimating the models: 
+
+```
+Warning message:
+In randomForest.default(y = as.integer(train_df$incidence_civil_ns_plus1 ==  :
+  The response has five or fewer unique values.  Are you sure you want to do regression?
+```
+
+The RF approach BS use is essentially similar to the probability forests proposed in Malley 2012. It is not clear if this is intentional or not, as the paper is not cited. 
+
+We tried to create versions of the RF models that use the regular framework for classification forests, but were unable to create models that approach the BS RFs test set performance. 
+
+How were these hyper-parameter values determined?
+
 ## AUC-ROC sensitivity
 
 RNG and variation
