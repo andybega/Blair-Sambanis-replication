@@ -1,10 +1,10 @@
 ---
-title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
+title: "Good Empirics Dominate Bad Theory: Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
 author: Richard K. Morgan and Andreas Beger and Michael D. Ward
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
   pdf_document:
-    keep_tex: false
+    keep_tex: true
 references:
 - id: blair2020forecasting
   title: "Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning"
@@ -17,6 +17,7 @@ references:
   type: article-journal
   issued:
     year: 2020
+bibliography: ~/Git/whistle/master.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -25,6 +26,7 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE)
 library(readr)
 library(dplyr)
 library(tidyr)
+library(tidyverse)
 library(kableExtra)
 library(stringr)
 ```
@@ -276,6 +278,13 @@ RNG and variation
 
 
 # Conclusion
+
+BS has a clear misunderstanding of the role that out-of-sample prediction can plan in analysis.  On the one hand it can be used for simple forecasting while on the other it can be used to evaluate the performance of models, specifically to overfitting and bias.  They further misrepresent cross-validation which is not about fishing for results, as claimed by BS.  The current state-of-the-art uses prediction and cross-validation most frequently to provide supportive evidence that is independent of the estimation procedure and the in-sample data. It is incorrect to paint this procedure as atheoretical since many studies will have some explanation for how the model was constructed. These procedures may simply be used to provide evidence for a theoretical argument.  Though that argument may be unconvincing and/or atheoretical.
+
+The BS approach that is advocated is to use theory to guide prediction. But theory is a quite ambiguous and undefined concept.  It is not a procedure.  What they actually do is to create a model with four right hand side variables that is supposed to capture a complicated repression-dissent dynamic.  The dynamic is probably not linear, but their model is. There is a wide-ranging literature on this dynamic that they do not rely on to construct their model.  As such their baseline comparison is hardly a standard bearer for strong theory.
+
+Further, they complete misunderstand the use of ICEWS event data in current research. They claim that most uses to date have focused on the quad categories, but this ignores a wide swath of literature (Steinert-Threlkeld ApsR 2017) and Metternich et al (AJPX 2013) that uses a sepcific action---such as protest---defined in the CAMEO ontology. In the AJPS article we hand coded, for example, every actor in Thailand and focused on an analysis of how those have been interacting.
+
 
 We encountered several issues in the code underlying the BS analysis. 
 
