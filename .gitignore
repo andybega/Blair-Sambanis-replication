@@ -17,3 +17,5 @@ rep_nosmooth/trafo-data
 table1-redo/trafo-data
 table1-redo/output/full-model-grid.rds
 tuning-experiments/trafo-data
+
+paper.log
