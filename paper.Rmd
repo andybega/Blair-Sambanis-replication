@@ -30,6 +30,11 @@ library(tidyverse)
 library(kableExtra)
 library(stringr)
 ```
+# Introduction
+
+@bdm:2011 , @ward:2016 , @montgomery:etal:PS:2012, @chiba:etal:2015, @brandt:2015  @mhw:2012,@ward:etal:2013,@chadefaux:2015,@weidmann:ward:2010,@pilster:bohmelt:2014,@Brandt_etal_2011,@gleditsch:2015,@bennett:stam:2009,@shellman:etal:2013,@hegre:etal:2011,@ward:etal:2010,@freeman:job:1979,@gneiting:raftery:2005
+@choucri:1974,@choucri:robinson:1979,@goldstone:etal:2010,tetlock:etal:2017,
+
 
 # Review of Blair and Sambanis 2020
 
@@ -37,9 +42,9 @@ library(stringr)
 
 BS specifically examine three questions: 
 
-- (1) how does the theoretically-driven Escalation model compare in forecast performance to alternative models not informed specifically by civil war onset theories, 
-- (2) does annual, structural information from the PITF instability forecasting model add to the Escalation model's monthly and 6-month predictions,
-- and (3) how accurate were predictions for the first half of 2016 derived from the Escalation model?
+- (1) How does the theoretically-driven rscalation model compare in forecast performance to alternative models not informed specifically by civil war onset theories?
+- (2) Does annual, structural information from the PITF instability forecasting model add to the escalation model's monthly and 6-month predictions?
+- (3) How accurate were predictions for the first half of 2016 derived from the escalation model?
 
 To assess the first two questions BS use global datasets covering all major countries from 2001 to 2015. Two versions of the dataset are used, one at the country-month level, the other aggregated to 6-month half-years. The main outcome is civil war onset, measured using Sambanis' civil war dataset. 
 
@@ -52,13 +57,13 @@ Both the first and second questions above rely on comparing the Escalation model
 
 The corresponding results for each question are shown in BS Tables 1 and 2, which we will replicate further below. 
 
-To examine the first question, BS compare the test set of the Escalation model to four alternative models. The independent variables for the first set of analysis reported in Table 1 in the paper are all derived from the ICEWS event data, using domestic events between actors within a country. The models are:
+To examine the first question, BS compare the test set of the escalation model to four alternative models. The independent variables for the first set of analysis reported in Table 1 in the paper are all derived from the ICEWS event data, using domestic events between actors within a country. The models are:
 
-- Escalation: a set of 10 theoretically-informed indicators.
+- Escalation: a set of ten indicators, putatively drawn from a theoretical escalation model.
 - Quad: ICEWS quad counts, i.e. material conflict, material cooperation, verbal conflict, verbal cooperation.
 - Goldstein: -10 (conflictual) to 10 (cooperative) scores derived from the ICEWS data for interactions between the government one one side and opposition or rebel actors on the other. These are directed, thus making for 4 total covariates.
-- CAMEO: counts for all CAMEO event codes, thus a total of 1,159 covariates. 
-- Average: unweighted average of the predictions from the 4 models above.
+- CAMEO: counts for all CAMEO event codes, thus a total of 1,159 covariates (CAN THIS BE RIGHT?). 
+- Average: unweighted average of the predictions from the four models briefly described above.
 
 The results in Table 1, aside from the core base specification results, include 8 additional robustness tests for both the 1-month and 6-month versions. These robustness checks vary either (1) random forecast hyperparameter values, or (2) the year used to split the train/test data, or (3) alternative codings of the civil war onset dependent variable. 
 
