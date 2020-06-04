@@ -3,7 +3,10 @@
 #
 
 WORKERS  <- 7
-RNG_SEED <- 1234
+# if RNG_SEED is NULL, no seed will be set and the output file name will be as
+# is; if RNG_SEED is set, the output file name will include the seed as the
+# last element of its filename.
+RNG_SEED <- NULL
 
 setwd(here::here("rep_nosmooth"))
 
@@ -21,7 +24,12 @@ library(lgr)
 dir.create("output/predictions", recursive = TRUE, showWarnings = FALSE)
 
 registerDoFuture()
-registerDoRNG(RNG_SEED)
+if (!is.null(RNG_SEED)) {
+  lgr$info("Running with RNG seed %s", RNG_SEED)
+  registerDoRNG(RNG_SEED)
+} else {
+  lgr$info("Running without RNG seed")
+}
 plan("multisession", workers = WORKERS)
 
 # Function to wrap the AUC-ROC calculation
@@ -135,6 +143,8 @@ rf_model_table <- foreach(
 rf_model_table <- bind_rows(rf_model_table)
 
 # Handle the special models that are not simple RFs
+lgr$info("Estimating special models")
+
 results <- list()
 for (i in 1:nrow(non_rf_models)) {
   # keep track of run time
@@ -316,7 +326,7 @@ non_rf_models <- results
 model_table_w_results <- bind_rows(rf_model_table, non_rf_models) %>%
   arrange(cell_id)
 
-if (exists("RNG_SEED")) {
+if (!is.null(RNG_SEED)) {
   out_file <- sprintf("output/model-table-w-results-%s.rds", RNG_SEED)
   write_rds(model_table_w_results, out_file)
 } else {
@@ -330,3 +340,4 @@ model_table_w_results %>%
   knitr::kable("markdown", digits = 2) %>%
   writeLines("output/model-table-w-results.md")
 
+lgr$info("Script finished")

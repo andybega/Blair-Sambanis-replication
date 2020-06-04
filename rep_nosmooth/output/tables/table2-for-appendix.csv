@@ -1,21 +1,21 @@
 horizon,row,column,auc_roc,auc_roc_smoothed,N_test,cases
-1 month,Base specification,Escalation Only,0.7832066019443177,0.8527108453643096,13748,Original model-specific cases
-1 month,Base specification,With PITF Predictors,0.773171391382254,0.763685042786174,13155,Original model-specific cases
-1 month,Base specification,Weighted by PITF,0.7952957080094627,0.7951513065693337,13461,Original model-specific cases
-1 month,Base specification,PITF Split Population,0.796280119385601,0.8100752275968217,13748,Original model-specific cases
-1 month,Base specification,PITF Only,0.7539606119711297,0.7671522732231284,13510,Original model-specific cases
-6 months,Base specification,Escalation Only,0.7716270990156341,0.8235372669124419,2366,Original model-specific cases
-6 months,Base specification,With PITF Predictors,0.8630212954747116,0.8553509641404272,2264,Original model-specific cases
-6 months,Base specification,Weighted by PITF,0.8078136087676417,0.8068846455538475,2317,Original model-specific cases
-6 months,Base specification,PITF Split Population,0.8178922987840185,0.7936675836565628,2366,Original model-specific cases
-6 months,Base specification,PITF Only,0.7411751662971175,0.7418342713478532,2265,Original model-specific cases
-1 month,Base specification,Escalation Only,0.691270650622068,0.7438592792922637,9811,Cases adjusted to common subset
-1 month,Base specification,With PITF Predictors,0.7149602284315725,0.6831620171124613,9811,Cases adjusted to common subset
-1 month,Base specification,Weighted by PITF,0.690067305731185,0.6902242149189151,9811,Cases adjusted to common subset
-1 month,Base specification,PITF Split Population,0.8132163981235978,0.79730055051909,9811,Cases adjusted to common subset
-1 month,Base specification,PITF Only,0.6654293289822558,0.6885482320580278,9811,Cases adjusted to common subset
-6 months,Base specification,Escalation Only,0.7920818038804405,0.8486322855118509,1915,Cases adjusted to common subset
-6 months,Base specification,With PITF Predictors,0.8706082852648138,0.8623750770075471,1915,Cases adjusted to common subset
-6 months,Base specification,Weighted by PITF,0.7957197168327216,0.7916844724971267,1915,Cases adjusted to common subset
-6 months,Base specification,PITF Split Population,0.690744625065548,0.6995845949606301,1915,Cases adjusted to common subset
-6 months,Base specification,PITF Only,0.7064105925537494,0.7054738130648919,1915,Cases adjusted to common subset
+1 month,Base specification,Escalation Only,0.7477352412479755,0.8088202155753856,13837,Original model-specific cases
+1 month,Base specification,With PITF Predictors,0.7837397455096871,0.775478763230507,13035,Original model-specific cases
+1 month,Base specification,Weighted by PITF,0.7596068894535982,0.7610854539884446,12208,Original model-specific cases
+1 month,Base specification,PITF Split Population,0.7617509388292666,0.827852921549002,12495,Original model-specific cases
+1 month,Base specification,PITF Only,0.7100456621004566,0.7277967407518378,13373,Original model-specific cases
+6 months,Base specification,Escalation Only,0.7744660829719336,0.8238415510781972,2366,Original model-specific cases
+6 months,Base specification,With PITF Predictors,0.8654219204655674,0.8571725515744927,2241,Original model-specific cases
+6 months,Base specification,Weighted by PITF,0.8121574697736685,0.8113575541238827,2184,Original model-specific cases
+6 months,Base specification,PITF Split Population,0.6881974769529354,0.699851427936266,2069,Original model-specific cases
+6 months,Base specification,PITF Only,0.7031174187287724,0.7026062211168854,2242,Original model-specific cases
+1 month,Base specification,Escalation Only,0.691760146848868,0.7438299652705904,9811,Cases adjusted to common subset
+1 month,Base specification,With PITF Predictors,0.7137262900265143,0.6841307835095407,9811,Cases adjusted to common subset
+1 month,Base specification,Weighted by PITF,0.6901692841117684,0.6904867387726293,9811,Cases adjusted to common subset
+1 month,Base specification,PITF Split Population,0.7122578013461146,0.7735703622036031,9811,Cases adjusted to common subset
+1 month,Base specification,PITF Only,0.6549765449724658,0.6800105651441994,9811,Cases adjusted to common subset
+6 months,Base specification,Escalation Only,0.7920818038804405,0.8499700904782719,1915,Cases adjusted to common subset
+6 months,Base specification,With PITF Predictors,0.8682485579444154,0.8598387411029197,1915,Cases adjusted to common subset
+6 months,Base specification,Weighted by PITF,0.7955886208704772,0.7916122026368622,1915,Cases adjusted to common subset
+6 months,Base specification,PITF Split Population,0.6898925013109596,0.7008053488086319,1915,Cases adjusted to common subset
+6 months,Base specification,PITF Only,0.7049029889879391,0.703736485846924,1915,Cases adjusted to common subset

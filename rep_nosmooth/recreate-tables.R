@@ -7,7 +7,7 @@ library(kableExtra)
 library(purrr)
 
 setwd(here::here("rep_nosmooth"))
-results <- read_rds("output/model-table-w-results-1234.rds")
+results <- read_rds("output/model-table-w-results.rds")
 
 
 # Table 1 -----------------------------------------------------------------
