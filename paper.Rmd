@@ -17,7 +17,8 @@ references:
   type: article-journal
   issued:
     year: 2020
-bibliography: /Users/mdw/Git/whistle/master.bib
+bibliography: 
+  - "`r user <- Sys.info()[['user']]; if (user=='andybega')  '/Users/andybega/Work/whistle/master.bib' else if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else references.bib`"
 ---
 
 ```{r setup, include=FALSE}
@@ -124,7 +125,7 @@ The implementation error aside, this split-population analog model is actually q
 
 ## Inconsistent test set N for the models in Table 2
 
-Lastly, the AUC-ROC values reported in the original BS Table 2 are calculated on the basis of slightly different numbers of underlying test set cases (see Table \ref{table2-N}). ROC calculations for a set of predictions can only be done on the set of cases for which both non-missing predictions and non-missing outcomes are available. Those sets differ across models (columns) for each row in Table 2. Thus a difference in AUC-ROC values for two models could be due to the fact that they were calculated on different sets of underlying cases, not because the models are systemically performing at a different level. In other words, the results for different models in BS Table 2 are actually not comparable to the other, and any conclusions drawn from such comparison are potentially incorrect. 
+Lastly, the AUC-ROC values reported in the original BS Table 2 are calculated on the basis of slightly different numbers of underlying test set cases (see Table \ref{tab:table2-N}). ROC calculations for a set of predictions can only be done on the set of cases for which both non-missing predictions and non-missing outcomes are available. Those sets differ across models (columns) for each row in Table 2. Thus a difference in AUC-ROC values for two models could be due to the fact that they were calculated on different sets of underlying cases, not because the models are systemically performing at a different level. In other words, the results for different models in BS Table 2 are actually not comparable to the other, and any conclusions drawn from such comparison are potentially incorrect. 
 
 We fix this issue by only using predictions for common joint subset of cases that all models have non-missing predictions for. The original BS Table 2 1-month have *N*=11,806--12,495 versus a common joint subset of 9,811, and for the 6-month row *N*=2,070--2,233 versus *N*=1,915 for the common joint subset. 
 
@@ -140,7 +141,7 @@ By examining the code used to generated Table 4, we were able to confirm that th
 
 ## Basic interpretation of Table 1
 
-Table \ref{table1-smooth} is our replication of BS Table 1 with smoothed AUC-ROC. The results differ slightly from the original BS Table 1, typically by no more than 0.01, due to the non-deterministic nature of the RF models. It is the case that BS set the RNG seed in their replication code, which should theoretically allow exact reproduction, but (1) there was a change in more recent versions of R that affected the RNG seeding process, and (2) we refactored the replication script to allow one to run the models in parallel. In any case, the interpretation of results should not be sensitive to random variation, i.e. it should not depend on using a specific RNG seed. On the basis of these results, BS conclude that the Escalation model is generally superior to the alternatives, and we can replicate that interpretation when using smoothed ROC curves. 
+Table \ref{tab:table1-smooth} is our replication of BS Table 1 with smoothed AUC-ROC. The results differ slightly from the original BS Table 1, typically by no more than 0.01, due to the non-deterministic nature of the RF models. It is the case that BS set the RNG seed in their replication code, which should theoretically allow exact reproduction, but (1) there was a change in more recent versions of R that affected the RNG seeding process, and (2) we refactored the replication script to allow one to run the models in parallel. In any case, the interpretation of results should not be sensitive to random variation, i.e. it should not depend on using a specific RNG seed. On the basis of these results, BS conclude that the Escalation model is generally superior to the alternatives, and we can replicate that interpretation when using smoothed ROC curves. 
 
 ```{r table1-smooth}
 table1_smooth <- read_csv("data/table1-smooth.csv")
@@ -154,7 +155,7 @@ table1_smooth %>%
   pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
 ```
 
-Table \ref{table1-nosmooth} shows a version of BS Table 1 with the conventional non-smoothed ROC curves. The Average model outperforms the Escalation model in 17 out of 18 cases, and the CAMEO model outperforms in 16 of 18 cases, with one tie. The Goldstein model generally outperforms the Escalation model in the 6-month version. The Quad model appears to be roughly on par with the Escalation model. Thus the original BS conclusion that the Escalation model is superior to the alternative models is completely conditional on the non-standard use of smoothed ROC curves, and overturns when using traditional AUC-ROC calculations. 
+Table \ref{tab:table1-nosmooth} shows a version of BS Table 1 with the conventional non-smoothed ROC curves. The Average model outperforms the Escalation model in 17 out of 18 cases, and the CAMEO model outperforms in 16 of 18 cases, with one tie. The Goldstein model generally outperforms the Escalation model in the 6-month version. The Quad model appears to be roughly on par with the Escalation model. Thus the original BS conclusion that the Escalation model is superior to the alternative models is completely conditional on the non-standard use of smoothed ROC curves, and overturns when using traditional AUC-ROC calculations. 
 
 ```{r table1-nosmooth}
 table1_nosmooth <- read_csv("data/table1-nosmooth.csv")
@@ -170,7 +171,7 @@ table1_nosmooth %>%
 
 ## Do structural variables add to the Escalation model?
 
-Table \ref{table2-fixed} shows our replication of BS Table 2 with (1) regular, not smoothed, AUC-ROC, (2) fixed "Weighted by PITF" and "PITF Split-Population" models, and (3) AUC-ROC values computed on the common joint subset of tests cases that all models have non-missing predictions for. Table \ref{table2-full} further below shows AUC-ROC values for both smoothed and non-smoothed versions, and both the original, model-varying test cases sets and our common joint subset. 
+Table \ref{tab:table2-fixed} shows our replication of BS Table 2 with (1) regular, not smoothed, AUC-ROC, (2) fixed "Weighted by PITF" and "PITF Split-Population" models, and (3) AUC-ROC values computed on the common joint subset of tests cases that all models have non-missing predictions for. Table \ref{tab:table2-full} further below shows AUC-ROC values for both smoothed and non-smoothed versions, and both the original, model-varying test cases sets and our common joint subset. 
 
 ```{r table2-nosmooth}
 table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
@@ -229,7 +230,7 @@ table2_benefit %>%
   pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1))
 ```
 
-What impact did the ROC smoothing have overall on the results reported in BS Tables 1 and 2? Tables \ref{table1-benefit} and \ref{table2-benefit} show the increase in AUC-ROC when using smoothed ROC curves, compared to the standard non-smoothed AUC-ROC. Positive values indicate that smoothing increased a model's apparent performance. The Escalation model is the only model that consistently had a benefit from smoothing. For all 8 other models, smoothing sometimes gave a benefit, sometimes not. 
+What impact did the ROC smoothing have overall on the results reported in BS Tables 1 and 2? Tables \ref{tab:table1-benefit} and \ref{tab:table2-benefit} show the increase in AUC-ROC when using smoothed ROC curves, compared to the standard non-smoothed AUC-ROC. Positive values indicate that smoothing increased a model's apparent performance. The Escalation model is the only model that consistently had a benefit from smoothing. For all 8 other models, smoothing sometimes gave a benefit, sometimes not. 
 
 A more dramatic difference stands out when we consider the overall average impact of smoothing across all flavors of a model reported in the columns of the tables. The Average, Goldstein, Quad, PITF Split Population, and Weighted by PITF models are slightly hurt by smoothing, but on the order of less than 0.01 in absolute magnitude. The "With PITF Predictors" model is hurt on the order of 0.02, i.e. it appears substantially worse with smoothing. The CAMEO and PITF Only models benefit slightly, on the order of 0.01 or less. The Escalation Only model on the other hand has an average boost of 0.058 to it's AUC-ROC from smoothing. Considering the spread of AUC-ROC values if we compare across rows in BS Tables 1 and 2, that boost is substantial.
 
