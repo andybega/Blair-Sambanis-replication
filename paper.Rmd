@@ -35,6 +35,19 @@ library(stringr)
 
 Blair and Sambanis (2020; hereafter B&S) argue that theory is important for creating models that have high accuracy in forecasting civil war onset.  Indeed they argue that with such theory, forecasting is more accurate than has previously been possible.  Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article.  We find that these claims are false.  Their theory-based escalation model does not do better than the alternatives that they examine, indeed it does worse.  The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure: 1) they use smoothed performance curves instead of the unsmoothed curves, 2) they mistakenly encode the dependent variable to be incidents of civil war, rather than as they claim the onset of a civil war, 3) they mistakenly calculate the predicted values for the alternative ``non-theoretical'' models that they compare to.  In what follows we show the impact of these mistakes on the conclusions, we examine their understanding of prediction it self, and we explore the logic of their assertion about theory as well.  We believe that this research by B&S is incorrect and should be retracted.
 
+B&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars ``remarkable accurately.'' Indeed they argue that this so-called theoretical model outperforms four other ``more mechanical'' alternatives. Second, they clam that the integration of structure with process are better over short forecasting windows. Third they preregisted the list of thirty countries which have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when in fact they have been routine for many years with several prominent projects. B&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is strong and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
+
+Before proceeding, we quote B&S (page 24):
+\begin{quote}
+Our theoretically driven model generates accurate forecasts, with base specification
+AUCs of .82 and .85 over one- and six-month windows, respectively, and AUCs
+as high as .92 in other specifications. Our model also consistently and sometimes
+dramatically outperforms the alternatives we test...Cederman and Weidmann (2017, 476) argue that ``the hope that
+big data will somehow yield valid forecasts through theory-free ‘brute force’ is
+misplaced in the area of political violence.'' Our results lend some credence to this
+claim.
+\end{quote}
+
 
 # Review of Blair and Sambanis 2020
 
