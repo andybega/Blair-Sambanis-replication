@@ -318,22 +318,29 @@ Using the same analysis B&S intend to use, we in fact find that:
 
 
 
-\clearpage
-
-
-![](figures/bands-table4.png)
 
 
 
 ```{r, message=FALSE}
-tab4 <- read_csv("data/tab4-fixed.csv")
+tab4o <- read_csv("data/table4-original.csv")
+tab4f <- read_csv("data/table4-fixed.csv")
+
+tab4o <- tab4o %>%
+  rename(header = type) %>%
+  mutate(source = "Original, scored with civil war incidence")
+tab4f <- tab4f %>%
+  rename(Predicted0 = `0`, Predicted1 = `1`) %>%
+  mutate(source = "Fixed, scored with civil war onset")
+
+tab4 <- bind_rows(tab4o, tab4f) %>%
+  select(source, header, everything())
 
 tab4 %>%
   knitr::kable(
-    caption = "2016 Confusion Matrices for Six-month Escalation Model.",
+    caption = "Replication of B\\&S Table 4: 2016 Confusion Matrices for Six-month Escalation Model.",
     booktabs = TRUE
   ) %>%
-  kableExtra::collapse_rows(1)
+  kableExtra::collapse_rows(1:2, row_group_label_position = "stack")
 ```
 
 
