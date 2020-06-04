@@ -2,10 +2,10 @@
 #   Run all the models behind Tables 1 and 2
 #
 
-WORKERS  <- 7
+WORKERS  <- 8
 # if RNG_SEED is NULL, no seed will be set and the output file name will be as
 # is; if RNG_SEED is set, the output file name will include the seed as the
-# last element of its filename.
+# last element of its file name.
 RNG_SEED <- NULL
 
 setwd(here::here("rep_nosmooth"))
@@ -20,8 +20,11 @@ library(foreach)
 library(doFuture)
 library(doRNG)
 library(lgr)
+library(tidyr)
 
-dir.create("output/predictions", recursive = TRUE, showWarnings = FALSE)
+# clean up and recreate predictions batch directory
+unlink("output/predictions", recursive = TRUE)
+dir.create("output/predictions", recursive = TRUE)
 
 registerDoFuture()
 if (!is.null(RNG_SEED)) {
@@ -115,9 +118,7 @@ rf_model_table <- foreach(
     right_join(test_data %>%
                  dplyr::select(year, period, country_iso3, one_of(dv_i_name)),
                by = c("year", "period", "country_iso3")) %>%
-    # the original rep scripts do this; doesn't make a difference for ROC
-    # calculations
-    mutate(pred = ifelse(is.na(test_data[, dv_i_name]), NA_real_, pred))
+    arrange(country_iso3, year, period)
 
   # 2020-05-29, AB: I checked this manually against train_model and prediction
   # in `1mo_run_escalation.R` and both seem to match what is done here in terms
@@ -134,7 +135,7 @@ rf_model_table <- foreach(
       # The number of non-missing rows in the training data used to fit the mdl
       N_train = nrow(train_data),
       # The number of non-missing predictions
-      N_test  = sum(!is.na(preds$pred)),
+      N_test  = sum(complete.cases(preds)),
       time    = as.numeric((proc.time() - t0)["elapsed"])
     )
   res_i
@@ -295,9 +296,7 @@ for (i in 1:nrow(non_rf_models)) {
       right_join(test_data %>%
                    dplyr::select(year, period, country_iso3, one_of(dv_i_name)),
                  by = c("year", "period", "country_iso3")) %>%
-      # the original rep scripts do this; doesn't make a difference for ROC
-      # calculations
-      mutate(pred = ifelse(is.na(test_data[, dv_i_name]), NA_real_, pred))
+      arrange(country_iso3, year, period)
   }
 
   write_rds(preds, sprintf("output/predictions/model-%02s.rds", non_rf_models$cell_id[i]))
@@ -326,11 +325,28 @@ non_rf_models <- results
 model_table_w_results <- bind_rows(rf_model_table, non_rf_models) %>%
   arrange(cell_id)
 
+# Combine all model the predictions
+cell_ids <- model_table_w_results %>%
+  select(cell_id) %>%
+  mutate(pred_file = sprintf("output/predictions/model-%02s.rds", cell_id))
+preds <- cell_ids %>%
+  mutate(preds = purrr::map(pred_file, function(x) {
+    x <- read_rds(x)
+    x <- x %>% pivot_longer(starts_with("incidence"), names_to = "outcome", values_to = "value")
+    x
+  })) %>%
+  select(-pred_file) %>%
+  tidyr::unnest(preds)
+
 if (!is.null(RNG_SEED)) {
   out_file <- sprintf("output/model-table-w-results-%s.rds", RNG_SEED)
   write_rds(model_table_w_results, out_file)
+
+  out_file <- sprintf("output/all-predictions-%s.rds", RNG_SEED)
+  write_rds(preds, out_file)
 } else {
   write_rds(model_table_w_results, "output/model-table-w-results.rds")
+  write_rds(preds, "output/all-predictions.rds")
 }
 
 
