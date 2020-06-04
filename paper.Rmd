@@ -33,10 +33,7 @@ library(stringr)
 ```
 # Introduction
 
-@bdm:2011 , @ward:2016 , @montgomery:etal:PS:2012, @chiba:etal:2015, @brandt:2015  @mhw:2012,@ward:etal:2013,@chadefaux:2015,@weidmann:ward:2010,@pilster:bohmelt:2014,@Brandt_etal_2011,@gleditsch:2015,@bennett:stam:2009,@shellman:etal:2013,@hegre:etal:2011,@ward:etal:2010,@freeman:job:1979,@gneiting:raftery:2005
-@choucri:1974,@choucri:robinson:1979,@goldstone:etal:2010,tetlock:etal:2017,
-
-@rost:etal:2009,  GLOBUS, 
+Blair and Sambanis (2020; hereafter B&S) argue that theory is important for creating models that have high accuracy in forecasting civil war onset.  Indeed they argue that with such theory, forecasting is more accurate than has previously been possible.  Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article.  We find that these claims are false.  Their theory-based escalation model does not do better than the alternatives that they examine, indeed it does worse.  The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure: 1) they use smoothed performance curves instead of the unsmoothed curves, 2) they mistakenly encode the dependent variable to be incidents of civil war, rather than as they claim the onset of a civil war, 3) they mistakenly calculate the predicted values for the alternative ``non-theoretical'' models that they compare to.  In what follows we show the impact of these mistakes on the conclusions, we examine their understanding of prediction it self, and we explore the logic of their assertion about theory as well.  We believe that this research by B&S is incorrect and should be retracted.
 
 
 # Review of Blair and Sambanis 2020
@@ -312,6 +309,34 @@ Using the same analysis B&S intend to use, we in fact find that:
 - structural variables substantially improve the Escalation model's performance when added to the pool of predictors the underlying random forest model draws on
 
 
+@bdm:2011 , @ward:2016 , @montgomery:etal:PS:2012, @chiba:etal:2015, @brandt:2015  @mhw:2012,@ward:etal:2013,@chadefaux:2015,@weidmann:ward:2010,@pilster:bohmelt:2014,@Brandt_etal_2011,@gleditsch:2015,@bennett:stam:2009,@shellman:etal:2013,@hegre:etal:2011,@ward:etal:2010,@freeman:job:1979,@gneiting:raftery:2005
+@choucri:1974,@choucri:robinson:1979,@goldstone:etal:2010,tetlock:etal:2017,
+@rost:etal:2009,  
+@hopple:andriole:1984,
+@andriole:young:1977,
+@brandt:etal:2011,
+@brandt:etal:2014,
+@mellers:etal:2015,
+@tetlock:gardner:2015,
+@hegre:etal:2019,
+@weidmann:ward:2010, 
+@beger:ward:2017,
+@schrodt:1991,
+@obrien:2010,
+@obrien:2002,
+@hegre:etal:2019,
+@hegre:etal:2017,
+@hegre:etal:2016,
+@chiba:gleditsch:2017,
+@buhaug:etal:2014,
+@colaresi:mahmood:2017,
+@ramakrishnan:etal:2014,
+@schleussner:etal2016,
+@kupilik:witmer:2018,
+@witmer:etal:2017
+@oloughlin:etal:2012
+@hegre:etal:2013 
+@buhaug:gleditsch:2008
 
 **AB: add a table comparing B&S original claims and updated results.**
 
@@ -386,6 +411,6 @@ table2_full %>%
   collapse_rows(1:3, row_group_label_position = "stack")
 
 ```
-
+\newpage
 
 # References
