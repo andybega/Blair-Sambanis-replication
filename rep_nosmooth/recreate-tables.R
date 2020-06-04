@@ -14,14 +14,17 @@ results <- read_rds("output/model-table-w-results.rds")
 
 # Note that all rows in Table 1 operate, correctly, on the same test
 # set N
-results %>%
+table1_N <- results %>%
   filter(table=="Table 1") %>%
   select(table, horizon, row, column, N_test) %>%
   arrange(table, horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "N_test") %>%
   select(table, horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
-
+table1_N
+table1_N %>%
+  knitr::kable("markdown") %>%
+  writeLines("output/table1-N.md")
 
 table1_smooth <- results %>%
   filter(table=="Table 1") %>%
@@ -189,6 +192,17 @@ full_table2 <- bind_rows(orig, adj) %>%
   select(-cell_id, -table, -non_RF, -N_train, -time)
 
 write_csv(full_table2, "output/tables/table2-for-appendix.csv")
+
+# keep track of N for git; easier to spot differences
+table2_N <- full_table2 %>%
+  select(cases, horizon, column, N_test) %>%
+  arrange(desc(cases), horizon) %>%
+  pivot_wider(names_from = "column", values_from = "N_test")
+table1_N
+table1_N %>%
+  knitr::kable("markdown") %>%
+  writeLines("output/table1-N.md")
+
 
 
 # Average smooth benefit --------------------------------------------------
