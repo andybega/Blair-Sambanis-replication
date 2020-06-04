@@ -198,10 +198,10 @@ table2_N <- full_table2 %>%
   select(cases, horizon, column, N_test) %>%
   arrange(desc(cases), horizon) %>%
   pivot_wider(names_from = "column", values_from = "N_test")
-table1_N
-table1_N %>%
+table2_N
+table2_N %>%
   knitr::kable("markdown") %>%
-  writeLines("output/table1-N.md")
+  writeLines("output/table2-N.md")
 
 
 
