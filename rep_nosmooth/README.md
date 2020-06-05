@@ -7,7 +7,7 @@ report, and regular, non-smoothed ROC curve AUC.
 
 In order to be able to run the models needed to create tables 1 and 2
 more quickly than with the original replication code, the code here has
-been refactored to enable running in parallel. Here is a summary of the
+been re-factored to enable running in parallel. Here is a summary of the
 major changes:
 
   - `re-save-data.R` changes the format of the saved 1-month and 6-month
@@ -23,9 +23,21 @@ major changes:
   - `model-runner.R` runs the models. Adjust the number of WORKERS at
     the top of the script as needed based on the number of cores on your
     computer. The primary output of this script is
-    `output/model-table-w-results.csv`
+    `output/model-table-w-results.csv` and `output/all-predictions.R`.
   - `recreate-tables.R` recreates the original and non-smooth ROC
-    versions of Tables 1 and 2.
+    versions of Tables 1 and 2 using `output/model-table-w-results.csv`
+    and `output/all-predictions.R`.
+
+In addition, there are some ancillary materials.
+
+  - [variance.md](/variance.md) examines how much the AUC-ROC results
+    vary when you don’t set an RNG seed. For the base specification
+    escalation model, the variance is significantly below 0.01, and
+    small changes in the Table 1 and 2 replications mainly occur when
+    the distribution straddles a threshold used for rounding,
+    e.g. 0.825.
+  - `make-original-tables.R` is a by-hand coding of the values reported
+    for Tables 1, 2, and 4 in B\&S 2020.
 
 ### Model definitions
 
@@ -88,55 +100,3 @@ model that averages the predictions from the other four
 models(/specifications). This doesn’t require running any model per se;
 just averaging existing predictions. These are handled via special
 treatment in `model-runner.R`, outside the main parallel loop.
-
-## Table 1
-
-### Original, smoothed ROC curves
-
-| horizon  | Model                | Escalation | Quad | Goldstein | CAMEO | Average |
-| :------- | :------------------- | ---------: | ---: | --------: | ----: | :------ |
-| 1 month  | Base specification   |       0.86 | 0.80 |      0.78 |  0.83 | NA      |
-| 1 month  | Terminal nodes       |       0.86 | 0.79 |      0.77 |  0.83 | NA      |
-| 1 month  | Sample size          |       0.84 | 0.81 |      0.70 |  0.86 | NA      |
-| 1 month  | Trees per forest     |       0.85 | 0.80 |      0.78 |  0.83 | NA      |
-| 1 month  | Training/test sets 1 |       0.86 | 0.79 |      0.75 |  0.81 | NA      |
-| 1 month  | Training/test sets 2 |       0.81 | 0.80 |      0.72 |  0.78 | NA      |
-| 1 month  | Training/test sets 3 |       0.80 | 0.81 |      0.68 |  0.75 | NA      |
-| 1 month  | Coding of DV 1       |       0.85 | 0.81 |      0.80 |  0.84 | NA      |
-| 1 month  | Coding of DV 2       |       0.92 | 0.80 |      0.82 |  0.81 | NA      |
-| 6 months | Base specification   |       0.82 | 0.77 |      0.82 |  0.77 | NA      |
-| 6 months | Terminal nodes       |       0.80 | 0.76 |      0.81 |  0.77 | NA      |
-| 6 months | Sample size          |       0.83 | 0.78 |      0.78 |  0.79 | NA      |
-| 6 months | Trees per forest     |       0.82 | 0.78 |      0.82 |  0.77 | NA      |
-| 6 months | Training/test sets 1 |       0.80 | 0.78 |      0.81 |  0.75 | NA      |
-| 6 months | Training/test sets 2 |       0.72 | 0.74 |      0.76 |  0.73 | NA      |
-| 6 months | Training/test sets 3 |       0.88 | 0.70 |      0.81 |  0.68 | NA      |
-| 6 months | Coding of DV 1       |       0.83 | 0.76 |      0.82 |  0.79 | NA      |
-| 6 months | Coding of DV 2       |       0.83 | 0.77 |      0.82 |  0.79 | NA      |
-
-Alternative Table 1 with non-smoothed AUC-ROC
-
-### With conventional ROC curves
-
-| horizon  | Model                | Escalation | Quad | Goldstein | CAMEO | Average |
-| :------- | :------------------- | ---------: | ---: | --------: | ----: | :------ |
-| 1 month  | Base specification   |       0.79 | 0.78 |      0.79 |  0.80 | NA      |
-| 1 month  | Terminal nodes       |       0.80 | 0.78 |      0.75 |  0.81 | NA      |
-| 1 month  | Sample size          |       0.79 | 0.80 |      0.74 |  0.82 | NA      |
-| 1 month  | Trees per forest     |       0.78 | 0.78 |      0.79 |  0.81 | NA      |
-| 1 month  | Training/test sets 1 |       0.77 | 0.77 |      0.76 |  0.79 | NA      |
-| 1 month  | Training/test sets 2 |       0.74 | 0.77 |      0.73 |  0.76 | NA      |
-| 1 month  | Training/test sets 3 |       0.71 | 0.80 |      0.69 |  0.73 | NA      |
-| 1 month  | Coding of DV 1       |       0.79 | 0.80 |      0.80 |  0.82 | NA      |
-| 1 month  | Coding of DV 2       |       0.80 | 0.82 |      0.77 |  0.83 | NA      |
-| 6 months | Base specification   |       0.77 | 0.79 |      0.83 |  0.78 | NA      |
-| 6 months | Terminal nodes       |       0.77 | 0.78 |      0.82 |  0.78 | NA      |
-| 6 months | Sample size          |       0.78 | 0.78 |      0.80 |  0.80 | NA      |
-| 6 months | Trees per forest     |       0.77 | 0.79 |      0.83 |  0.78 | NA      |
-| 6 months | Training/test sets 1 |       0.75 | 0.79 |      0.82 |  0.76 | NA      |
-| 6 months | Training/test sets 2 |       0.70 | 0.75 |      0.78 |  0.74 | NA      |
-| 6 months | Training/test sets 3 |       0.85 | 0.72 |      0.84 |  0.71 | NA      |
-| 6 months | Coding of DV 1       |       0.78 | 0.79 |      0.83 |  0.80 | NA      |
-| 6 months | Coding of DV 2       |       0.80 | 0.78 |      0.84 |  0.80 | NA      |
-
-Alternative Table 1 with non-smoothed AUC-ROC

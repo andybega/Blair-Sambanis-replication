@@ -14,12 +14,17 @@ library(readr)
 
 The code in this folder replicates the results in Tables 1 and 2 of B&S, but does so with both the smoothed ROC curve AUC values B&S report, and regular, non-smoothed ROC curve AUC. 
 
-In order to be able to run the models needed to create tables 1 and 2 more quickly than with the original replication code, the code here has been refactored to enable running in parallel. Here is a summary of the major changes:
+In order to be able to run the models needed to create tables 1 and 2 more quickly than with the original replication code, the code here has been re-factored to enable running in parallel. Here is a summary of the major changes:
 
 - `re-save-data.R` changes the format of the saved 1-month and 6-month data versions from Stata 13 .dta files to R .rds format. This can be read much quicker than the Stata format. 
 - `setup-model-table.R` encodes all the various pieces of information needed to actually run the models reflected in tables 1 and 2. In the original replication files this is done in bits and pieces in `+master.R`, `code/[1|6]mo_define_models.R`, and each model runner file, e.g. `code/1mo_run_escalation.R`. The primary output are several files written to the `output/model-definitions` folder. More details on this below.
-- `model-runner.R` runs the models. Adjust the number of WORKERS at the top of the script as needed based on the number of cores on your computer. The primary output of this script is `output/model-table-w-results.csv`
-- `recreate-tables.R` recreates the original and non-smooth ROC versions of Tables 1 and 2. 
+- `model-runner.R` runs the models. Adjust the number of WORKERS at the top of the script as needed based on the number of cores on your computer. The primary output of this script is `output/model-table-w-results.csv` and `output/all-predictions.R`.
+- `recreate-tables.R` recreates the original and non-smooth ROC versions of Tables 1 and 2 using `output/model-table-w-results.csv` and `output/all-predictions.R`.
+
+In addition, there are some ancillary materials. 
+
+- [variance.md](/variance.md) examines how much the AUC-ROC results vary when you don't set an RNG seed. For the base specification escalation model, the variance is significantly below 0.01, and small changes in the Table 1 and 2 replications mainly occur when the distribution straddles a threshold used for rounding, e.g. 0.825. 
+- `make-original-tables.R` is a by-hand coding of the values reported for Tables 1, 2, and 4 in B&S 2020. 
 
 ### Model definitions
 
@@ -47,28 +52,5 @@ Forecasting horizon aside, the rows encode three dimensions of info:
 Together these bits define all that we need to run the correct random forest models for these 78 cells. 
 
 The other 22 cells mostly involve averaging predictions produced by the other models. For example, the "Average" column in Table 1 is for a model that averages the predictions from the other four models(/specifications). This doesn't require running any model per se; just averaging existing predictions. These are handled via special treatment in `model-runner.R`, outside the main parallel loop. 
-
-
-## Table 1
-
-### Original, smoothed ROC curves
-
-```{r}
-table1_smooth <- read_csv("output/table1-smooth.csv")
-
-table1_smooth %>%
-  knitr::kable(digits = 2,
-               caption = "Alternative Table 1 with non-smoothed AUC-ROC")
-```
-
-
-### With conventional ROC curves
-
-```{r}
-table1_nosmooth <- read_csv("output/table1-nosmooth.csv")
-table1_nosmooth %>%
-  knitr::kable(digits = 2,
-               caption = "Alternative Table 1 with non-smoothed AUC-ROC")
-```
 
 
