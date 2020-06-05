@@ -139,11 +139,11 @@ table1_nosmooth %>%
   pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
 ```
 
-As it turns out, this decision has a dramatic impact on the AUC-ROC calculations they use to support their empirical claims. As we show below, the difference between the smoothed and original ROC AUC values is up to 0.12--a huge difference given that row-wise, the models being compared typically differ by only 0.05 or less--and this differentially impacts the models that are being compared. In fact, B&S's original results and interpretation are entirely conditional on the use of smoothed AUC-ROC. These results are shown in Tables 1 and 2.  The Goldstein, CAMEO, and Average model are everywhere superior to the theoretically informed escalation model.  Even the Quad model is generally as good as the escalation model in all implementations, and is frequently quite a bit better.
+As it turns out, this decision has a dramatic impact on the AUC-ROC calculations B&S use to support their empirical claims. As we show below, the difference between the smoothed and original ROC AUC values is up to 0.12--a huge difference given that row-wise, the models being compared typically differ by only 0.05 or less--and this differentially impacts the models that are being compared. In fact, B&S's original results and interpretation are entirely conditional on the use of smoothed AUC-ROC. These results are shown in Tables 1 and 2.  The Goldstein, CAMEO, and Average model are everywhere superior to the theoretically informed escalation model.  Even the Quad model is generally as good as the escalation model in all implementations, and is frequently quite a bit better.
 
 To our knowledge, the norm is to calculate AUC-ROC values using original, not smoothed ROC curves. We are in fact not aware of other work that uses smoothed ROC curves for AUC calculations. It might be that there are theoretical reasons justifying the use of smoothed ROC curves over the original ROC curves; but given that this decision dramatically impacts the interpretation of the B&S results, it minimally would have warranted an explicit discussion in the paper. This is not the case, and it is only mentioned in the sentence we quote above. 
 
-The next three issues we encountered all concern information in Table 2. 
+The next three issues we encountered all concern information in B&S Table 2. 
 
 ## Incorrect "Weighted by PITF" implementation
 
