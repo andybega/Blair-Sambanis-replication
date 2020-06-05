@@ -1,12 +1,6 @@
 Original B&S replication code
 =============
 
-Note!: the replication code in this folder requires a separate R environment that has an older version of ROCR. To run code in this folder, run:
-
-```r
-source("renv/activate.R")
-```
-
 ## Changes
 
 Due to a bug with RStudio's job runner (`https://github.com/rstudio/rstudio/issues/4586`), we replaces all `source(...)` commands with `source(..., local = TRUE)`. 
