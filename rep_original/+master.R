@@ -127,7 +127,7 @@ test_DV_civil_ns_lowrisk <- test_lowrisk$incidence_civil_ns_plus1
 # Define models
 
 lgr$info("Assign 1 month model objects")
-source("code/1mo_define_models.R")
+source("code/1mo_define_models.R", local = TRUE)
 
 
 
@@ -137,19 +137,19 @@ source("code/1mo_define_models.R")
 # Run models
 
 lgr$info("1 month escalation models")
-source("code/1mo_run_escalation.R")
+source("code/1mo_run_escalation.R", local = TRUE)
 
 lgr$info("1 month quad models")
-source("code/1mo_run_quad.R")
+source("code/1mo_run_quad.R", local = TRUE)
 
 lgr$info("1 month goldstein models")
-source("code/1mo_run_goldstein.R")
+source("code/1mo_run_goldstein.R", local = TRUE)
 
 lgr$info("1 month CAMEO models")
-source("code/1mo_run_all_CAMEO.R")
+source("code/1mo_run_all_CAMEO.R", local = TRUE)
 
 lgr$info("1 month average models")
-source("code/1mo_run_avg.R")
+source("code/1mo_run_avg.R", local = TRUE)
 
 # Save predictions
 
@@ -173,33 +173,33 @@ write.csv(AUCs, file = "tables/table1_top.csv", row.names = T)
 
 # Create left panel of Figure 1
 
-source("code/1mo_make_ROC.R")
+source("code/1mo_make_ROC.R", local = TRUE)
 
 # Create left panel of Figure 2
 
-source("code/1mo_make_PR.R")
+source("code/1mo_make_PR.R", local = TRUE)
 
 # Create Figure 3
 
-source("code/1mo_make_separation.R")
+source("code/1mo_make_separation.R", local = TRUE)
 
 lgr$info("1 month table 2 models")
 
 # Run escalation model with PITF predictors
 
-source("code/1mo_run_escalation_with_PITF.R")
+source("code/1mo_run_escalation_with_PITF.R", local = TRUE)
 
 # Run escalation model weighted by PITF predicted probabilities
 
-source("code/1mo_run_escalation_weighted_PITF.R")
+source("code/1mo_run_escalation_weighted_PITF.R", local = TRUE)
 
 # Run split population escalation model using PITF predicted probabilities
 
-source("code/1mo_run_escalation_split_PITF.R")
+source("code/1mo_run_escalation_split_PITF.R", local = TRUE)
 
 # Run PITF model
 
-source("code/1mo_run_PITF.R")
+source("code/1mo_run_PITF.R", local = TRUE)
 
 # Create top panel of Table 2
 
@@ -223,11 +223,11 @@ write.csv(brier_f1, file = "tables/tableA4_top.csv", row.names = T)
 
 # Run escalation model with lagged low-level violence
 
-source("code/1mo_run_escalation_withlags.R")
+source("code/1mo_run_escalation_withlags.R", local = TRUE)
 
 # Run escalation model with low-level violence only
 
-source("code/1mo_run_escalation_simple.R")
+source("code/1mo_run_escalation_simple.R", local = TRUE)
 
 # Create top panel of Table A5
 
@@ -239,7 +239,7 @@ write.csv(AUCs_alt, file = "tables/tableA5_top.csv", row.names = T)
 
 # Create left panels of Figure A11 - A14
 
-source("code/1mo_make_importance.R")
+source("code/1mo_make_importance.R", local = TRUE)
 
 # Save workspace
 
@@ -348,7 +348,7 @@ test_DV_civil_ns_lowrisk <- test_lowrisk$incidence_civil_ns_plus1
 # Define models
 
 lgr$info("Assign 6 month model objects")
-source("code/6mo_define_models.R")
+source("code/6mo_define_models.R", local = TRUE)
 
 
 
@@ -358,19 +358,19 @@ source("code/6mo_define_models.R")
 # Run models
 
 lgr$info("6 month escalation models")
-source("code/6mo_run_escalation.R")
+source("code/6mo_run_escalation.R", local = TRUE)
 
 lgr$info("6 month quad models")
-source("code/6mo_run_quad.R")
+source("code/6mo_run_quad.R", local = TRUE)
 
 lgr$info("6 month goldstein models")
-source("code/6mo_run_goldstein.R")
+source("code/6mo_run_goldstein.R", local = TRUE)
 
 lgr$info("6 month CAMEO models")
-source("code/6mo_run_all_CAMEO.R")
+source("code/6mo_run_all_CAMEO.R", local = TRUE)
 
 lgr$info("6 month average models")
-source("code/6mo_run_avg.R")
+source("code/6mo_run_avg.R", local = TRUE)
 
 # Save predictions
 
@@ -394,33 +394,33 @@ write.csv(AUCs_6mo, file = "tables/table1_bottom.csv", row.names = T)
 
 # Create right panel of Figure 1
 
-source("code/6mo_make_ROC.R")
+source("code/6mo_make_ROC.R", local = TRUE)
 
 # Create right panel of Figure 2
 
-source("code/6mo_make_PR.R")
+source("code/6mo_make_PR.R", local = TRUE)
 
 # Create Figure 4
 
-source("code/6mo_make_separation.R")
+source("code/6mo_make_separation.R", local = TRUE)
 
 lgr$info("6 month table 2 models")
 
 # Run escalation model with PITF predictors
 
-source("code/6mo_run_escalation_with_PITF.R")
+source("code/6mo_run_escalation_with_PITF.R", local = TRUE)
 
 # Run escalation model weighted by PITF predicted probabilities
 
-source("code/6mo_run_escalation_weighted_PITF.R")
+source("code/6mo_run_escalation_weighted_PITF.R", local = TRUE)
 
 # Run split population escalation model using PITF predicted probabilities
 
-source("code/6mo_run_escalation_split_PITF.R")
+source("code/6mo_run_escalation_split_PITF.R", local = TRUE)
 
 # Run PITF model
 
-source("code/6mo_run_PITF.R")
+source("code/6mo_run_PITF.R", local = TRUE)
 
 # Create top panel of Table 2
 
@@ -444,11 +444,11 @@ write.csv(brier_f1_6mo, file = "tables/tableA4_bottom.csv", row.names = T)
 
 # Run escalation model with lagged low-level violence
 
-source("code/6mo_run_escalation_withlags.R")
+source("code/6mo_run_escalation_withlags.R", local = TRUE)
 
 # Run escalation model with low-level violence only
 
-source("code/6mo_run_escalation_simple.R")
+source("code/6mo_run_escalation_simple.R", local = TRUE)
 
 # Create botton panel of Table A5
 
@@ -460,7 +460,7 @@ write.csv(AUCs_alt_6mo, file = "tables/tableA5_bottom.csv", row.names = T)
 
 # Create right panels of Figure A11 - A14
 
-source("code/6mo_make_importance.R")
+source("code/6mo_make_importance.R", local = TRUE)
 
 # Save workspace
 
@@ -504,11 +504,11 @@ test_DV_civil_ns <- test$incidence_civil_ns_plus1
 
 # Define models
 
-source("code/6mo_define_models_OOS.R")
+source("code/6mo_define_models_OOS.R", local = TRUE)
 
 # Run random forest model
 
-source("code/6mo_run_escalation_OOS.R")
+source("code/6mo_run_escalation_OOS.R", local = TRUE)
 
 # Save predictions
 
