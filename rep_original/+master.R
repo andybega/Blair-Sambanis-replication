@@ -139,6 +139,13 @@ source("code/1mo_define_models.R", local = TRUE)
 lgr$info("1 month escalation models")
 source("code/1mo_run_escalation.R", local = TRUE)
 
+# CHANGE: save additional artifacts for verifying the rep_nosmooth code
+saveRDS(escalation_train_formula_civil_ns, "extra/escalation_train_formula_civil_ns.rds")
+saveRDS(escalation_train_frame_civil_ns, "extra/escalation_train_frame_civil_ns.rds")
+saveRDS(train_model, "extra/train_model.rds")
+saveRDS(escalation_test_frame_civil_ns, "extra/escalation_test_frame_civil_ns.rds")
+saveRDS(test_DV_civil_ns, "extra/test_DV_civil_ns.rds")
+
 lgr$info("1 month quad models")
 source("code/1mo_run_quad.R", local = TRUE)
 
@@ -359,6 +366,13 @@ source("code/6mo_define_models.R", local = TRUE)
 
 lgr$info("6 month escalation models")
 source("code/6mo_run_escalation.R", local = TRUE)
+
+# CHANGE: save additional artifacts for verifying the rep_nosmooth code
+saveRDS(escalation_6mo_train_formula_civil_ns, "extra/escalation_6mo_train_formula_civil_ns.rds")
+saveRDS(escalation_6mo_train_frame_civil_ns, "extra/escalation_6mo_train_frame_civil_ns.rds")
+saveRDS(train_model, "extra/6mo_train_model.rds")
+saveRDS(escalation_test_frame_civil_ns, "extra/escalation_6mo_test_frame_civil_ns.rds")
+saveRDS(test_DV_civil_ns, "extra/6mo_test_DV_civil_ns.rds")
 
 lgr$info("6 month quad models")
 source("code/6mo_run_quad.R", local = TRUE)
