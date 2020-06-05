@@ -121,39 +121,39 @@ prediction_robust_civil_ns_alt2[is.na(goldstein_test_frame_civil_ns_alt2$test_DV
 
 # Calculate AUC
 
-performance <- prediction(prediction, test_DV_civil_ns)
+performance <- port$prediction(prediction, test_DV_civil_ns)
 roc <- roc(test_DV_civil_ns, prediction, smooth=TRUE, auc = TRUE)
 AUC_obs <- data.frame(as.numeric(roc$auc))
 
-performance_robust_maxnodes <- prediction(prediction_robust_maxnodes, test_DV_civil_ns)
+performance_robust_maxnodes <- port$prediction(prediction_robust_maxnodes, test_DV_civil_ns)
 roc_robust_maxnodes <- roc(test_DV_civil_ns, prediction_robust_maxnodes, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_maxnodes <- data.frame(as.numeric(roc_robust_maxnodes$auc))
 
-performance_robust_sampsize <- prediction(prediction_robust_sampsize, test_DV_civil_ns)
+performance_robust_sampsize <- port$prediction(prediction_robust_sampsize, test_DV_civil_ns)
 roc_robust_sampsize <- roc(test_DV_civil_ns, prediction_robust_sampsize, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_sampsize <- data.frame(as.numeric(roc_robust_sampsize$auc))
 
-performance_robust_ntree <- prediction(prediction_robust_ntree, test_DV_civil_ns)
+performance_robust_ntree <- port$prediction(prediction_robust_ntree, test_DV_civil_ns)
 roc_robust_ntree <- roc(test_DV_civil_ns, prediction_robust_ntree, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_ntree <- data.frame(as.numeric(roc_robust_ntree$auc))
 
-performance_robust_traintest1 <- prediction(prediction_robust_traintest1, test_DV_civil_ns_robust_traintest1)
+performance_robust_traintest1 <- port$prediction(prediction_robust_traintest1, test_DV_civil_ns_robust_traintest1)
 roc_robust_traintest1 <- roc(test_DV_civil_ns_robust_traintest1, prediction_robust_traintest1, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_traintest1 <- data.frame(as.numeric(roc_robust_traintest1$auc))
 
-performance_robust_traintest2 <- prediction(prediction_robust_traintest2, test_DV_civil_ns_robust_traintest2)
+performance_robust_traintest2 <- port$prediction(prediction_robust_traintest2, test_DV_civil_ns_robust_traintest2)
 roc_robust_traintest2 <- roc(test_DV_civil_ns_robust_traintest2, prediction_robust_traintest2, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_traintest2 <- data.frame(as.numeric(roc_robust_traintest2$auc))
 
-performance_robust_traintest3 <- prediction(prediction_robust_traintest3, test_DV_civil_ns_robust_traintest3)
+performance_robust_traintest3 <- port$prediction(prediction_robust_traintest3, test_DV_civil_ns_robust_traintest3)
 roc_robust_traintest3 <- roc(test_DV_civil_ns_robust_traintest3, prediction_robust_traintest3, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_traintest3 <- data.frame(as.numeric(roc_robust_traintest3$auc))
 
-performance_robust_civil_ns_alt1 <- prediction(prediction_robust_civil_ns_alt1, test_DV_civil_ns_alt1)
+performance_robust_civil_ns_alt1 <- port$prediction(prediction_robust_civil_ns_alt1, test_DV_civil_ns_alt1)
 roc_robust_civil_ns_alt1 <- roc(test_DV_civil_ns_alt1, prediction_robust_civil_ns_alt1, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_civil_ns_alt1 <- data.frame(as.numeric(roc_robust_civil_ns_alt1$auc))
 
-performance_robust_civil_ns_alt2 <- prediction(prediction_robust_civil_ns_alt2, test_DV_civil_ns_alt2)
+performance_robust_civil_ns_alt2 <- port$prediction(prediction_robust_civil_ns_alt2, test_DV_civil_ns_alt2)
 roc_robust_civil_ns_alt2 <- roc(test_DV_civil_ns_alt2, prediction_robust_civil_ns_alt2, smooth=TRUE, auc = TRUE)
 AUC_obs_robust_civil_ns_alt2 <- data.frame(as.numeric(roc_robust_civil_ns_alt2$auc))
 

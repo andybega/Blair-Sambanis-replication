@@ -11,6 +11,15 @@ rm(list = ls())
 # CHANGE: use here() for relative path
 setwd(here::here("rep_original"))
 
+# CHANGE: wrapper for ROCR::prediction() that handles NA's
+port <- list(
+  prediction = function(predictions, labels, ...) {
+    stopifnot(length(predictions)==length(labels))
+    not_na <- !is.na(predictions) & !is.na(labels)
+    ROCR::prediction(predictions[not_na], labels[not_na], ...)
+  }
+)
+
 # Load packages
 
 library(foreign)
@@ -31,7 +40,6 @@ library(ggplot2)
 library(fontcm)
 library(PRROC)
 library(Bolstad2)
-library(separationplot)
 # CHANGE: add logging to monitor progress
 library(lgr)
 
