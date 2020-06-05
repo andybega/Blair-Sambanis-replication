@@ -82,14 +82,19 @@ auc_roc_vec <- function(pred, truth, smooth) {
   as.numeric(roc_obj$auc)
 }
 
-# Identify the cell IDs for the saved predictions so we can load them
+# all-predictions is a tibble of all predictions, ID's by cell_id.
+# For the common sub-setting below, it's easier to treat each set of predictions
+# as a seperate list/object, so use tidyr to nest them
+all_predictions <- read_rds("output/all-predictions.rds") %>%
+  group_by(cell_id) %>%
+  tidyr::nest(preds = year:value)
+
+# Identify the cell IDs for the predictions we need and get the predictions
 cell_ids <- results %>%
   filter(table=="Table 2") %>%
-  select(cell_id, horizon, row, column) %>%
-  mutate(pred_file = sprintf("output/predictions/model-%02s.rds", cell_id))
+  select(cell_id, horizon, row, column)
 preds <- cell_ids %>%
-  mutate(preds = purrr::map(pred_file, read_rds)) %>%
-  select(-cell_id, -pred_file)
+  left_join(all_predictions, by = "cell_id")
 
 # Filter out cases with both non-missing prediction and non-missing outcome
 # Either one missing will cause it to drop out of AUC-ROC calculation.
@@ -127,12 +132,12 @@ results_table2 <- preds %>%
   mutate(preds = map(preds, semi_join, y = common_subset,
                      by = c("year", "period", "country_iso3"))) %>%
   mutate(
-    N_test = map_dbl(preds, nrow),
+    N_test  = map_dbl(preds, nrow),
     auc_roc = map_dbl(
-      preds, ~auc_roc_vec(.x$pred, .x$incidence_civil_ns_plus1, smooth = FALSE)
+      preds, ~auc_roc_vec(.x$pred, .x$value, smooth = FALSE)
     ),
     auc_roc_smoothed = map_dbl(
-      preds, ~auc_roc_vec(.x$pred, .x$incidence_civil_ns_plus1, smooth = TRUE)
+      preds, ~auc_roc_vec(.x$pred, .x$value, smooth = TRUE)
     ),
     table = "Table 2"
   ) %>%
@@ -210,12 +215,16 @@ table2_N %>%
 #   This is mentioned in the text
 #
 
-table1_smooth_benefit %>%
+tbl1 <- table1_smooth_benefit %>%
   pivot_longer(Escalation:Average) %>%
   group_by(name) %>%
-  summarize(Avg_benefit = mean(value))
+  summarize(Avg_benefit = mean(value)) %>%
+  mutate(table = "Table 1")
 
-table2_smooth_benefit %>%
+tbl2 <- table2_smooth_benefit %>%
   pivot_longer(-c(horizon, Model)) %>%
   group_by(name) %>%
-  summarize(Avg_benefit = mean(value))
+  summarize(Avg_benefit = mean(value)) %>%
+  mutate(table = "Table 2")
+
+bind_rows(tbl1, tbl2)
