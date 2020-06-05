@@ -22,3 +22,8 @@ if (any(success==FALSE)) {
   warning(sprintf("Could not find and copy file(s):\n%s",
                   paste0(files_needed[!success], collapse = "\n")))
 }
+
+file.copy("rep_nosmooth/output/figures/figure1-replicated.png",
+          "figures/", overwrite = TRUE)
+
+
