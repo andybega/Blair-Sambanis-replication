@@ -8,6 +8,7 @@ rm(list = ls())
 
 # Set working directory
 
+# CHANGE: use here() for relative path
 setwd(here::here("rep_original"))
 
 # Load packages
@@ -31,6 +32,8 @@ library(fontcm)
 library(PRROC)
 library(Bolstad2)
 library(separationplot)
+# CHANGE: add logging to monitor progress
+library(lgr)
 
 # Specify length of ROC curve
 
@@ -123,6 +126,7 @@ test_DV_civil_ns_lowrisk <- test_lowrisk$incidence_civil_ns_plus1
 
 # Define models
 
+lgr$info("Assign 1 month model objects")
 source("code/1mo_define_models.R")
 
 
@@ -132,14 +136,19 @@ source("code/1mo_define_models.R")
 
 # Run models
 
+lgr$info("1 month escalation models")
 source("code/1mo_run_escalation.R")
 
+lgr$info("1 month quad models")
 source("code/1mo_run_quad.R")
 
+lgr$info("1 month goldstein models")
 source("code/1mo_run_goldstein.R")
 
+lgr$info("1 month CAMEO models")
 source("code/1mo_run_all_CAMEO.R")
 
+lgr$info("1 month average models")
 source("code/1mo_run_avg.R")
 
 # Save predictions
@@ -173,6 +182,8 @@ source("code/1mo_make_PR.R")
 # Create Figure 3
 
 source("code/1mo_make_separation.R")
+
+lgr$info("1 month table 2 models")
 
 # Run escalation model with PITF predictors
 
@@ -246,6 +257,8 @@ if(check=="TRUE") {
 
 
 # Define 6-month models ------------------------------------------------------------
+
+lgr$info("start 6 month models")
 
 # Clear environment
 
@@ -334,6 +347,7 @@ test_DV_civil_ns_lowrisk <- test_lowrisk$incidence_civil_ns_plus1
 
 # Define models
 
+lgr$info("Assign 6 month model objects")
 source("code/6mo_define_models.R")
 
 
@@ -343,14 +357,19 @@ source("code/6mo_define_models.R")
 
 # Run models
 
+lgr$info("6 month escalation models")
 source("code/6mo_run_escalation.R")
 
+lgr$info("6 month quad models")
 source("code/6mo_run_quad.R")
 
+lgr$info("6 month goldstein models")
 source("code/6mo_run_goldstein.R")
 
+lgr$info("6 month CAMEO models")
 source("code/6mo_run_all_CAMEO.R")
 
+lgr$info("6 month average models")
 source("code/6mo_run_avg.R")
 
 # Save predictions
@@ -384,6 +403,8 @@ source("code/6mo_make_PR.R")
 # Create Figure 4
 
 source("code/6mo_make_separation.R")
+
+lgr$info("6 month table 2 models")
 
 # Run escalation model with PITF predictors
 
@@ -459,6 +480,8 @@ if(check=="TRUE") {
 
 # Define 6-month model for out-of-sample test ------------------------------------------------------------
 
+lgr$info("Create 2016-H1 forecasts")
+
 # Clear environment
 
 rm(list = ls())
@@ -503,4 +526,7 @@ if(check=="TRUE") {
   file.remove(file="workspaces/6mo_OOS_workspace.RData")
   save.image(file="workspaces/6mo_OOS_workspace.RData")
 }
+
+lgr$info("+master.R script has finished")
+
 
