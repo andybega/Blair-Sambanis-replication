@@ -4,6 +4,8 @@
 
 setwd(here::here("rep_nosmooth"))
 
+dir.create("output/tables", recursive = TRUE, showWarnings = FALSE)
+
 table1 <- tribble(
   ~horizon, ~model, ~Escalation, ~Quad, ~Goldstein, ~CAMEO, ~Average,
   "1 month", "Base specification",   .85, .80, .79, .82, .82,
