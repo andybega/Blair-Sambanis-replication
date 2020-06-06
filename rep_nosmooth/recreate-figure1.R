@@ -5,8 +5,13 @@
 library(here)
 library(stringr)
 library(pROC)
+library(tidyr)
+library(dplyr)
+library(readr)
+library(tibble)
 
 setwd(here("rep_nosmooth"))
+dir.create("output/figures")
 
 all_predictions <- read_rds("output/all-predictions.rds") %>%
   group_by(cell_id) %>%

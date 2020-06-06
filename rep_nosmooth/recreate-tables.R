@@ -1,4 +1,3 @@
-
 library(here)
 library(readr)
 library(dplyr)
@@ -7,8 +6,9 @@ library(kableExtra)
 library(purrr)
 
 setwd(here::here("rep_nosmooth"))
-results <- read_rds("output/model-table-w-results.rds")
+dir.create("output/tables")
 
+results <- read_rds("output/model-table-w-results.rds")
 
 # Table 1 -----------------------------------------------------------------
 
@@ -111,6 +111,8 @@ common_subset %>%
   group_by(horizon, column, preds) %>%
   summarize(n = map_int(preds, nrow)) %>%
   select(-preds)
+
+
 # Since we need to calculate common subsets by horizon, split the data frame
 # by horizon, then use inner_join on the row ID tibbles in each preds column
 # to get the case subsets
@@ -228,3 +230,4 @@ tbl2 <- table2_smooth_benefit %>%
   mutate(table = "Table 2")
 
 bind_rows(tbl1, tbl2)
+

@@ -2,7 +2,7 @@
 #   Run all the models behind Tables 1 and 2
 #
 
-WORKERS  <- 8
+WORKERS  <- 7
 # if RNG_SEED is NULL, no seed will be set and the output file name will be as
 # is; if RNG_SEED is set, the output file name will include the seed as the
 # last element of its file name.
@@ -21,6 +21,7 @@ library(doFuture)
 library(doRNG)
 library(lgr)
 library(tidyr)
+library(stringr)
 
 # clean up and recreate predictions batch directory
 unlink("output/predictions", recursive = TRUE)
@@ -54,6 +55,10 @@ train_end_year <- read_yaml("output/model-definitions/train-end-year.yaml")
 data_1mo <- read_rds("trafo-data/1mo_data.rds")
 data_6mo <- read_rds("trafo-data/6mo_data.rds")
 
+names(data_1mo)[stringr::str_detect(names(data_1mo), "gov_opp_cameo_10")]
+
+
+data_1mo[, "gov_opp_cameo_10"]
 # Split out the non-RF models that need special treatment
 non_rf_models <- model_table %>%
   filter(non_RF==TRUE)
@@ -67,6 +72,7 @@ rf_model_table <- rf_model_table[sample(1:nrow(rf_model_table)), ]
 
 rf_model_table <- foreach(
   i = 1:nrow(rf_model_table),
+  # i = 1,
   .inorder = FALSE
 ) %dopar% {
 
