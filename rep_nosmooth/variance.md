@@ -36,6 +36,7 @@ suppressMessages({
   library(doFuture)
   library(tidyr)
   library(ggplot2)
+  library(jsonlite)
 })
 ```
 
@@ -49,10 +50,7 @@ auc_roc_vec <- function(pred, truth, smooth) {
   as.numeric(roc_obj$auc)
 }
 
-features <- c("gov_opp_low_level", "gov_reb_low_level", "opp_gov_low_level",
-              "reb_gov_low_level", "gov_opp_nonviol_repression", "gov_reb_nonviol_repression",
-              "gov_opp_accommodations", "gov_reb_accommodations", "reb_gov_demands",
-              "opp_gov_demands")
+features <- fromJSON("output/model-definitions/feature-specs.json")
 
 train_end_year <- 2007
 
@@ -68,8 +66,9 @@ registerDoFuture()
 plan("multisession", workers = WORKERS)
 
 model_table <- crossing(
-  horizon = rep(c("1 month", "6 months"), SAMPLES),
-  sample  = rep(1:SAMPLES, each = 2)
+  model   = c("Escalation", "Quad"),
+  horizon = c("1 month", "6 months"),
+  sample  = c(1:SAMPLES)
 )
 
 # shuffle the table so the work load on average is more evenly distributed 
@@ -81,8 +80,9 @@ res <- foreach(
   .inorder = FALSE
 ) %dopar% {
 
-  horizon_i <- model_table[i, ][["horizon"]]
-  sample_i  <- model_table[i, ][["sample"]]
+  horizon_i  <- model_table[i, ][["horizon"]]
+  sample_i   <- model_table[i, ][["sample"]]
+  features_i <- features[[model_table[i, ][["model"]]]]
 
   if (horizon_i=="1 month") {
     data_i <- data_1mo
@@ -97,11 +97,11 @@ res <- foreach(
   # missing values, so we need to make sure the training data drops those
   # manually
   train_data   <- train_data %>%
-    dplyr::select(one_of(c(dv_name, features))) %>%
+    dplyr::select(one_of(c(dv_name, features_i))) %>%
     filter(complete.cases(.))
 
   fitted_model <- suppressWarnings(randomForest(
-    x = train_data[, features],
+    x = train_data[, features_i],
     y = train_data[, dv_name],
     ntree    = hp_settings$ntree,
     maxnodes = hp_settings$maxnodes,
@@ -113,7 +113,7 @@ res <- foreach(
   # it puts out cover all of the test data, with NA values where needed for
   # incomplete rows. Replicate that here.
   non_missing_test_data <- test_data %>%
-    dplyr::select(one_of(c("year", "period", "country_iso3", features))) %>%
+    dplyr::select(one_of(c("year", "period", "country_iso3", features_i))) %>%
     dplyr::filter(complete.cases(.))
   preds <- non_missing_test_data %>%
     dplyr::select(year, period, country_iso3) %>%
@@ -154,7 +154,7 @@ res_long <- res %>%
   mutate(smoothed = ifelse(smoothed=="auc_roc", FALSE, TRUE)) 
 
 res_tbl <- res_long %>%
-  group_by(horizon, smoothed) %>%
+  group_by(smoothed, horizon, model) %>%
   dplyr::summarize(N = n(),
                    mean = mean(auc_roc),
                    min  = min(auc_roc),
@@ -165,12 +165,16 @@ res_tbl %>%
   knitr::kable(digits = 3)
 ```
 
-| horizon  | smoothed |  N |  mean |   min |   max |    sd |
-| :------- | :------- | -: | ----: | ----: | ----: | ----: |
-| 1 month  | FALSE    | 40 | 0.784 | 0.781 | 0.789 | 0.001 |
-| 1 month  | TRUE     | 40 | 0.852 | 0.843 | 0.860 | 0.004 |
-| 6 months | FALSE    | 40 | 0.771 | 0.769 | 0.772 | 0.001 |
-| 6 months | TRUE     | 40 | 0.823 | 0.819 | 0.825 | 0.002 |
+| smoothed | horizon  | model      |  N |  mean |   min |   max |    sd |
+| :------- | :------- | :--------- | -: | ----: | ----: | ----: | ----: |
+| FALSE    | 1 month  | Escalation | 40 | 0.784 | 0.781 | 0.789 | 0.002 |
+| FALSE    | 1 month  | Quad       | 40 | 0.787 | 0.781 | 0.812 | 0.009 |
+| FALSE    | 6 months | Escalation | 40 | 0.771 | 0.770 | 0.773 | 0.001 |
+| FALSE    | 6 months | Quad       | 40 | 0.788 | 0.782 | 0.794 | 0.002 |
+| TRUE     | 1 month  | Escalation | 40 | 0.852 | 0.841 | 0.859 | 0.004 |
+| TRUE     | 1 month  | Quad       | 40 | 0.802 | 0.796 | 0.808 | 0.003 |
+| TRUE     | 6 months | Escalation | 40 | 0.824 | 0.820 | 0.828 | 0.002 |
+| TRUE     | 6 months | Quad       | 40 | 0.775 | 0.772 | 0.778 | 0.002 |
 
 Comparing across the two dimensions–horizon and smoothed–actually
 smoothing has more impact on the results than the forecast horizon.
@@ -180,8 +184,14 @@ smoothing has more impact on the results than the forecast horizon.
 # two digits. Since the plot below is faceted, need to use a separate data frame
 # for this with facet variable
 hlines <- bind_rows(
-  tibble(smoothed = "Smoothed", y = c(.82, .83, .84, .85) + .005),
-  tibble(smoothed = "Original", y = c(.77, .78) + .005)
+  tibble(smoothed = "Smoothed", horizon = "1 month", 
+         y = c(.79, .80, .81, .82, .83, .84, .85) + .005),
+  tibble(smoothed = "Original", horizon = "1 month", 
+         y = c(.77, .78, .79, .8) + .005),
+  tibble(smoothed = "Smoothed", horizon = "6 months", 
+         y = c(.77, .78, .79, .80, .81, .82) + .005),
+  tibble(smoothed = "Original", horizon = "6 months", 
+         y = c(.76, .77, .78, .79) + .005)
 )
 
 res_long %>%
@@ -189,11 +199,12 @@ res_long %>%
          horizon  = factor(horizon), 
          smoothed = factor(smoothed, levels = c("Smoothed", "Original"))) %>%
   ggplot() +
-  facet_wrap(~smoothed, scales = "free") +
-  geom_violin(aes(x = horizon, y = auc_roc)) +
-  geom_point(aes(x = horizon, y = auc_roc), alpha = .5) +
+  facet_wrap(horizon ~ smoothed, scales = "free", nrow = 2) +
+  geom_violin(aes(x = model, y = auc_roc)) +
+  geom_point(aes(x = model, y = auc_roc), alpha = .5) +
   geom_hline(data = hlines, aes(yintercept = y), linetype = 3) +
-  theme_bw()
+  theme_bw() +
+  coord_flip()
 ```
 
 ![](variance_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
