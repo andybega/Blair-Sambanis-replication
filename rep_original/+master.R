@@ -145,7 +145,7 @@ source("code/1mo_define_models.R", local = TRUE)
 # Run models
 
 lgr$info("1 month escalation models")
-source("code/1mo_run_escalation.R", local = TRUE)
+source("code/1mo_run_escalation.R", local = TRUE, echo = TRUE)
 
 # CHANGE: save additional artifacts for verifying the rep_nosmooth code
 saveRDS(escalation_train_formula_civil_ns, "extra/escalation_train_formula_civil_ns.rds")
@@ -168,15 +168,15 @@ source("code/1mo_run_avg.R", local = TRUE)
 
 # Save predictions
 
-saveRDS(pred_escalation_inc_civil_ns,"predictions/1mo_predictions_escalation.rds", convert.factors="string")
+saveRDS(pred_escalation_inc_civil_ns,"predictions/1mo_predictions_escalation.rds")
 
-saveRDS(pred_quad_inc_civil_ns,"predictions/1mo_predictions_quad.rds", convert.factors="string")
+saveRDS(pred_quad_inc_civil_ns,"predictions/1mo_predictions_quad.rds")
 
-saveRDS(pred_goldstein_inc_civil_ns,"predictions/1mo_predictions_goldstein.rds", convert.factors="string")
+saveRDS(pred_goldstein_inc_civil_ns,"predictions/1mo_predictions_goldstein.rds")
 
-saveRDS(pred_all_CAMEO_inc_civil_ns,"predictions/1mo_predictions_all_CAMEO.rds", convert.factors="string")
+saveRDS(pred_all_CAMEO_inc_civil_ns,"predictions/1mo_predictions_all_CAMEO.rds")
 
-saveRDS(pred_avg_inc_civil_ns,"predictions/1mo_predictions_avg.rds", convert.factors="string")
+saveRDS(pred_avg_inc_civil_ns,"predictions/1mo_predictions_avg.rds")
 
 # Create top panel of Table 1
 
@@ -396,15 +396,15 @@ source("code/6mo_run_avg.R", local = TRUE)
 
 # Save predictions
 
-saveRDS(pred_escalation_6mo_inc_civil_ns,"predictions/6mo_predictions_escalation.rds", convert.factors="string")
+saveRDS(pred_escalation_6mo_inc_civil_ns,"predictions/6mo_predictions_escalation.rds")
 
-saveRDS(pred_quad_6mo_inc_civil_ns,"predictions/6mo_predictions_quad.rds", convert.factors="string")
+saveRDS(pred_quad_6mo_inc_civil_ns,"predictions/6mo_predictions_quad.rds")
 
-saveRDS(pred_goldstein_6mo_inc_civil_ns,"predictions/6mo_predictions_goldstein.rds", convert.factors="string")
+saveRDS(pred_goldstein_6mo_inc_civil_ns,"predictions/6mo_predictions_goldstein.rds")
 
-saveRDS(pred_all_CAMEO_6mo_inc_civil_ns,"predictions/6mo_predictions_all_CAMEO.rds", convert.factors="string")
+saveRDS(pred_all_CAMEO_6mo_inc_civil_ns,"predictions/6mo_predictions_all_CAMEO.rds")
 
-saveRDS(pred_avg_6mo_inc_civil_ns,"predictions/6mo_predictions_avg.rds", convert.factors="string")
+saveRDS(pred_avg_6mo_inc_civil_ns,"predictions/6mo_predictions_avg.rds")
 
 # Create bottom panel of Table 1
 
@@ -534,7 +534,7 @@ source("code/6mo_run_escalation_OOS.R", local = TRUE)
 
 # Save predictions
 
-saveRDS(pred_escalation_6mo_inc_civil_ns,"predictions/6mo_predictions_escalation_OOS.rds", convert.factors="string")
+saveRDS(pred_escalation_6mo_inc_civil_ns,"predictions/6mo_predictions_escalation_OOS.rds")
 
 # Save workspace
 
