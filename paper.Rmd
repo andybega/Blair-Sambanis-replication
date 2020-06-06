@@ -187,11 +187,11 @@ The relevant variables in the data are "incidence_civil_ns" and "incidence_civil
 By examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable back to incidence. 
 
 # Results of the updated replication
-
+We now turn to an examination of our replication that fixes the above issues.  The bottom line is that the changes we make turn on their heads the conclusions of B&S.
 
 ## Do structural variables add to the Escalation model?
 
-Table \ref{tab:table2-fixed} shows our replication of B&S Table 2 with (1) regular, not smoothed, AUC-ROC, (2) fixed "Weighted by PITF" and "PITF Split-Population" models, and (3) AUC-ROC values computed on the common joint subset of tests cases that all models have non-missing predictions for. Table \ref{tab:table2-full} further below shows AUC-ROC values for both smoothed and non-smoothed versions, and both the original, model-varying test cases sets and our common joint subset. 
+Table \ref{tab:table2-fixed} shows our replication of B&S Table 2 with (1) regular, not smoothed, AUC-ROC, (2) fixed "Weighted by PITF" and "PITF Split-Population" models, and (3) AUC-ROC values computed on the common, joint subset of tests cases that all models have non-missing predictions for. Table \ref{tab:table2-full} further below shows AUC-ROC values for both smoothed and non-smoothed versions, and both the original, model-varying test cases sets and our common joint subset. 
 
 ```{r table2-nosmooth}
 table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
@@ -207,7 +207,7 @@ table2_nosmooth %>%
   footnote("Differences from the original B\\&S Table 2: (1) AUC-ROC values are computed on the common subset of cases, meaning that N is equal in each row; (2) AUC-ROC values are computed using original, non-smoothed ROC curves.", footnote_as_chunk = TRUE, threeparttable = TRUE)
 ```
 
-B&S interpret the results as follows, on page 20:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
+B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
 
 > Of the approaches we test, the split-population analog is most promising
 
@@ -219,13 +219,11 @@ Adding PITF predictors actually improves performance in both cases; the "With PI
 
 > The weighted model performs very poorly regardless. 
 
-It performs roughly on par with the Escalation Only model. 
-
-One finding that remains is that the "PITF Only" model is outperformed by the "Escalation Only" model. As the former only uses annual inputs, but the data at hand are the 1-month or 6-months level, this is not surprising. 
+The weighted model performs roughly on par with the Escalation Only model. One finding that remains is that the "PITF Only" model is outperformed by the "Escalation Only" model. As the former only uses annual inputs, but the data at hand are the 1-month or 6-months level, this is neither surprising, nor noteworthy.
 
 > Overall, our results suggest that while measures of structural risk may improve predictive performance, the value they add is marginal and inconsistent. [...] Incorporating PITF thus significantly reduces or only slightly improves the performance of the escalation model, regardless of the approach we take. 
 
-The most straightforward method of incorporating the annual, structural PITF variables--adding them to the predictors of the Escalation RF model--strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard, and that the "PITF Split Population" model does not in fact actually incorporate structural information at all. We thus conclude that adding structural variables actually clearly improves predictive performance.
+The most straightforward method of incorporating the annual, structural PITF variables--adding them to the predictors of the Escalation RF model--strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard and that the "PITF Split Population" model does not in fact actually incorporate structural information at all. We thus conclude that adding structural variables improves predictive performance.
 
 ## The effect of using smoothed ROC curves
 
@@ -254,9 +252,11 @@ What impact did the ROC smoothing have overall on the results reported in B&S Ta
 
 A more dramatic difference stands out when we consider the overall average impact of smoothing across all flavors of a model reported in the columns of the tables. The Average, Goldstein, Quad, PITF Split Population, and Weighted by PITF models are slightly hurt by smoothing, but on the order of less than 0.01 in absolute magnitude. The "With PITF Predictors" model is hurt on the order of 0.02, i.e. it appears substantially worse with smoothing. The CAMEO and PITF Only models benefit slightly, on the order of 0.01 or less. The escalation only model on the other hand has an average boost of 0.058 to its AUC-ROC from smoothing. Considering the spread of AUC-ROC values if we compare across rows in B&S Tables 1 and 2, that boost is substantial.
 
-The use of smoothed ROC curves to calculate AUC-ROC values only clearly benefits the escalation model, it does so consistently, and by a considerable margin. All eight alternative models reported in Tables 1 and 2 do not on average gain when using smoothed ROC curves to calculate AUC. 
+The use of smoothed ROC curves to calculate AUC-ROC values clearly benefits \textbf{only} the escalation model. It does so consistently and by a considerable margin. All eight alternative models reported in Tables 1 and 2 on average do not gain when using smoothed ROC curves to calculate AUC. 
 
 ## How accurate were the 2016 forecasts?
+
+THIS SECTION IS EMPTY
 
 # Additional concerns
 
