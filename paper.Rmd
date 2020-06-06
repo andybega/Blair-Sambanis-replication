@@ -1,6 +1,6 @@
 ---
 title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
-author: Andreas Beger and Richard K. Morgan and Michael D. Ward
+author: Andreas Beger, Richard K. Morgan, and Michael D. Ward
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
   pdf_document:
@@ -23,6 +23,7 @@ bibliography:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=FALSE)
+# options(tinytex.verbose = TRUE)
 
 library(readr)
 library(dplyr)
@@ -72,7 +73,7 @@ To examine the first question, B&S compare the test set of the escalation model 
 - Escalation: a set of ten indicators, putatively drawn from a theoretical escalation model.
 - Quad: ICEWS quad counts, i.e. material conflict, material cooperation, verbal conflict, verbal cooperation.
 - Goldstein: -10 (conflictual) to 10 (cooperative) scores derived from the ICEWS data for interactions between the government one one side and opposition or rebel actors on the other. These are directed, thus making for four total covariates.
-- CAMEO: counts for all CAMEO event codes totalling $1,159$ covariates, which are mostly zero for any country in any month. 
+- CAMEO: counts for all CAMEO event codes totaling $1,159$ covariates, which are mostly zero for any country in any month. 
 - Average: unweighted average of the predictions from the four models briefly described above.
 
 
@@ -94,7 +95,7 @@ Finally, B&S used their escalation model to create forecasts for the first half 
 # Replication problems
 
 While replicating and analyzing B&S's results, we found several issues worthy of further discussion and investigation.
-These are a) the use of smoothed ROC curves to draw conclusions about which model is best, b) an incorrect implementation of the weighted by ICEWS data model, c)  an inconsistent test set $ for the models examined, d) incorrect scoring of the 2016 forecasts, e) an inappropriate use of random forrest implementation, with very unusual hyperparameters.  Our belief is that these research decisions lead B&S to draw conclusion that are incorrect. The escalation model is not the best and it actually performs worse that the atheoretical, garbage can model with over $1000$ variables.  We turn to discussing these five issues below.  We hold a complete analysis that corrects all these issues until later, as there are many possible permuations of a seriatim unfolding.
+These are a) the use of smoothed ROC curves to draw conclusions about which model is best, b) an incorrect implementation of the weighted by ICEWS data model, c)  an inconsistent test set for the models examined, d) incorrect scoring of the 2016 forecasts, e) an inappropriate use of random forrest implementation, with very unusual hyperparameters.  Our belief is that these research decisions lead B&S to draw conclusion that are incorrect. The escalation model is not the best and it actually performs worse that the atheoretical, garbage can model with over $1000$ variables.  We turn to discussing these five issues below.  We hold a complete analysis that corrects all these issues until later, as there are many possible permuations of a seriatim unfolding.
 
 ## Smoothed ROC curves
 
