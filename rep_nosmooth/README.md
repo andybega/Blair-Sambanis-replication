@@ -7,8 +7,27 @@ report, and regular, non-smoothed ROC curve AUC.
 
 In order to be able to run the models needed to create tables 1 and 2
 more quickly than with the original replication code, the code here has
-been re-factored to enable running in parallel. Here is a summary of the
-major changes:
+been re-factored to enable running in parallel. The structure of the
+code has completely changed. Instead of a master script that handles
+file IO and sources other scripts to setup model definition objects
+(features, training/test data frames, etc.) and run models, the new
+logic is to:
+
+1.  Create a central model table that encodes all cells in B\&S Tables 1
+    and 2 and the information needed to define the underlying models, as
+    well as associated model definitions like features, hyper-parameter
+    settings, etc. (`output/model-definitions/`).
+2.  Run through the model table (mostly in parallel) to estimate all
+    models; save the resulting predictions.
+3.  Re-create output tables and figures.
+
+## (Clean) replication
+
+Below are instructions for how to run the script in order to replicate
+the updated analysis. To do a clean replication, delete the `output/`
+folder; this is not required though.
+
+Run through the files in the following order:
 
   - `re-save-data.R` changes the format of the saved 1-month and 6-month
     data versions from Stata 13 .dta files to R .rds format. This can be
@@ -27,10 +46,12 @@ major changes:
   - `recreate-tables.R` recreates the original and non-smooth ROC
     versions of Tables 1 and 2 using `output/model-table-w-results.csv`
     and `output/all-predictions.R`.
+  - `recreate-figure1.R` recreates the ROC curves in B\&S Figure 1 using
+    `output/model-table-w-results.csv` and `output/all-predictions.R`.
 
 In addition, there are some ancillary materials.
 
-  - [variance.md](/variance.md) examines how much the AUC-ROC results
+  - [variance.md](variance.md) examines how much the AUC-ROC results
     vary when you don’t set an RNG seed. For the base specification
     escalation model, the variance is significantly below 0.01, and
     small changes in the Table 1 and 2 replications mainly occur when
@@ -39,7 +60,7 @@ In addition, there are some ancillary materials.
   - `make-original-tables.R` is a by-hand coding of the values reported
     for Tables 1, 2, and 4 in B\&S 2020.
 
-### Model definitions
+## Model definitions
 
 The original replication code has a large number of scripts that define
 the various models/methods to run. In order to allow running the RF
