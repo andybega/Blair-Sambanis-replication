@@ -11,6 +11,7 @@ We added code to save additional objects generated during the replication run to
 
 The original commands to save data objects have the form `saveRDS(..., convert.factor = "string")`. The "convert.factor" option does not exist in more recent versions of R and we have removed it. 
 
+The scripts that produce plot output use `quartz()`, which is not available on Windows. Both `quartz()` and the `plot.new()` commands are not needed to produce the PDF figures and we removed them. Also, the original plots use CM Romand and Times family fonts via the **extrafonts** package. Getting this to work requires additional installation steps. Since it does not otherwise affect the results, we remove the associated code as well.  
 
 
 
