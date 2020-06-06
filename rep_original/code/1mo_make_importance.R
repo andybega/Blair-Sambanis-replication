@@ -2,38 +2,34 @@
   # Create left panel of Figure A11
 
       importance <- RF_ranking_escalation_inc_civil_ns
-      
-      rownames(importance) <-  c("Gov -> opp low-level violence", 
-                                    "Gov -> reb low-level violence", 
-                                    "Opp -> gov low-level violence", 
-                                    "Reb -> gov low-level violence", 
-                                    "Gov -> opp non-violent repression", 
-                                    "Gov -> reb non-violent repression", 
-                                    "Gov -> opp accommodations", 
-                                    "Gov -> reb accommodations", 
+
+      rownames(importance) <-  c("Gov -> opp low-level violence",
+                                    "Gov -> reb low-level violence",
+                                    "Opp -> gov low-level violence",
+                                    "Reb -> gov low-level violence",
+                                    "Gov -> opp non-violent repression",
+                                    "Gov -> reb non-violent repression",
+                                    "Gov -> opp accommodations",
+                                    "Gov -> reb accommodations",
                                     "Reb -> gov demands",
                                     "Opp -> gov demands")
-      
+
       importance.sorted <- importance[order(importance$Importance.score),]
 
-      quartz()
-      
-      plot.new()
-      
-      pdf("figures/figureA11_left.pdf", family = "CM Roman", width = 5.5, height = 5)
-      
+      pdf("figures/figureA11_left.pdf", width = 5.5, height = 5)
+
       dotchart(importance.sorted$Importance.score,labels=row.names(importance.sorted), xlab="Decrease in MSE", cex=.7)
-      
+
       dev.off()
 
 
-      
-      
+
+
   # Create left panel of Figure A12
-      
+
       importance <- RF_ranking_quad_inc_civil_ns
-      
-      rownames(importance) <-  c("Gov -> opp verbal conflict", 
+
+      rownames(importance) <-  c("Gov -> opp verbal conflict",
                                  "Gov -> reb verbal conflict",
                                  "Gov -> opp material conflict",
                                  "Gov -> reb material conflict",
@@ -50,53 +46,45 @@
                                  "Opp -> gov material cooperation",
                                  "Reb -> gov material cooperation"
       )
-      
+
       importance.sorted <- importance[order(importance$Importance.score),]
 
-      quartz()
-      
-      plot.new()
-      
-      pdf("figures/figureA12_left.pdf", family = "CM Roman", width = 5.5, height = 5)
-      
+      pdf("figures/figureA12_left.pdf", width = 5.5, height = 5)
+
       dotchart(importance.sorted$Importance.score,labels=row.names(importance.sorted), xlab="Decrease in MSE", cex=.7)
-      
+
       dev.off()
-      
-      
-      
+
+
+
   # Create left panel of Figure A13
-      
+
       importance <- RF_ranking_goldstein_inc_civil_ns
-      
-      rownames(importance) <-  c("Gov -> opp Goldstein scale", 
-                             "Gov -> reb Goldstein scale", 
-                             "Opp -> gov Goldstein scale", 
+
+      rownames(importance) <-  c("Gov -> opp Goldstein scale",
+                             "Gov -> reb Goldstein scale",
+                             "Opp -> gov Goldstein scale",
                              "Reb -> gov Goldstein scale"
       )
-      
+
       importance.sorted <- importance[order(importance$Importance.score),]
 
-      quartz()
-      
-      plot.new()
-      
       # Save PDF
-      
-      pdf("figures/figureA13_left.pdf", family = "CM Roman", width = 5.5, height = 5)
-      
+
+      pdf("figures/figureA13_left.pdf", width = 5.5, height = 5)
+
       dotchart(importance.sorted$Importance.score,labels=row.names(importance.sorted), xlab="Decrease in MSE", cex=.7)
-      
+
       dev.off()
-      
-      
-        
-      
-      
+
+
+
+
+
   # Create left panel of Figure A14
-      
+
       importance <- RF_ranking_all_CAMEO_inc_civil_ns
-      
+
       rownames(importance) <-  c("Gov -> opp CAMEO 010",
                              "Gov -> opp CAMEO 011",
                              "Gov -> opp CAMEO 012",
@@ -1257,26 +1245,22 @@
                              "Reb -> gov CAMEO 204",
                              "Reb -> gov CAMEO 2041",
                              "Reb -> gov CAMEO 2042")
-      
+
       importance.sorted <- importance[order(importance$Importance.score),]
       importance.sorted
-      
+
       importance.sorted.truncated <- importance.sorted[1131:1160,]
-      
-      quartz()
-      
-      plot.new()
-      
+
       # Save PDF
-      
-      pdf("figures/figureA14_left.pdf", family = "CM Roman", width = 5.5, height = 5)
-      
+
+      pdf("figures/figureA14_left.pdf", width = 5.5, height = 5)
+
       dotchart(importance.sorted.truncated$Importance.score,labels=row.names(importance.sorted.truncated), xlab="Decrease in MSE", cex=.7)
-      
+
       dev.off()
-      
-      
-           
+
+
+
 
 
 

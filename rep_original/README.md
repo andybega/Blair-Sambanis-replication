@@ -9,4 +9,9 @@ We added code to save additional objects generated during the replication run to
 
 **ROCR** version 1.0-9 (2020-03-26) added a check in `ROCR::prediction()` for NA's in the input predictions. This breaks the existing replication code. I added a wrapper that handles the NAs before calling ROCR, `port$prediction()`. It' can't be just `prediction()` because vectors of predictions get assigned to the same name, and thus conflict. 
 
+The original commands to save data objects have the form `saveRDS(..., convert.factor = "string")`. The "convert.factor" option does not exist in more recent versions of R and we have removed it. 
+
+The scripts that produce plot output use `quartz()`, which is not available on Windows. Both `quartz()` and the `plot.new()` commands are not needed to produce the PDF figures and we removed them. Also, the original plots use CM Romand and Times family fonts via the **extrafonts** package. Getting this to work requires additional installation steps. Since it does not otherwise affect the results, we remove the associated code as well.  
+
+
 
