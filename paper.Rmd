@@ -18,7 +18,7 @@ references:
   issued:
     year: 2020
 bibliography: 
-  - "`r user <- Sys.info()[['user']]; if (user=='andybega')  '/Users/andybega/Work/whistle/master.bib' else if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else references.bib`"
+  - "`r user <- Sys.info()[['user']]; if (user=='andybega')  '/Users/andybega/Work/whistle/master.bib' else if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else 'references.bib'`"
 ---
 
 ```{r setup, include=FALSE}

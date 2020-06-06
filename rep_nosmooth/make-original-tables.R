@@ -2,6 +2,9 @@
 #   Encode the original values reported for B&S Tables 1, 2, and 4
 #
 
+library(tibble)
+library(readr)
+
 setwd(here::here("rep_nosmooth"))
 
 dir.create("output/tables", recursive = TRUE, showWarnings = FALSE)
