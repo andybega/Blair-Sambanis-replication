@@ -1,6 +1,9 @@
 ---
 title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
-author: Andreas Beger, Richard K. Morgan, and Michael D. Ward
+author: 
+ - Andreas Beger^[Predictive Heuristics, adbeger@gmail.com. corresponding author]
+ - Richard K. Morgan^[World Bank, rick.morgan2@gmail.com]
+ - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com]
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
   pdf_document:
@@ -341,40 +344,47 @@ Using the same analysis B&S intend to use, we in fact find that:
 
 Blair & Sambanis have focused attention on comparing forecasting models and forecasts in the civil war domain.  As social science becomes more adept at predictive analysis this will doubtless be of increasing importance.  However, these comparisons must be done carefully to ensure that correct inferences are drawn.  We continue to think that theory is overrated (@ward:2016), and that machine learning and big data will allow us to learn new things, but it will be interesting to see how the evidence for these claims are adjudicated with additional usage and careful evaluation.
 
-
-@bdm:2011 , @ward:2016 , @montgomery:etal:PS:2012, @chiba:etal:2015, @brandt:2015  @mhw:2012,@ward:etal:2013,@chadefaux:2015,@weidmann:ward:2010,@pilster:bohmelt:2014,@Brandt_etal_2011,@gleditsch:2015,@bennett:stam:2009,@shellman:etal:2013,@hegre:etal:2011,@ward:etal:2010,@freeman:job:1979,@gneiting:raftery:2005
-@choucri:1974,@choucri:robinson:1979,@goldstone:etal:2010,tetlock:etal:2017,
-@rost:etal:2009,  
-@hopple:andriole:1984,
-@andriole:young:1977,
-@brandt:etal:2011,
-@brandt:etal:2014,
-@mellers:etal:2015,
-@tetlock:gardner:2015,
-@hegre:etal:2019,
-@weidmann:ward:2010, 
-@beger:ward:2017,
-@schrodt:1991,
-@obrien:2010,
+There is a fairly long tradition of making predictions in academic and policy work on conflict. Most of these are not mentioned by B&S.  We would include work from the last century including @choucri:1974, @andriole:young:1977, @choucri:robinson:1979, @freeman:job:1979,@hopple:andriole:1984, @schrodt:1991, and others. 
+The current century has even more work that can't be overlooked or combined into a theory barren classification
 @obrien:2002,
-@hegre:etal:2019,
-@hegre:etal:2017,
-@hegre:etal:2016,
+@buhaug:gleditsch:2008, 
+@bennett:stam:2009,
+@rost:etal:2009, 
+@obrien:2010, 
+@weidmann:ward:2010, 
+@weidmann:ward:2010, 
+@ward:etal:2010,
+@goldstone:etal:2010, 
+@bdm:2011, 
+@brandt:etal:2011, 
+@hegre:etal:2011, 
+@Brandt_etal_2011, 
+@oloughlin:etal:2012, 
+@hegre:etal:2013, @shellman:etal:2013, 
+@ward:etal:2013, 
+@brandt:etal:2014, 
+@buhaug:etal:2014, 
+@ramakrishnan:etal:2014, 
+@pilster:bohmelt:2014, 
+@brandt:2015, @chadefaux:2015, 
+@chiba:etal:2015, @gleditsch:2015, 
+@mellers:etal:2015, 
+@tetlock:gardner:2015, 
+@hegre:etal:2016, 
+@schleussner:etal2016, @ward:2016, 
+@beger:ward:2017, 
 @chiba:gleditsch:2017,
-@buhaug:etal:2014,
-@colaresi:mahmood:2017,
-@ramakrishnan:etal:2014,
-@schleussner:etal2016,
-@kupilik:witmer:2018,
-@witmer:etal:2017
-@oloughlin:etal:2012
-@hegre:etal:2013 
-@buhaug:gleditsch:2008
-
-**AB: add a table comparing B&S original claims and updated results.**
-
-
-
+@colaresi:mahmood:2017, 
+@hegre:etal:2017, 
+@tetlock:etal:2017, 
+@witmer:etal:2017, 
+@kupilik:witmer:2018, 
+@hegre:etal:2019, 
+@hegre:etal:2019.
+Indeed this scholarship has brought us to the point where predictive analysis of conflict studies is not unknown in the scholarly and policy arenas.  Most, if not all of these authors, would probably claim some theoretical motivation. The a-theoretical case is a counterfactual that either includes everything, or nothing, as aruged in @ward:2016. In the B&S article it serves as a strawman. Unfortunately for B&S that strawman outperforms there putatively theoretical model. Important statistical developments have also added to this research vector, including especially 
+@gneiting:raftery:2005, 
+@montgomery:etal:PS:2012, and
+@mhw:2012.
 
 
 
