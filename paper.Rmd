@@ -8,18 +8,6 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
   pdf_document:
     keep_tex: true
-references:
-- id: blair2020forecasting
-  title: "Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning"
-  author:
-  - family: Blair
-    given: Robert A.
-  - family: Sambanis
-    given: Nicholas
-  container-title: Journal of Conflict Resolution
-  type: article-journal
-  issued:
-    year: 2020
 bibliography: 
   - "`r user <- Sys.info()[['user']]; if (user=='andybega')  '/Users/andybega/Work/whistle/master.bib' else if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else 'references.bib'`"
 ---
@@ -37,9 +25,9 @@ library(stringr)
 ```
 # Introduction
 
-Blair and Sambanis (2020; hereafter B&S) argue that theory is important for creating models that have high accuracy in forecasting civil war onset.  Indeed they argue that with such theory, forecasting is more accurate than has previously been possible.  Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article.  We find that these claims are false.  Their theory-based escalation model does not do better than the alternatives that they examine, indeed it does worse.  The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure: 1) they use smoothed performance curves instead of the unsmoothed curves, 2) they mistakenly encode the dependent variable to be incidents of civil war, rather than as they claim the onset of a civil war, 3) they mistakenly calculate the predicted values for the alternative "non-theoretical" models that they compare to.  In what follows we show the impact of these mistakes on the conclusions, we examine their understanding of prediction itself, and we explore the logic of their assertion about theory as well. 
+Blair and Sambanis (hereafter B&S) argue that theory is important for creating models that have high accuracy in forecasting civil war onset.  Indeed they argue that with such theory, forecasting is more accurate than has previously been possible.  Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article.  We find that these claims are false.  Their theory-based escalation model does not do better than the alternatives that they examine, indeed it does worse.  The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure: 1) they use smoothed performance curves instead of the unsmoothed curves, 2) they mistakenly encode the dependent variable to be incidents of civil war, rather than as they claim the onset of a civil war, 3) they mistakenly calculate the predicted values for the alternative "non-theoretical" models that they compare to, and they use a random forest model that is appropriate for continuous, not discrete dependent variables..  In what follows we show the impact of these mistakes on the conclusions, we examine their understanding of prediction itself, and we explore the logic of their assertion about theory as well. 
 
-B&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars "remarkable accurately." Indeed they argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they clam that the integration of structure with process are better over short forecasting windows. Third they preregisted the list of thirty countries which have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when in fact they have been routine for many years with several prominent projects. B&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is strong and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
+B&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars "remarkable accurately." Indeed they argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they clam that the integration of structure with process are better over short forecasting windows. Third they preregistered the list of thirty countries which have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when in fact they have been routine for many years with several prominent projects. B&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is strong and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
 
 Before proceeding, we quote B&S (page 24):
 \begin{quote}
@@ -55,7 +43,7 @@ claim.
 
 # Review of Blair and Sambanis 2020
 
-@blair2020forecasting (B&S hereafter) aim to examine whether theory adds more value to a forecasting model when compared to non-parametric machine learning models, and specifically random forests, whose specifications are not theory-informed. For the moment we set aside a) the logic of this hypothesis and b) whether their model has more theory than is typically found in empirical conflict models.  In short, they uphold their hypothesis that theory guided empirical research produces better conflict predictions than machine learning inspired efforts that are essentially ad hoc combinations of available variables. They arrive at this conclusion by examining the problem of predicting civil war onset. They report that a parsimonious model using a small number of covariates derived from escalation theories of conflict can forecast civil war onset better than alternative specifications based on generic covariates not specifically informed by theory including a \textit{kitchen sink} model with more than 1,000 covariates. 
+@blair:sambanis:2020 (B&S hereafter) aim to examine whether theory adds more value to a forecasting model when compared to non-parametric machine learning models, and specifically random forests, whose specifications are not theory-informed. For the moment we set aside a) the logic of this hypothesis and b) whether their model has more theory than is typically found in empirical conflict models.  In short, they uphold their hypothesis that theory guided empirical research produces better conflict predictions than machine learning inspired efforts that are essentially ad hoc combinations of available variables. They arrive at this conclusion by examining the problem of predicting civil war onset. They report that a parsimonious model using a small number of covariates derived from escalation theories of conflict can forecast civil war onset better than alternative specifications based on generic covariates not specifically informed by theory including a \textit{kitchen sink} model with more than 1,000 covariates. 
 
 B&S specifically examine three questions: 
 
@@ -207,19 +195,19 @@ table2_nosmooth %>%
 
 B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
 
-> Of the approaches we test, the split-population analog is most promising
+1. B&S: ``Of the approaches we test, the split-population analog is most promising \ldots ''
 
 This is not the case anymore. It outperforms in the 1-month version and under-performs the escalation model in the 6-month version. 
 
-> Adding PITF predictors improves the performance of the escalation model over six-month windows but diminishes it over one-month windows. 
+2. B&S: ``Adding PITF predictors improves the performance of the escalation model over six-month windows but diminishes it over one-month windows \ldots ''
 
 Adding PITF predictors actually improves performance in both cases; the "With PITF Predictions" model strictly dominates the "Escalation Only" model. 
 
-> The weighted model performs very poorly regardless. 
+3. B&S: ``The weighted model performs very poorly regardless \ldots ''
 
 The weighted model performs roughly on par with the Escalation Only model. One finding that remains is that the "PITF Only" model is outperformed by the "Escalation Only" model. As the former only uses annual inputs, but the data at hand are the 1-month or 6-months level, this is neither surprising, nor noteworthy.
 
-> Overall, our results suggest that while measures of structural risk may improve predictive performance, the value they add is marginal and inconsistent. [...] Incorporating PITF thus significantly reduces or only slightly improves the performance of the escalation model, regardless of the approach we take. 
+4. B&S: ``Overall, our results suggest that while measures of structural risk may improve predictive performance, the value they add is marginal and inconsistent. [...] Incorporating PITF thus significantly reduces or only slightly improves the performance of the escalation model, regardless of the approach we take. \ldots ''
 
 The most straightforward method of incorporating the annual, structural PITF variables--adding them to the predictors of the Escalation RF model--strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard and that the "PITF Split Population" model does not in fact actually incorporate structural information at all. We thus conclude that adding structural variables improves predictive performance.
 
@@ -366,8 +354,8 @@ The current century has even more work that can't be overlooked or combined into
 @buhaug:etal:2014, 
 @ramakrishnan:etal:2014, 
 @pilster:bohmelt:2014, 
-@brandt:2015, @chadefaux:2015, 
-@chiba:etal:2015, @gleditsch:2015, 
+@chadefaux:2017, 
+@chiba:etal:2015,
 @mellers:etal:2015, 
 @tetlock:gardner:2015, 
 @hegre:etal:2016, 
