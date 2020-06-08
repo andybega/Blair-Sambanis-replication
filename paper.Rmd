@@ -359,7 +359,6 @@ Indeed this scholarship has brought us to the point where predictive analysis of
 
 \newpage
 
-# (APPENDIX) Appendix {-}
 # Appendix A
 
 ```{r}
