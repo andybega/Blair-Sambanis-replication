@@ -2,7 +2,7 @@
 title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
 author: 
  - Andreas Beger^[Predictive Heuristics, adbeger@gmail.com. corresponding author]
- - Richard K. Morgan^[World Bank, rick.morgan2@gmail.com]
+ - Richard K. Morgan^[USAID, rick.morgan2@gmail.com. The views expressed are those of the author and do not reflect the official policy or position of USAID or the US Government.]
  - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com]
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
@@ -25,7 +25,7 @@ library(stringr)
 ```
 # Introduction
 
-Blair and Sambanis (hereafter B&S) argue that theory is important for creating models that have high accuracy in forecasting civil war onset.  Indeed they argue that with such theory, forecasting is more accurate than has previously been possible.  Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article.  We find that these claims are false.  Their theory-based escalation model does not do better than the alternatives that they examine, indeed it does worse.  The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure: 1) they use smoothed performance curves instead of the unsmoothed curves, 2) they mistakenly encode the dependent variable to be incidents of civil war, rather than as they claim the onset of a civil war, 3) they mistakenly calculate the predicted values for the alternative "non-theoretical" models that they compare to, and they use a random forest model that is appropriate for continuous, not discrete dependent variables..  In what follows we show the impact of these mistakes on the conclusions, we examine their understanding of prediction itself, and we explore the logic of their assertion about theory as well. 
+Blair and Sambanis (2020; hereafter B&S) argue that theory is important for creating models that have high accuracy in forecasting civil war onset.  Indeed they argue that with such theory, forecasting is more accurate than has previously been possible.  Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article.  We find that these claims are false.  Their theory-based escalation model does not do better than the alternatives that they examine, indeed it does worse.  The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure, the principal of which is that the performance results they report are based on smoothed performance curves, not the original unsmoothed curves. In addition, two of the structural alternatives to their basic escalation model were incorrectly implemented, and we also found that the scoring of their forecasts for the first half of 2016 were incorrectly performed using civil war incidence, not onset. In what follows we show the impact of these mistakes on the conclusions, we examine their understanding of prediction itself, and we explore the logic of their assertion about theory as well. 
 
 B&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars "remarkable accurately." Indeed they argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they clam that the integration of structure with process are better over short forecasting windows. Third they preregistered the list of thirty countries which have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when in fact they have been routine for many years with several prominent projects. B&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is strong and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
 
@@ -85,8 +85,9 @@ Finally, B&S used their escalation model to create forecasts for the first half 
 
 # Replication problems
 
-While replicating and analyzing B&S's results, we found several issues worthy of further discussion and investigation.
-These are a) the use of smoothed ROC curves to draw conclusions about which model is best, b) an incorrect implementation of the weighted by ICEWS data model, c)  an inconsistent test set for the models examined, d) incorrect scoring of the 2016 forecasts, e) an inappropriate use of random forrest implementation, with very unusual hyperparameters.  Our belief is that these research decisions lead B&S to draw conclusion that are incorrect. The escalation model is not the best and it actually performs worse that the atheoretical, garbage can model with over $1000$ variables.  We turn to discussing these five issues below.  We hold a complete analysis that corrects all these issues until later, as there are many possible permuations of a seriatim unfolding.
+While replicating and analyzing B&S's results, we found several issues worthy of further discussion and investigation. These are a) the use of smoothed ROC curves to draw conclusions about which model is best, b) incorrect implementations of the weighted by PITF and PITF analog split-population models, c) inconsistent test sets for the models examined, and d) incorrect scoring of the 2016 forecasts. We also note (e) additional concerns arising from the question of how the random forest models were tuned by B&S, especially given the way they are used is unorthodox. We did not further investigate the latter issue as it is rendered somewhat moot by the changes in results after addressing the preceding issues. 
+
+Our belief is that these research decisions and issues lead B&S to draw conclusion that are incorrect. The escalation model is not the best and it actually performs worse that the atheoretical, garbage can model with over $1000$ variables.  We turn to discussing these five issues below.  We hold a complete analysis that corrects all these issues until later, as there are many possible permuations of a seriatim unfolding.
 
 ## Smoothed ROC curves
 
@@ -94,46 +95,13 @@ The most consequential issue that we found is that all AUC-ROC values reported i
 
 > Figure 1 displays the corresponding ROC curves, smoothed for ease of interpretation.
 
-This implies that the ROC curves were only smoothed in the references Figure 1, but actually all AUC-ROC calculations throughout the replication code use an option to smooth the ROC curves prior to AUC calculation. 
-The reason to use a smoothed curve is that you have a continuous dependent variable (not the case here) which can produce any value of the dependent variable.  Wherein there is a discrete number of actual outcomes there is no justification for using smoothed ROC plots, nor for caculating statistics based on them.  Moreover, it is easy to compute the nonsmoothed ROC curve, and associated statistics, so computational ease does not justify this choice.
-
-Figure 1 shows our replication of both the smoothed ROC curves B&S report, and the actual ROC curves on the right. 
+This implies that the ROC curves were only smoothed in the references Figure 1, but actually all AUC-ROC calculations throughout the replication code use an option to smooth the ROC curves prior to AUC calculation. ROC curves are constructed from the false positive and true positive rates as one moves through a set of ranked predictions, and as a result appear step-like. Figure 1 shows our replication of both the smoothed ROC curves B&S report, and the actual ROC curves on the right. The standard method is to compute the area under the curve AUC statistic on the original, non-smooth ROC curves that are shown on the right. 
 
 ![Replication of B&S Figure 1 with both smooth and non-smoothed ROC curves.](figures/figure1-replicated.png)
 
-ROC curves typically appear step-like in response to the distribution of positive and negative cases in the data. In this case, there are also groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines as seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the *y*-axis only changes when the prediction for a observed positive case is reached. For these ROC curves, and for that matter in the basic train/test split used for 12 of the 18 rows/models in B&S Table 1, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct *y* coordinates.  Notice also that the smoothing averages the left most almost straight line with the right most almost straight line in a monotonic way. This ignores the fact that the actual ROC 
+ROC curves typically appear step-like in response to the distribution of positive and negative cases in the data, which specifically in rare events problems like this one restricts the number of distinct true positive rate values. The specific predictions here also include groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines as seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the *y*-axis only changes when the prediction for a observed positive case is reached. For these ROC curves, and for that matter in the basic train/test split used for 12 of the 18 rows/models in B&S Table 1, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct *y* coordinates.  Notice also that the smoothing averages the left most almost straight line with the right most almost straight line in a monotonic way. This ignores the fact that the actual ROC **MIKE**
 
-Table \ref{tab:table1-smooth} is our replication of B&S Table 1 with smoothed AUC-ROC. The results differ slightly from the original B&S Table 1, typically by no more than 0.01, due to the non-deterministic nature of the RF models. It is the case that B&S set the RNG seed in their replication code, which should theoretically allow exact reproduction, but (1) there was a change in more recent versions of R that affected the RNG seeding process, and (2) we refactored the replication script to allow one to run the models in parallel. In any case, the interpretation of results should not be sensitive to random variation, i.e. it should not depend on using a specific RNG seed. On the basis of these results, B&S conclude that the escalation model is generally superior to the alternatives, and we can replicate that interpretation when using smoothed ROC curves. 
-
-```{r table1-smooth}
-table1_smooth <- read_csv("data/table1-smooth.csv")
-
-table1_smooth %>%
-  select(-horizon) %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Replication of B\\&S Table 1 with smoothed ROC curves; test set AUC-ROC for various models",
-    label = "table1-smooth") %>% 
-  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
-```
-
-Table \ref{tab:table1-nosmooth} shows a version of B&S Table 1 with the conventional non-smoothed ROC curves. The Average model outperforms the escalation model in 17 out of 18 cases, and the CAMEO model outperforms in 16 of 18 cases, with one tie. The Goldstein model generally outperforms the Escalation model in the 6-month version. The Quad model appears to be roughly on par with the Escalation model. Thus, the original B&S conclusion that the escalation model is superior to the alternative models is completely conditional on the non-standard use of smoothed ROC curves, and overturns when using traditional AUC-ROC calculations. 
-
-```{r table1-nosmooth}
-table1_nosmooth <- read_csv("data/table1-nosmooth.csv")
-
-table1_nosmooth %>%
-  select(-horizon) %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Replication of B\\&S Table 1 \\textit{without} smoothed ROC curves; test set AUC-ROC for various models",
-    label = "table1-nosmooth") %>% 
-  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
-```
-
-As it turns out, this decision has a dramatic impact on the AUC-ROC calculations B&S use to support their empirical claims. As we show below, the difference between the smoothed and original ROC AUC values is up to 0.12--a huge difference given that row-wise, the models being compared typically differ by only 0.05 or less--and this differentially impacts the models that are being compared. In fact, B&S's original results and interpretation are entirely conditional on the use of smoothed AUC-ROC. These results are shown in Tables 1 and 2.  The Goldstein, CAMEO, and Average model are everywhere superior to the theoretically informed escalation model.  Even the Quad model is generally as good as the escalation model in all implementations, and is frequently quite a bit better.
-
-To our knowledge, the norm is to calculate AUC-ROC values using original, not smoothed ROC curves. We are in fact not aware of other work that uses smoothed ROC curves for AUC calculations. It might be that there are theoretical reasons justifying the use of smoothed ROC curves over the original ROC curves; but given that this decision dramatically impacts the interpretation of the B&S results, it minimally would have warranted an explicit discussion in the paper. This is not the case, and it is only mentioned in the sentence we quote above. 
+As we show below, the use of smoothed ROC curves to calculuate AUC has a dramatic impact on the results. To our knowledge, the norm is to calculate AUC-ROC values using original, not smoothed ROC curves. We are in fact not aware of other work that uses smoothed ROC curves for AUC calculations. It might be that there are theoretical reasons justifying the use of smoothed ROC curves over the original ROC curves; but given that this decision dramatically impacts the interpretation of the B&S results, it minimally would have warranted an explicit discussion in the paper. As it is, B&S offer no justification for using smoothed ROC curves in the AUC-ROC calculations. 
 
 The next three issues we encountered all concern information in B&S Table 2. 
 
@@ -159,10 +127,29 @@ The implementation error aside, this split-population analog model is actually q
 
 ## Inconsistent test set N for the models in Table 2
 
-Further, the AUC-ROC values reported in the original B&S Table 2 are calculated on the basis of slightly different numbers of underlying test set cases (see Table \ref{tab:table2-N}). ROC calculations for a set of predictions can only be done on the set of cases for which both non-missing predictions and non-missing outcomes are available. Those sets differ across models (columns) for each row in Table 2. Thus a difference in AUC-ROC values for two models could be due to the fact that they were calculated on different sets of underlying cases, not because the models are systemically performing at a different level. In other words, the results for different models in B&S Table 2 are actually not comparable toone another, and any conclusions drawn from such comparison are potentially incorrect. 
+Further, the AUC-ROC values reported in the original B&S Table 2 are calculated on the basis of slightly different numbers of underlying test set cases (see Table \ref{tab:table2-N}). ROC calculations for a set of predictions can only be done on the set of cases for which both non-missing predictions and non-missing outcomes are available. Those sets differ across models (columns) for each row in Table 2. The top portion of Table \ref{tab:table2-N} shows the number of valid test set predictions that can be scored for each model in the original B&S Table 2. For the 1-month data version, the number of predictions differs by up to 500 cases, and in the 6-month data version by around 100 cases. These numbers appear small enough to be not important, but crucially the already small number of positive cases also changes: the "With PITF Predictors" and "PITF Only" models lose 2 and 1 of 11 positive cases, respectively, in the 1- and 6-month data versions. 
 
-We fix this issue by only using predictions for common joint subset of cases that all models have non-missing predictions for. The original B&S Table 2 1-month have *N*=11,806--12,495 versus a common joint subset of 9,811, and for the 6-month row *N*=2,070--2,233 versus *N*=1,915 for the common joint subset. 
+Thus a difference in AUC-ROC values for two models could be due to the fact that they were calculated on different sets of underlying cases, not because the models are systemically performing at a different level. In other words, the results for different models in B&S Table 2 are actually not comparable to one another, and any conclusions drawn from such comparison are potentially incorrect. 
 
+```{r}
+table2_full <- read_csv("data/table2-for-appendix.csv")
+
+table2_full %>%
+  select(horizon, column, N_test, cases) %>%
+  pivot_wider(names_from = column, values_from = N_test) %>%
+  arrange(horizon, desc(cases)) %>%
+  rename(Cases = cases, Horizon = horizon) %>%
+  select(Cases, Horizon, everything()) %>%
+  arrange(desc(Cases), Horizon) %>%
+  knitr::kable(
+    "latex", booktabs = TRUE, digits = 0,
+    caption = "Number of valid test predictions for the escalation and structural alterantives models (B\\&S Table 2)",
+    label = "table2-N") %>%
+  column_spec(3:7, width = "2cm") %>%
+  collapse_rows(1:2, row_group_label_position = "stack") 
+```
+
+We fix this issue by only using predictions for common joint subset of cases that all models have non-missing predictions for. The resulting number of cases for each model are shown in the bottom portion of the table. Since the sets of incomplete cases in the original version above do not completely overlap themselves, the common subset for all models is actually slightly smaller than the smallest N in the top portion of the table.
 
 ## Incorrect scoring of the 2016 forecasts
 
@@ -171,110 +158,6 @@ B&S show a confusion matrix to score their 2016-H1 forecasts in Table 4. Althoug
 The relevant variables in the data are "incidence_civil_ns" and "incidence_civil_ns_plus1", which appears to be a 1-period lead version of the DV that is used in the actual prediction models. The incidence DV contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. This reflects common practice in how these are coded. 
 
 By examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable back to incidence. 
-
-# Results of the updated replication
-We now turn to an examination of our replication that fixes the above issues.  The bottom line is that the changes we make turn on their heads the conclusions of B&S.
-
-## Do structural variables add to the Escalation model?
-
-Table \ref{tab:table2-fixed} shows our replication of B&S Table 2 with (1) regular, not smoothed, AUC-ROC, (2) fixed "Weighted by PITF" and "PITF Split-Population" models, and (3) AUC-ROC values computed on the common, joint subset of tests cases that all models have non-missing predictions for. Table \ref{tab:table2-full} further below shows AUC-ROC values for both smoothed and non-smoothed versions, and both the original, model-varying test cases sets and our common joint subset. 
-
-```{r table2-nosmooth}
-table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
-
-table2_nosmooth %>%
-  dplyr::select(-Model, -horizon) %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Replication of B\\&S Table 2: Test set AUC-ROC for escalation model with and without structural PITF contribution",
-    label = "table2-fixed") %>%
-  column_spec(2:6, width = "2cm") %>%
-  pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1)) %>%
-  footnote("Differences from the original B\\&S Table 2: (1) AUC-ROC values are computed on the common subset of cases, meaning that N is equal in each row; (2) AUC-ROC values are computed using original, non-smoothed ROC curves.", footnote_as_chunk = TRUE, threeparttable = TRUE)
-```
-
-B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
-
-1. B&S: ``Of the approaches we test, the split-population analog is most promising \ldots ''
-
-This is not the case anymore. It outperforms in the 1-month version and under-performs the escalation model in the 6-month version. 
-
-2. B&S: ``Adding PITF predictors improves the performance of the escalation model over six-month windows but diminishes it over one-month windows \ldots ''
-
-Adding PITF predictors actually improves performance in both cases; the "With PITF Predictions" model strictly dominates the "Escalation Only" model. 
-
-3. B&S: ``The weighted model performs very poorly regardless \ldots ''
-
-The weighted model performs roughly on par with the Escalation Only model. One finding that remains is that the "PITF Only" model is outperformed by the "Escalation Only" model. As the former only uses annual inputs, but the data at hand are the 1-month or 6-months level, this is neither surprising, nor noteworthy.
-
-4. B&S: ``Overall, our results suggest that while measures of structural risk may improve predictive performance, the value they add is marginal and inconsistent. [...] Incorporating PITF thus significantly reduces or only slightly improves the performance of the escalation model, regardless of the approach we take. \ldots ''
-
-The most straightforward method of incorporating the annual, structural PITF variables--adding them to the predictors of the Escalation RF model--strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard and that the "PITF Split Population" model does not in fact actually incorporate structural information at all. We thus conclude that adding structural variables improves predictive performance.
-
-## The effect of using smoothed ROC curves
-
-```{r}
-table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
-table1_benefit %>%
-  select(-horizon) %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Smoothing advantage for B\\&S Table 1: the gain in AUC-ROC when calculated using smoothed ROC curves",
-    label = "table1-benefit") %>% 
-  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
-
-table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
-table2_benefit %>%
-  select(-horizon) %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Smoothing advantage for B\\&S Table 2: the gain in AUC-ROC when calculated using smoothed ROC curves",
-    label = "table2-benefit") %>% 
-  column_spec(2:6, width = "2cm") %>%
-  pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1))
-```
-
-What impact did the ROC smoothing have overall on the results reported in B&S Tables 1 and 2? Tables \ref{tab:table1-benefit} and \ref{tab:table2-benefit} show the increase in AUC-ROC when using smoothed ROC curves, compared to the standard non-smoothed AUC-ROC. Positive values indicate that smoothing increased a model's apparent performance. The escalation model is the only model that consistently had a benefit from smoothing. For all eight other models, smoothing sometimes gave a benefit, sometimes not. 
-
-A more dramatic difference stands out when we consider the overall average impact of smoothing across all flavors of a model reported in the columns of the tables. The Average, Goldstein, Quad, PITF Split Population, and Weighted by PITF models are slightly hurt by smoothing, but on the order of less than 0.01 in absolute magnitude. The "With PITF Predictors" model is hurt on the order of 0.02, i.e. it appears substantially worse with smoothing. The CAMEO and PITF Only models benefit slightly, on the order of 0.01 or less. The escalation only model on the other hand has an average boost of 0.058 to its AUC-ROC from smoothing. Considering the spread of AUC-ROC values if we compare across rows in B&S Tables 1 and 2, that boost is substantial.
-
-The use of smoothed ROC curves to calculate AUC-ROC values clearly benefits \textbf{only} the escalation model. It does so consistently and by a considerable margin. All eight alternative models reported in Tables 1 and 2 on average do not gain when using smoothed ROC curves to calculate AUC. 
-
-## How accurate were the 2016 forecasts?
-
-B&S report confusion matrices for their forecasts for the first half of 2016 (2016-H1) in their Table 4. To create the confusion matrices, B&S treat the 30 highest ranked predictions as positive predictions ("1s") and the rest as negative predictions ("0s"). We replicate their Table 4 in the top portion of \ref{tab:table4}. There are two confusion matrices for slightly different codings of outcomes in 2016-H1, under the corresponding "Assuming Persistence" and "Assuming Change" headings. We should note that the "Assuming Persistence" corresponds to the values in the replication data; the small variations for the "Assuming Change" version are hand-coded in the replication code file that generates the confusion matrices and appear to be subjective assessments of B&S. 
-
-We can see that the original table presents 15 or 16 positive cases for 2016-H1, depending on the dependent variable coding variation. This corresponds to a positive rate of around 9.5% for the first half of 2016 data. In contrast, the corresponding 6-month version of the data from 2001 to 2015, with 30 half-years, has in total 20 civil war onset events, for a much lower positive rate of around 0.5%. Since the positive event rate in the confusion matrices far exceeds the rate of observed civil war onsets in both the training and test data, this suggests that the forecasts were erroneously assessed using civil war incidence, not onset. As we showed above, by examining the replication code we were able to verify that the forecasts were scored using civil war incidence, i.e. including ongoing civil wars, rather than civil war onset years only. 
-
-
-```{r, message=FALSE}
-tab4o <- read_csv("data/table4-original.csv")
-tab4f <- read_csv("data/table4-fixed.csv")
-
-tab4o <- tab4o %>%
-  rename(header = type) %>%
-  mutate(source = "Original, scored with civil war incidence")
-tab4f <- tab4f %>%
-  rename(Predicted0 = `0`, Predicted1 = `1`) %>%
-  mutate(source = "Fixed, scored with civil war onset")
-
-tab4 <- bind_rows(tab4o, tab4f) %>%
-  select(source, header, everything())
-
-tab4 %>%
-  knitr::kable(
-    caption = "Replication of B\\&S Table 4: 2016 Confusion Matrices for Six-month Escalation Model.",
-    label = "table4",
-    booktabs = TRUE
-  ) %>%
-  kableExtra::collapse_rows(1:2, row_group_label_position = "stack")
-```
-
-The correct confusion matrices when using observed onset (or the lack of it) are shown in the second part of Table \ref{tab:table4}. In the default "Assuming Persistence" coding, there are no civil war onsets in the data for 2016-H1. Thus, the recall values is undefined, while the precision is 0/30 = 0, compared to reported recall and precision values of 13/15 = 0.87 and 13/30 = 0.43. The alternative coding ("Assuming Change") produces 2 civil war onsets. Recall is 1 compared to 14/16 = 0.88 before, and precision is 2/30 = 0.07 instead of 14/30 = 0.47. 
-
-Another, minor issue or rather coding error, is related to using a lead version of the DV. With the lead version of the DV, "incidence_civil_ns_plus1", which is what the models are predicting, the predicted value for 2016-H1 actually indicates the risk of civil war onset in 2016-H2. In the Table 4 script referenced above, the 2016-H1 predictions (for 2016-H2) are assessed using the raw DV, "incidence_civil_ns", not the lead version. Essentially, the forecasts for 2016-H2 are assessed using observed outcomes for 2016-H1. In this case it doesn't make a difference since both the raw DV and lead version for 2016-H1 do not have any positive values. 
-
-# Additional concerns
 
 ## Random forest hyperparameters
 
@@ -314,6 +197,143 @@ In any case, B&S's random forest approach appears to work really well. We tried 
 
 Given that they are relatively unorthodox, yet appear to work very well, we wonder how the hyper-parameter values were determined. Two specific concerns are that this was not done with an eye towards test set accuracy, which would invalidate the independence of the out-of-sample test set, and whether the specific hyper-parameter values are optimized for only one model, or were optimized and found to work well for all models. There is no discussion of the random forest tuning strategy or how the specific hyper-parameter methods were determined in the paper. 
 
+Given the dramatic changes in results as a result of the preceding issues, we did not further investigate these potential concerns.
+
+# Results of the updated analysis
+
+We now turn to an examination of our replication that fixes the above issues.  The bottom line is that the changes we make turn on their heads the conclusions of B&S.
+
+## Is the Escalation model superior to the alternative ICEWS models?
+
+Table \ref{tab:table1-nosmooth} shows a version of B&S Table 1 with the conventional non-smoothed ROC curves. Both the Average and CAMEO models outperform the Escalation model in almost all instances. The Goldstein model generally outperforms the Escalation model in the 6-month version. The Quad model appears to be roughly on par with the Escalation model. Thus, the original B&S conclusion that the escalation model is superior to the alternative models is completely conditional on the non-standard use of smoothed ROC curves, and overturns when using traditional AUC-ROC calculations. 
+
+```{r table1-nosmooth}
+table1_nosmooth <- read_csv("data/table1-nosmooth.csv")
+
+table1_nosmooth %>%
+  select(-horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Comparison of the escalation model to alternative ICEWS model using test set AUC-ROC, \\textit{without} smoothed ROC curves (Replication of B\\&S Table 1)",
+    label = "table1-nosmooth") %>% 
+  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
+```
+
+The key difference between our Table \ref{tab:table1-nosmooth} and the original B&S Table 1 is that we calculated AUC-ROC values for the original ROC curves, not smoothed ROC curves. B&S's original results and interpretation regarding the superiority of the B&S model over alternative ICEWS models, including the 1,000+ covariate CAMEO model, are entirely conditional on the use of smoothed AUC-ROC. Even the Quad model is generally as good as the escalation model in all implementations, and is frequently quite a bit better.
+
+## Do structural variables add to the Escalation model?
+
+Table \ref{tab:table2-fixed} shows our replication of B&S Table 2 with (1) regular, not smoothed, AUC-ROC, (2) fixed "Weighted by PITF" and "PITF Split-Population" models, and (3) AUC-ROC values computed on the common, joint subset of tests cases that all models have non-missing predictions for. Table \ref{tab:table2-full} further below shows AUC-ROC values for both smoothed and non-smoothed versions, and both the original, model-varying test cases sets and our common joint subset. 
+
+```{r table2-nosmooth}
+table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
+
+table2_nosmooth %>%
+  dplyr::select(-Model, -horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Comparison of escalation model to structural extensions, using test set AUC-ROC (Replication of B\\&S Table 2)",
+    label = "table2-fixed") %>%
+  column_spec(2:6, width = "2cm") %>%
+  pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1)) %>%
+  footnote("Differences from the original B\\&S Table 2: (1) AUC-ROC values are computed on the common subset of cases, meaning that N is equal in each row; (2) AUC-ROC values are computed using original, non-smoothed ROC curves.", footnote_as_chunk = TRUE, threeparttable = TRUE)
+```
+
+B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
+
+1. B&S: ``Of the approaches we test, the split-population analog is most promising \ldots ''
+
+The PITF split-population analog still performs well, but the simple Escalation + PITF predictors model arguable performs better still. 
+
+2. B&S: ``Adding PITF predictors improves the performance of the escalation model over six-month windows but diminishes it over one-month windows \ldots ''
+
+Adding PITF predictors actually improves performance in both cases; the "With PITF Predictions" model strictly dominates the "Escalation Only" model, and by quite a maring in the 6-month data version.  
+
+3. B&S: ``The weighted model performs very poorly regardless \ldots ''
+
+The weighted model performs roughly on par with the Escalation Only model. One finding that remains is that the "PITF Only" model is outperformed by the "Escalation Only" model. As the former only uses annual inputs, but the data at hand are the 1-month or 6-months level, this is neither surprising, nor noteworthy.
+
+4. B&S: ``Overall, our results suggest that while measures of structural risk may improve predictive performance, the value they add is marginal and inconsistent. [...] Incorporating PITF thus significantly reduces or only slightly improves the performance of the escalation model, regardless of the approach we take. \ldots ''
+
+The most straightforward method of incorporating the annual, structural PITF variables--adding them to the predictors of the Escalation RF model--strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard and that the "PITF Split Population" model does not in fact actually incorporate structural information at all. We thus conclude that adding structural variables improves predictive performance.
+
+## The effect of using smoothed ROC curves
+
+What impact did the ROC smoothing have overall on the results reported in Table \ref{tab:table1-nosmooth} (B&S Table 1) and Table \ref{tab:table2-fixed} (B&S Table 2)? Figure \ref{fig:benefit} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each of the gray points corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed}. The red crosses mark the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to "PITF Only", smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible in average. The Escalation model _always_ benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the result B&S find, namely that the escalation model is generally superior. 
+
+
+```{r benefit, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2)"}
+table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
+table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
+
+benefit <- bind_rows(
+  table1_benefit %>%
+    rename(setting = Model) %>%
+    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff"),
+  table2_benefit %>%
+    rename(setting = Model, Escalation = `Escalation Only`) %>%
+    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff")
+)
+
+# mean benefit by model
+means <- benefit %>%
+  group_by(model) %>%
+  summarize(avg_benefit = mean(diff))
+
+ann_text <- tibble(horizon = "1 month", diff = 0.07, model = 8.6, label = "Mean")
+
+model_levels <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average", 
+                  "With PITF Predictors", "Weighted by PITF", "PITF Split Population",
+                  "PITF Only")
+benefit %>%
+  mutate(model = factor(model, levels = rev(model_levels))) %>%
+  ggplot(aes(y = model)) + 
+  #facet_wrap(~ horizon, scales = "free_x") +
+  geom_point(aes(x = diff), alpha = 0.5, size = 2, color = "gray50") +
+  geom_point(data = means, aes(x = avg_benefit), shape = 4, color = "red", size = 4) +
+  labs(x = "AUC(smoothed ROC) - AUC(ROC)",
+       y = "") +
+  theme_bw() +
+  geom_text(data = ann_text, aes(x = diff, label = label), col = "red") +
+  geom_vline(xintercept = 0, linetype = 3) +
+  theme(axis.text.y = element_text(size = 12))
+```
+
+In sum, it is not only the case that using smoothed ROC curves alters the results: the use of smoothed ROC curves to calculate AUC-ROC values clearly benefits \textbf{only} the escalation model. It does so consistently and by a considerable margin. All eight alternative models reported in Tables 1 and 2 on average do not gain when using smoothed ROC curves to calculate AUC. 
+
+## How accurate were the 2016 forecasts?
+
+B&S report confusion matrices for their forecasts for the first half of 2016 (2016-H1) in their Table 4. To create the confusion matrices, B&S treat the 30 highest ranked predictions as positive predictions ("1s") and the rest as negative predictions ("0s"). We replicate their Table 4 in the top portion of \ref{tab:table4}. There are two confusion matrices for slightly different codings of outcomes in 2016-H1, under the corresponding "Assuming Persistence" and "Assuming Change" headings. We should note that the "Assuming Persistence" corresponds to the values in the replication data; the small variations for the "Assuming Change" version are hand-coded in the replication code file that generates the confusion matrices and appear to be subjective assessments of B&S. 
+
+We can see that the original table presents 15 or 16 positive cases for 2016-H1, depending on the dependent variable coding variation. This corresponds to a positive rate of around 9.5% for the first half of 2016 data. In contrast, the corresponding 6-month version of the data from 2001 to 2015, with 30 half-years, has in total 20 civil war onset events, for a much lower positive rate of around 0.5%. Since the positive event rate in the confusion matrices far exceeds the rate of observed civil war onsets in both the training and test data, this suggests that the forecasts were erroneously assessed using civil war incidence, not onset. As we showed above, by examining the replication code we were able to verify that the forecasts were scored using civil war incidence, i.e. including ongoing civil wars, rather than civil war onset years only. 
+
+
+```{r, message=FALSE}
+tab4o <- read_csv("data/table4-original.csv")
+tab4f <- read_csv("data/table4-fixed.csv")
+
+tab4o <- tab4o %>%
+  rename(header = type) %>%
+  mutate(source = "Original, scored with civil war incidence")
+tab4f <- tab4f %>%
+  rename(Predicted0 = `0`, Predicted1 = `1`) %>%
+  mutate(source = "Fixed, scored with civil war onset")
+
+tab4 <- bind_rows(tab4o, tab4f) %>%
+  select(source, header, everything())
+
+tab4 %>%
+  knitr::kable(
+    caption = "Replication of B\\&S Table 4: 2016 Confusion Matrices for Six-month Escalation Model.",
+    label = "table4",
+    booktabs = TRUE
+  ) %>%
+  kableExtra::collapse_rows(1:2, row_group_label_position = "stack")
+```
+
+The correct confusion matrices when using observed onset (or the lack of it) are shown in the second part of Table \ref{tab:table4}. In the default "Assuming Persistence" coding, there are no civil war onsets in the data for 2016-H1. Thus, the recall values is undefined, while the precision is 0/30 = 0, compared to reported recall and precision values of 13/15 = 0.87 and 13/30 = 0.43. The alternative coding ("Assuming Change") produces 2 civil war onsets. Recall is 1 compared to 14/16 = 0.88 before, and precision is 2/30 = 0.07 instead of 14/30 = 0.47. 
+
+Another, minor issue or rather coding error, is related to using a lead version of the DV. With the lead version of the DV, "incidence_civil_ns_plus1", which is what the models are predicting, the predicted value for 2016-H1 actually indicates the risk of civil war onset in 2016-H2. In the Table 4 script referenced above, the 2016-H1 predictions (for 2016-H2) are assessed using the raw DV, "incidence_civil_ns", not the lead version. Essentially, the forecasts for 2016-H2 are assessed using observed outcomes for 2016-H1. In this case it doesn't make a difference since both the raw DV and lead version for 2016-H1 do not have any positive values. 
 
 # Conclusion
 
@@ -379,20 +399,6 @@ Indeed this scholarship has brought us to the point where predictive analysis of
 
 ```{r}
 table2_full <- read_csv("data/table2-for-appendix.csv")
-
-table2_full %>%
-  select(horizon, column, N_test, cases) %>%
-  pivot_wider(names_from = column, values_from = N_test) %>%
-  arrange(horizon, desc(cases)) %>%
-  rename(Cases = cases, Horizon = horizon) %>%
-  select(Cases, Horizon, everything()) %>%
-  arrange(desc(Cases), Horizon) %>%
-  knitr::kable(
-    "latex", booktabs = TRUE, digits = 0,
-    caption = "Number of valid test predictions for each cell in B\\&S Table 2",
-    label = "table2-N") %>%
-  column_spec(3:7, width = "2cm") %>%
-  collapse_rows(1:2, row_group_label_position = "stack") 
   
 table2_full %>%
   pivot_longer(auc_roc:auc_roc_smoothed, names_to = "Smoothed ROC",
@@ -416,5 +422,43 @@ table2_full %>%
 
 ```
 \newpage
+
+# Appendix
+
+Table \ref{tab:table1-smooth} is our replication of B&S Table 1 with smoothed AUC-ROC. The results differ slightly from the original B&S Table 1, typically by no more than 0.01, due to the non-deterministic nature of the RF models. It is the case that B&S set the RNG seed in their replication code, which should theoretically allow exact reproduction, but (1) there was a change in more recent versions of R that affected the RNG seeding process, and (2) we refactored the replication script to allow one to run the models in parallel. In any case, the interpretation of results should not be sensitive to random variation, i.e. it should not depend on using a specific RNG seed. On the basis of these results, B&S conclude that the escalation model is generally superior to the alternatives, and we can replicate that interpretation when using smoothed ROC curves. 
+
+```{r table1-smooth}
+table1_smooth <- read_csv("data/table1-smooth.csv")
+
+table1_smooth %>%
+  select(-horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Replication of B\\&S Table 1 with smoothed ROC curves; test set AUC-ROC for various models",
+    label = "table1-smooth") %>% 
+  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
+```
+
+```{r smooth-benefit-tables}
+table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
+table1_benefit %>%
+  select(-horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Smoothing advantage for B\\&S Table 1: the gain in AUC-ROC when calculated using smoothed ROC curves",
+    label = "table1-benefit") %>% 
+  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
+
+table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
+table2_benefit %>%
+  select(-horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Smoothing advantage for B\\&S Table 2: the gain in AUC-ROC when calculated using smoothed ROC curves",
+    label = "table2-benefit") %>% 
+  column_spec(2:6, width = "2cm") %>%
+  pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1))
+```
+
 
 # References

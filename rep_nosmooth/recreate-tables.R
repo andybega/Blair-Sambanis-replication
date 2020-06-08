@@ -128,6 +128,16 @@ sapply(common_subset, nrow)
 common_subset <- common_subset %>%
   bind_rows(., .id = "horizon")
 
+# Note that the number of positive cases also differs!
+sapply(preds$preds, function(x) {x <- x[complete.cases(x), ]; sum(x$value==1, na.rm=T)})
+preds %>%
+  # reduce each prediction set down to the common case set; after this step
+  # the predictions in each horizon group will have same N.
+  mutate(preds = map(preds, semi_join, y = common_subset,
+                     by = c("year", "period", "country_iso3"))) %>%
+  pull(preds) %>%
+  sapply(., function(x) {x <- x[complete.cases(x), ]; sum(x$value==1, na.rm=T)})
+
 results_table2 <- preds %>%
   # reduce each prediction set down to the common case set; after this step
   # the predictions in each horizon group will have same N.
