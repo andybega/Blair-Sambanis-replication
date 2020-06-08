@@ -6,8 +6,9 @@ author:
  - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com]
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
-  pdf_document:
+  bookdown::pdf_document2:
     keep_tex: true
+    toc: false
 bibliography: 
   - "`r user <- Sys.info()[['user']]; if (user=='andybega')  '/Users/andybega/Work/whistle/master.bib' else if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else 'references.bib'`"
 ---
@@ -357,9 +358,37 @@ Indeed this scholarship has brought us to the point where predictive analysis of
 @mhw:2012.
 
 
+# References
+
+<div id="refs"></div>
+
 \newpage
 
-# Appendix A
+# (APPENDIX) Appendix {-}
+
+# Appendix
+
+\renewcommand{\thefigure}{A\arabic{figure}}
+\setcounter{figure}{0}
+
+\renewcommand{\thetable}{A\arabic{table}} 
+\setcounter{table}{0}
+
+## Additional replication tables
+
+Table \ref{tab:table1-smooth} is our replication of B&S Table 1 with smoothed AUC-ROC. The results differ slightly from the original B&S Table 1, typically by no more than 0.01, due to the non-deterministic nature of the RF models. It is the case that B&S set the RNG seed in their replication code, which should theoretically allow exact reproduction, but (1) there was a change in more recent versions of R that affected the RNG seeding process, and (2) we refactored the replication script to allow one to run the models in parallel. In any case, the interpretation of results should not be sensitive to random variation, i.e. it should not depend on using a specific RNG seed. On the basis of these results, B&S conclude that the escalation model is generally superior to the alternatives, and we can replicate that interpretation when using smoothed ROC curves. 
+
+```{r table1-smooth}
+table1_smooth <- read_csv("data/table1-smooth.csv")
+
+table1_smooth %>%
+  select(-horizon) %>%
+  knitr::kable(
+    digits = 2, booktabs = TRUE, 
+    caption = "Replication of B\\&S Table 1 with smoothed ROC curves; test set AUC-ROC for various models",
+    label = "table1-smooth") %>% 
+  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
+```
 
 ```{r}
 table2_full <- read_csv("data/table2-for-appendix.csv")
@@ -386,22 +415,6 @@ table2_full %>%
 
 ```
 
-
-
-Table \ref{tab:table1-smooth} is our replication of B&S Table 1 with smoothed AUC-ROC. The results differ slightly from the original B&S Table 1, typically by no more than 0.01, due to the non-deterministic nature of the RF models. It is the case that B&S set the RNG seed in their replication code, which should theoretically allow exact reproduction, but (1) there was a change in more recent versions of R that affected the RNG seeding process, and (2) we refactored the replication script to allow one to run the models in parallel. In any case, the interpretation of results should not be sensitive to random variation, i.e. it should not depend on using a specific RNG seed. On the basis of these results, B&S conclude that the escalation model is generally superior to the alternatives, and we can replicate that interpretation when using smoothed ROC curves. 
-
-```{r table1-smooth}
-table1_smooth <- read_csv("data/table1-smooth.csv")
-
-table1_smooth %>%
-  select(-horizon) %>%
-  knitr::kable(
-    digits = 2, booktabs = TRUE, 
-    caption = "Replication of B\\&S Table 1 with smoothed ROC curves; test set AUC-ROC for various models",
-    label = "table1-smooth") %>% 
-  pack_rows(index = c("One-month forecasts" = 9, "Six-month forecasts" = 9))
-```
-
 ```{r smooth-benefit-tables}
 table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
 table1_benefit %>%
@@ -423,9 +436,7 @@ table2_benefit %>%
   pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1))
 ```
 
-# Appendix B
-## Some additional, minor issues
-### Random forest hyperparameters
+## Random forest hyper-parameter selection
 
 What initially sparked our interest in the paper was the unusual choice of hyperparameter settings for the random forest models estimated. Table \ref{tab:hp} shows the default values used by the implementation of random forest that B&S use (from the **randomForest** R package), in contrast to the basic settings used by B&S for most the models reported in the paper. 
 
@@ -465,4 +476,3 @@ Given that they are relatively unorthodox, yet appear to work very well, we wond
 
 Given the dramatic changes in results as a result of the preceding issues, we did not further investigate these potential concerns.
 
-# References
