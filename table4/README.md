@@ -1,9 +1,30 @@
 Table 4 investigation
 ================
 
+Is B\&S Table 4 genered by scoring the civil war onset forecasts using
+civil war incidence?
+
+The data used to train the forecasting models is `6mo_data_OOS.dta`.
+This just appears to be an extension of the regular 6 month training
+data that includes and additional
+
 ``` r
 data_6month_oos <- read.dta13("data/6mo_data_OOS.dta")
 
+data_6month_oos %>% filter(year > 2013) %>% count(year, period)
+```
+
+    ##   year period   n
+    ## 1 2014     27 164
+    ## 2 2014     28 164
+    ## 3 2015     29 164
+    ## 4 2015     30 164
+    ## 5 2016     31 164
+
+The number of positive events–civil war onsets–matches what’s in the
+training data, namely 20 onsets. There are no onsets recorded for 2016.
+
+``` r
 data_6month_oos %>% count(incidence_civil_ns_plus1)
 ```
 
@@ -13,7 +34,7 @@ data_6month_oos %>% count(incidence_civil_ns_plus1)
     ## 3                       NA  483
 
 ``` r
-data_6month_oos %>% count(incidence_civil_ns )
+data_6month_oos %>% count(incidence_civil_ns ) 
 ```
 
     ##   incidence_civil_ns    n
@@ -22,118 +43,185 @@ data_6month_oos %>% count(incidence_civil_ns )
     ## 3                 NA  502
 
 ``` r
-pred_escalation_6mo_inc_civil_ns <- read.dta13("data/6mo_predictions_escalation_OOS.dta")
-
-# this object contains OOS forecasts from 2008 to 2016
-as_tibble(pred_escalation_6mo_inc_civil_ns)
-```
-
-    ## # A tibble: 2,788 x 6
-    ##    country year  period incidence_civil_ns incidence_civil_ns_p… prediction     
-    ##    <chr>   <chr> <chr>  <chr>              <chr>                 <chr>          
-    ##  1 AFG     2008  15     NA                 NA                    0.069138337868…
-    ##  2 AFG     2008  16     NA                 NA                    0.068421271410…
-    ##  3 AFG     2009  17     NA                 NA                    0.071911089794…
-    ##  4 AFG     2009  18     NA                 NA                    0.068664278453…
-    ##  5 AFG     2010  19     NA                 NA                    0.071694215183…
-    ##  6 AFG     2010  20     NA                 NA                    0.070948765300…
-    ##  7 AFG     2011  21     NA                 NA                    0.043480454996…
-    ##  8 AFG     2011  22     NA                 NA                    0.069389650470…
-    ##  9 AFG     2012  23     NA                 NA                    0.070806201197…
-    ## 10 AFG     2012  24     NA                 NA                    0.086818325575…
-    ## # … with 2,778 more rows
-
-``` r
-fcast2016 <- pred_escalation_6mo_inc_civil_ns %>%
-  filter(year==2016)
-
-fcast2016 %>% count(incidence_civil_ns_plus1)
-```
-
-    ##   incidence_civil_ns_plus1   n
-    ## 1                        0 164
-
-``` r
-fcast2016 %>% count(incidence_civil_ns )
+data_6month_oos %>% filter(year==2016) %>% count(incidence_civil_ns)
 ```
 
     ##   incidence_civil_ns   n
     ## 1                  0 149
     ## 2                 NA  15
 
-``` r
-fcast2016 %>%
-  filter(is.na(incidence_civil_ns)) %>%
-  dplyr::select(year, country)
-```
-
-    ## [1] year    country
-    ## <0 rows> (or 0-length row.names)
+The predictions seem to come from `6mo_predictions_escalation_OOS.dta`.
 
 ``` r
-# Ok, indeed it looks like "incidence_civil_ns" was originally incidence and
-# then recoded to onset, with NA for continuing conflicts
-data_6month_oos %>%
-  ggplot(aes(x = year, y = factor(country_iso3), fill = factor(incidence_civil_ns))) +
-  geom_tile()
-```
-
-![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
-
-``` r
-# How does this look in the full data?
-data_6month <- read.dta13("data/6mo_data_OOS.dta")
-data_6month %>%
-  ggplot(aes(x = year, y = factor(country_iso3), fill = factor(incidence_civil_ns))) +
-  geom_tile()
-```
-
-![](README_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
-
-``` r
-data_6month %>%
-  ggplot(aes(x = year, y = factor(country_iso3), fill = factor(incidence_civil_ns_plus1))) +
-  geom_tile()
-```
-
-![](README_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->
-
-``` r
-# What's going on with the positive cases here?
-dv <- data_6month %>%
-  filter(incidence_civil_ns==1) %>%
-  dplyr::select(country_name, country_iso3, year, period, incidence_civil_ns)
-dv_plus1 <- data_6month %>%
-  filter(incidence_civil_ns_plus1==1) %>%
-  dplyr::select(country_name, country_iso3, year, period, incidence_civil_ns_plus1)
-both_dvs <- full_join(dv_plus1, dv) %>%
-  arrange(country_name, year)
-```
-
-    ## Joining, by = c("country_name", "country_iso3", "year", "period")
-
-``` r
-ggplot(data_6month, aes(x = period, y = factor(country_iso3),
-                        fill = factor(incidence_civil_ns_plus1))) +
-  geom_tile()
-```
-
-![](README_files/figure-gfm/unnamed-chunk-1-4.png)<!-- -->
-
-``` r
-# Predictions
 preds <- read.dta13("data/6mo_predictions_escalation_OOS.dta") %>%
   as_tibble() %>%
-  filter(period==max(period)) %>%
-  mutate(incidence_civil_ns = as.integer(incidence_civil_ns),
-         incidence_civil_ns_plus1 = as.integer(incidence_civil_ns_plus1))
+  # for some reason the data vectors as character, not numeric. 
+  mutate(across(-country, as.numeric))
 ```
 
-    ## Warning in mask$eval_all_mutate(dots[[i]]): NAs introduced by coercion
+    ## Warning in fn(col, ...): NAs introduced by coercion
+    
+    ## Warning in fn(col, ...): NAs introduced by coercion
+    
+    ## Warning in fn(col, ...): NAs introduced by coercion
+
+``` r
+preds
+```
+
+    ## # A tibble: 2,788 x 6
+    ##    country  year period incidence_civil_ns incidence_civil_ns_plus1 prediction
+    ##    <chr>   <dbl>  <dbl>              <dbl>                    <dbl>      <dbl>
+    ##  1 AFG      2008     15                 NA                       NA     0.0691
+    ##  2 AFG      2008     16                 NA                       NA     0.0684
+    ##  3 AFG      2009     17                 NA                       NA     0.0719
+    ##  4 AFG      2009     18                 NA                       NA     0.0687
+    ##  5 AFG      2010     19                 NA                       NA     0.0717
+    ##  6 AFG      2010     20                 NA                       NA     0.0709
+    ##  7 AFG      2011     21                 NA                       NA     0.0435
+    ##  8 AFG      2011     22                 NA                       NA     0.0694
+    ##  9 AFG      2012     23                 NA                       NA     0.0708
+    ## 10 AFG      2012     24                 NA                       NA     0.0868
+    ## # … with 2,778 more rows
+
+This actually has OOS predictions from 2008 to 2016 (this also means the
+latest forecasts for 2016 use stale 2007 data…):
+
+``` r
+range(preds$year)
+```
+
+    ## [1] 2008 2016
+
+There are no onsets recorded in this either. But there are some missing
+values in the non-“plus1” version of the outcome.
+
+``` r
+fcast2016 <- preds %>%
+  filter(year==2016)
+
+fcast2016 %>% count(incidence_civil_ns_plus1)
+```
+
+    ## # A tibble: 1 x 2
+    ##   incidence_civil_ns_plus1     n
+    ##                      <dbl> <int>
+    ## 1                        0   164
+
+``` r
+fcast2016 %>% count(incidence_civil_ns )
+```
+
+    ## # A tibble: 2 x 2
+    ##   incidence_civil_ns     n
+    ##                <dbl> <int>
+    ## 1                  0   149
+    ## 2                 NA    15
+
+``` r
+fcast2016 %>%
+  dplyr::filter(is.na(incidence_civil_ns)) %>%
+  dplyr::select(country, year)
+```
+
+    ## # A tibble: 15 x 2
+    ##    country  year
+    ##    <chr>   <dbl>
+    ##  1 AFG      2016
+    ##  2 COD      2016
+    ##  3 COL      2016
+    ##  4 IND      2016
+    ##  5 IRQ      2016
+    ##  6 LBY      2016
+    ##  7 MLI      2016
+    ##  8 NGA      2016
+    ##  9 PAK      2016
+    ## 10 RUS      2016
+    ## 11 SDN      2016
+    ## 12 SOM      2016
+    ## 13 SYR      2016
+    ## 14 UKR      2016
+    ## 15 YEM      2016
+
+If you start out with an incidence civil war variable, like the name
+here implies, and you convert it to onset, it might be that this was
+done by keeping the first year as a “1” and setting the rest to missing.
+Does it look like this was done here?
+
+``` r
+data_6month_oos %>%
+  select(year, period, country_iso3, incidence_civil_ns, incidence_civil_ns_plus1) %>%
+  group_by(country_iso3) %>%
+  mutate(any_non0 = any(is.na(incidence_civil_ns)) | any(incidence_civil_ns==1)) %>%
+  ungroup() %>%
+  filter(any_non0==TRUE) %>%
+  mutate(country_iso3 = factor(country_iso3, levels = rev(unique(country_iso3))),
+         date = sprintf("%s-%02s-01", year, ifelse(period %% 2 == 1, 1, 7)),
+         date = as.Date(date)) %>%
+  ggplot(aes(x = date, y = factor(country_iso3), 
+             fill = factor(incidence_civil_ns))) +
+  geom_tile() +
+  scale_x_date(expand = c(0, 0)) +
+  theme_bw()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+This plot shows country-years–with countries on the *y*-axis and years
+on the *x*-axis. The fill color corresponds to whether the non-lagged
+outcome variable was coded as 0, 1, or missing.
+
+It seems that all sequences of NA’s that start after 2001 are preceded
+by a “1” coding. There are some isolated single half-year 1’s, and Yemen
+has 2 “1”’s not separated by a non-civil war year.
+
+Looking through the appendix:
+
+  - Cote d’Ivoire (CIV) indeed has a single-year civil war (p. 30)
+  - Libya also looks like it has a short civil war folled by longer one
+    (p. 29)
+  - Yemen, ok, there are two long periods of civil war separated by a
+    small gap; that probably explains the onset immediately after NA
+    half year (p. 28)
+
+Ok, so this indeed seems to be onset coded from an original incidence
+variable, as the name suggests anyways.
+
+How do we get from that to B\&S Table 4?
+
+Aha, the culprit is in `6mo_make_confusion_matrix.do`. The script loads
+`predictions/6mo_predictions_escalation_OOS.dta`, drops everything prior
+to 2016. Then, on lines 50-52:
+
+``` stata
+* Recode predictand
+        
+replace incidence_civil_ns=1 if incidence_civil_ns==.
+```
+
+So it seems that `incidence_civil_ns` went from some original incidence
+version to the onset + NA for ongoing coding in the data that is used
+for the R portion of the work; then prior to creating the confusion
+matrices for the forecast scoring, the onset + NA for ongoing coding is
+reversed, giving us back incidence coding. So indeed, the forecasts are
+scored using incidence.
+
+Here’s the alternative coding for the bottom portion, btw:
+
+``` stata
+          * Generate alternate coding of predictand
+        
+            gen incidence_civil_ns_alt=incidence_civil_ns
+                replace incidence_civil_ns_alt=0 if country_name=="Colombia"
+                replace incidence_civil_ns_alt=1 if country_name=="Turkey"
+                replace incidence_civil_ns_alt=1 if country_name=="Burundi"
+```
+
+Redo a correct scoring against civil war onset.
 
 ``` r
 # Hand-code the Table 3 predictions;
-# The predictions don't exactly match what is in Table 3, possibley because I
+# The predictions don't exactly match what is in Table 3, possibly because I
 # only ran the 6 month OOS portion of +master.R after setting the seed at the
 # top.
 pred1 <- c("Nigeria", "India", "Iraq", "Somalia", "Syria", "Pakistan",
@@ -142,31 +230,31 @@ pred1 <- c("Nigeria", "India", "Iraq", "Somalia", "Syria", "Pakistan",
            "Sudan", "Lebanon", "Thailand", "Iran", "Myanmar", "Montenegro",
            "Bangladesh", "Niger", "El Salvador", "France", "Ghana", "Tajikistan")
 codes <- countrycode::countrycode(pred1, "country.name", "iso3c")
-preds$label <- as.integer(preds$country %in% codes)
+fcast2016$label <- as.integer(fcast2016$country %in% codes)
 # should be 30
-sum(preds$label)
+sum(fcast2016$label)
 ```
 
     ## [1] 30
 
 ``` r
 # What is the truth data in preds?
-preds %>% count(incidence_civil_ns)
+fcast2016 %>% count(incidence_civil_ns)
 ```
 
     ## # A tibble: 2 x 2
     ##   incidence_civil_ns     n
-    ##                <int> <int>
+    ##                <dbl> <int>
     ## 1                  0   149
     ## 2                 NA    15
 
 ``` r
-preds %>% count(incidence_civil_ns_plus1)
+fcast2016 %>% count(incidence_civil_ns_plus1)
 ```
 
     ## # A tibble: 1 x 2
     ##   incidence_civil_ns_plus1     n
-    ##                      <int> <int>
+    ##                      <dbl> <int>
     ## 1                        0   164
 
 ``` r
@@ -187,7 +275,7 @@ data_6month_oos %>% filter(period==31) %>% count(incidence_civil_ns_alt1_plus1)
     ## 2                            NA  13
 
 ``` r
-tab4_top <- preds %>%
+tab4_top <- fcast2016 %>%
   rename(Observed = incidence_civil_ns, Predicted = label) %>%
   replace_na(list(Observed = 0L)) %>%
   mutate(Observed = factor(Observed, levels = c("0", "1")),
@@ -206,16 +294,16 @@ tab4_top <- preds %>%
 # replace incidence_civil_ns_alt=0 if country_name=="Colombia"
 # replace incidence_civil_ns_alt=1 if country_name=="Turkey"
 # replace incidence_civil_ns_alt=1 if country_name=="Burundi"
-preds %>%
+fcast2016 %>%
   filter(country %in% c("COL", "TUR", "BDI"))
 ```
 
     ## # A tibble: 3 x 7
-    ##   country year  period incidence_civil_… incidence_civil_ns… prediction    label
-    ##   <chr>   <chr> <chr>              <int>               <int> <chr>         <int>
-    ## 1 BDI     2016  31                     0                   0 0.0134470646…     1
-    ## 2 COL     2016  31                    NA                   0 0.0106598520…     1
-    ## 3 TUR     2016  31                     0                   0 0.0646999504…     1
+    ##   country  year period incidence_civil_ns incidence_civil_ns_p… prediction label
+    ##   <chr>   <dbl>  <dbl>              <dbl>                 <dbl>      <dbl> <int>
+    ## 1 BDI      2016     31                  0                     0     0.0134     1
+    ## 2 COL      2016     31                 NA                     0     0.0107     1
+    ## 3 TUR      2016     31                  0                     0     0.0647     1
 
 ``` r
 data_6month_oos %>%
@@ -322,14 +410,14 @@ data_6month_oos %>%
 # Burundi has no ongoing conflict, so this is new onset
 # Colombia has ongong conflict, so no difference
 # Turkey has no ongoing conflict, so this is new onset
-preds_v2 <- preds %>%
+fcast2016_v2 <- fcast2016 %>%
   mutate(incidence_civil_ns = case_when(
-    country=="TUR" ~ 1L,
-    country=="BDI" ~ 1L,
+    country=="TUR" ~ 1,
+    country=="BDI" ~ 1,
     TRUE ~ incidence_civil_ns
   ))
 
-tab4_bottom <- preds_v2 %>%
+tab4_bottom <- fcast2016_v2 %>%
   rename(Observed = incidence_civil_ns, Predicted = label) %>%
   replace_na(list(Observed = 0L)) %>%
   mutate(Observed = factor(Observed, levels = c("0", "1")),
@@ -348,7 +436,7 @@ tab4 <- bind_rows(tab4_top, tab4_bottom) %>%
   dplyr::select(header, everything()) %>%
   pivot_wider(names_from = "Predicted", values_from = n)
 
-write_csv(tab4, "output/tab4-fixed.csv")
+write_csv(tab4, "output/table4-fixed.csv")
 
 tab4
 ```
