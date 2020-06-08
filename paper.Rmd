@@ -5,6 +5,8 @@ author:
  - Richard K. Morgan^[USAID, rick.morgan2@gmail.com. The views expressed are those of the author and do not reflect the official policy or position of USAID or the US Government.]
  - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com]
 date: "`r format(Sys.time(), '%d %B %Y')`"
+thanks: Cassy L. Dorff provided helpful feedback on this project.
+abstract: We examine the research protocols in Blair and Sambanis (2020).  We find that there are several important mistakes and research decisions that determine their results. Fixing these mistakes results in a reversal of their claim that theory based models of escalation are better at predicting onsets of civil war than other kinds of models.  While their model is not very theoretical, it is outperformed by several of the ad hoc, non-theoretical models they examine.  
 output: 
   bookdown::pdf_document2:
     keep_tex: true
@@ -17,6 +19,7 @@ bibliography:
 knitr::opts_chunk$set(echo = FALSE, message=FALSE)
 # options(tinytex.verbose = TRUE)
 
+library(bookdown)
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -102,7 +105,7 @@ The "Weighted by PITF" model is described as follows in B&S, page 19:
 
 > The [Weighted by PITF model] uses PITF predicted probabilities to weight the results of the escalation model, ensuring that high-risk and low-risk countries that happen to take similar values on ICEWS-based predictors are nonetheless assigned different predicted probabilities in most months.
 
-We infer that the intent is that the escalation model's predictions for the test set are weighted by the PITF model predictions for the test set. B&S, however, actually weights the \textbf{test} set predictions using the PITF model predictions for the \textbf{training} set.^[See `1mo_run_escalation_weighted_PITF.R` line 4, where the PITF predictions are taken from the training data set (`train$pred_prob_plus1`). The next line is a hack extending the shorter `weight` vector with missing values to avoid a R warning when it is multiplied with the longer vector of escalation model test set predictions. Similarly in the 6-month version of this file.] This appears to be an easily corrected coding error on the part of B&S.
+B&S intend that the escalation model's predictions for the test set are weighted by the PITF model predictions for the test set. B&S, however, actually weights the \textbf{test} set predictions using the PITF model predictions for the \textbf{training} set.^[See `1mo_run_escalation_weighted_PITF.R` line 4, where the PITF predictions are taken from the training data set (`train$pred_prob_plus1`). The next line is a hack extending the shorter `weight` vector with missing values to avoid a R warning when it is multiplied with the longer vector of escalation model test set predictions. Similarly in the 6-month version of this file.] This appears to be an easily corrected coding error on the part of B&S.
 
 
 ## Incorrect "PITF Split Population" implementation
@@ -132,7 +135,7 @@ By examining the code used to generated Table 4, we were able to confirm that th
 
 # Results of the updated analysis
 
-We now turn to an examination of our analysis that addresses and fixes the issues discussed above.^[The code for all of our analysis undertaken for this effort may be found at https://github.com/rickmorgan2/Blair-Sambanis-replication.] The main results of the original analysis consist of the comparison of the Escalation to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B&S Table 1), and a comparison of the Escalation model to models that add structural variables/information (our Table \ref{tab:table2-fixed}, B&S Table 2). We will review the substantive implications of our updated analysis further below, but the bottom line is that the changes we make turn on their heads the conclusions of B&S.
+We now turn to an examination of our analysis that addresses and fixes the issues discussed above.^[The code for all of our analysis undertaken for this effort may be found at https://github.com/rickmorgan2/Blair-Sambanis-replication.] The main results of the original analysis consist of the comparison of the Escalation to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B&S Table 1), and a comparison of the Escalation model to models that add structural variables/information (our Table \ref{tab:table2-fixed}, B&S Table 2). We will review the substantive implications of our updated analysis further below, but the bottom line is that these changes turn B&S's conclusions on their heads.
 
 ## Smoothed ROC curves and AUC calculations
 
@@ -211,7 +214,7 @@ The key difference between Table \ref{tab:table1-nosmooth} and B&S Table 1 is wh
 
 ## Using Inconsistent Ns
 
-The top portion of Table \ref{tab:table2-N} shows the number of valid test set predictions that can be scored for each model in the original B&S Table 2. For the 1-month data version, the number of predictions differs by up to 500 cases, and in the 6-month data version by around 100 cases. These numbers appear small enough to be not important, but crucially the already small number of positive cases also changes: the "With PITF Predictors" and "PITF Only" models lose 2 and 1 of 11 positive cases, respectively, in the 1- and 6-month data versions. 
+The top portion of Table \ref{tab:table2-N} shows the number of valid test set predictions that can be scored for each model in the original B&S Table 2. For the 1-month data version, the number of predictions differs by up to 500 cases, and in the 6-month data version by around 100 cases. These numbers appear small enough to be not important. However, the already small number of positive cases also is affected substantially:  "With PITF Predictors" and "PITF Only" models lose two or one (respectively) of 11 positive cases in the 1- and 6-month data versions. 
 
 ```{r}
 table2_full <- read_csv("data/table2-for-appendix.csv")
@@ -231,7 +234,7 @@ table2_full %>%
   collapse_rows(1:2, row_group_label_position = "stack") 
 ```
 
-We fix this issue by only using predictions for common joint subset of cases that all models have non-missing predictions for. The resulting number of cases for each model are shown in the bottom portion of the table. Since the sets of incomplete cases in the original version above do not completely overlap themselves, the common subset for all models is actually slightly smaller than the smallest N in the top portion of the table.
+Generally, these comparisions require the same cases.  Therefore, we use predictions for common joint subset of nonmissing predictions The resulting numbers of cases for each model are shown in the bottom portion of the table. Since the sets of incomplete cases in the original version above do not completely overlap themselves, the common subset for all models is actually slightly smaller than the smallest N in the top portion of the table.
 
 ## Do structural variables add to the Escalation model?
 
@@ -305,7 +308,7 @@ Another, minor issue or rather coding error, is related to using a lead version 
 
 # Conclusion
 
-The B&S approach that is advocated is to use theory to guide prediction. But theory is an ambiguous and undefined concept.  It is not a procedure.  What they actually do is to create a model with ten right hand side variables that is supposed to capture a complicated repression-dissent dynamic. There is a wide-ranging literature on this dynamic that they do not rely on to construct their model.  As such their baseline comparison is a poor standard bearer for strong theory. Moreover, they misunderstand the use of ICEWS event data in current research. They claim that most uses to date have focused on the quad categories, but this ignores a wide swath of literature (Steinert-Threlkeld APSR 2017) and Metternich et al (AJPS 2013) that uses a specific action---such as protest---defined in the CAMEO ontology. In the AJPS article on Thailand, Metternich et al hand coded, for example, every actor in Thailand and focused on an analysis of how those interact.
+The B&S approach that is advocated is to use theory to guide prediction. But theory as used by B&S is an ambiguous and undefined concept.  It is not a procedure.  What they actually do is to create a model with ten right hand side variables that is supposed to capture a complicated repression-dissent dynamic. There is a wide-ranging literature on this dynamic that they do not rely on to construct their model.  As such their baseline comparison is a poor standard bearer for strong theory. Moreover, they misunderstand the use of ICEWS event data in current research. They claim that most uses to date have focused on the quad categories, but this ignores a wide swath of literature (Steinert-Threlkeld APSR 2017) and Metternich et al (AJPS 2013) that uses a specific action---such as protest---defined in the CAMEO ontology. In the AJPS article on Thailand, Metternich et al hand coded, for example, every actor in Thailand and focused on an analysis of how those interact.
 
 We encountered several issues in the code underlying the B&S analysis. The issues we encountered are not subjective modeling choices. When we fix these issues and perform an updated analysis, the B&S conclusions are all essentially overturn. In other words, B&S findings are based on a faulty analysis, and invalid. 
 
