@@ -41,7 +41,7 @@ claim.
 \end{quote}
 
 
-# Review of Blair and Sambanis 2020
+# Summary of Blair and Sambanis (2020)
 
 @blair:sambanis:2020 (B&S hereafter) aim to examine whether theory adds more value to a forecasting model when compared to non-parametric machine learning models, and specifically random forests, whose specifications are not theory-informed. For the moment we set aside a) the logic of this hypothesis and b) whether their model has more theory than is typically found in empirical conflict models.  In short, they uphold their hypothesis that theory guided empirical research produces better conflict predictions than machine learning inspired efforts that are essentially ad hoc combinations of available variables. They arrive at this conclusion by examining the problem of predicting civil war onset. They report that a parsimonious model using a small number of covariates derived from escalation theories of conflict can forecast civil war onset better than alternative specifications based on generic covariates not specifically informed by theory including a \textit{kitchen sink} model with more than 1,000 covariates. 
 
@@ -83,25 +83,15 @@ The corresponding results are shown in B&S Table 2.
 
 Finally, B&S used their escalation model to create forecasts for the first half of 2016, and in their third and final analysis, they score the forecasts accuracy using civil war onset data later observed. This is summarized in B&S Table 3. 
 
-# Replication problems
+# Implementation issues in B&S
 
-While replicating and analyzing B&S's results, we found several issues worthy of further discussion and investigation. These are a) the use of smoothed ROC curves to draw conclusions about which model is best, b) incorrect implementations of the weighted by PITF and PITF analog split-population models, c) inconsistent test sets for the models examined, and d) incorrect scoring of the 2016 forecasts. We also note (e) additional concerns arising from the question of how the random forest models were tuned by B&S, especially given the way they are used is unorthodox. We did not further investigate the latter issue as it is rendered somewhat moot by the changes in results after addressing the preceding issues. 
+While replicating and analyzing B&S's results, we found several issues worthy of further discussion and investigation. These are a) the use of smoothed ROC curves to draw conclusions about which model is best, b) incorrect implementations of the weighted by PITF and PITF analog split-population models, c) inconsistent test sets for the models examined, and d) incorrect scoring of the 2016 forecasts.^[We also note (e) additional concerns arising from the question of how the random forest models were tuned by B&S, especially given the way they are used is unorthodox. We did not further investigate the latter issue as it is rendered somewhat moot by the changes in results after addressing the preceding issues.]
 
 Our belief is that these research decisions and issues lead B&S to draw conclusion that are incorrect. The escalation model is not the best and it actually performs worse that the atheoretical, garbage can model with over $1000$ variables.  We turn to discussing these five issues below.  We hold a complete analysis that corrects all these issues until later, as there are many possible permuations of a seriatim unfolding.
 
 ## Smoothed ROC curves
 
-The most consequential issue that we found is that all AUC-ROC values reported in B&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, actual ROC curves. A reference to smoothing is made in a single sentence in the paper (p. 12):
-
-> Figure 1 displays the corresponding ROC curves, smoothed for ease of interpretation.
-
-This implies that the ROC curves were only smoothed in the references Figure 1, but actually all AUC-ROC calculations throughout the replication code use an option to smooth the ROC curves prior to AUC calculation. ROC curves are constructed from the false positive and true positive rates as one moves through a set of ranked predictions, and as a result appear step-like. Figure 1 shows our replication of both the smoothed ROC curves B&S report, and the actual ROC curves on the right. The standard method is to compute the area under the curve AUC statistic on the original, non-smooth ROC curves that are shown on the right. 
-
-![Replication of B&S Figure 1 with both smooth and non-smoothed ROC curves.](figures/figure1-replicated.png)
-
-ROC curves typically appear step-like in response to the distribution of positive and negative cases in the data, which specifically in rare events problems like this one restricts the number of distinct true positive rate values. The specific predictions here also include groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines as seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the *y*-axis only changes when the prediction for a observed positive case is reached. For these ROC curves, and for that matter in the basic train/test split used for 12 of the 18 rows/models in B&S Table 1, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct *y* coordinates.  Notice also that the smoothing averages the left most almost straight line with the right most almost straight line in a monotonic way. This ignores the fact that the actual ROC **MIKE**
-
-As we show below, the use of smoothed ROC curves to calculuate AUC has a dramatic impact on the results. To our knowledge, the norm is to calculate AUC-ROC values using original, not smoothed ROC curves. We are in fact not aware of other work that uses smoothed ROC curves for AUC calculations. It might be that there are theoretical reasons justifying the use of smoothed ROC curves over the original ROC curves; but given that this decision dramatically impacts the interpretation of the B&S results, it minimally would have warranted an explicit discussion in the paper. As it is, B&S offer no justification for using smoothed ROC curves in the AUC-ROC calculations. 
+The most consequential issue that we found is that all AUC-ROC values reported in B&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, actual ROC curves. the data, which specifically in rare events problems like this one restricts the number of distinct true positive rate values. As we show below, the use of smoothed ROC curves to calculuate AUC has a dramatic impact on the results. To our knowledge, the norm is to calculate AUC-ROC values using original, not smoothed ROC curves. We are in fact not aware of other work that uses smoothed ROC curves for AUC calculations. It might be that there are theoretical reasons justifying the use of smoothed ROC curves over the original ROC curves; but given that this decision dramatically impacts the interpretation of the B&S results, it minimally would have warranted an explicit discussion in the paper. As it is, B&S offer no justification for using smoothed ROC curves in the AUC-ROC calculations. 
 
 The next three issues we encountered all concern information in B&S Table 2. 
 
@@ -111,23 +101,94 @@ The "Weighted by PITF" model is described as follows in B&S, page 19:
 
 > The [Weighted by PITF model] uses PITF predicted probabilities to weight the results of the escalation model, ensuring that high-risk and low-risk countries that happen to take similar values on ICEWS-based predictors are nonetheless assigned different predicted probabilities in most months.
 
-We infer that the intent is that the escalation model's predictions for the test set are weighted by the PITF model predictions for the test set. B&S, however, actually weights the \textbf{test} set predictions using the PITF model predictions for the \textbf{training} set.^[See `1mo_run_escalation_weighted_PITF.R` line 4, where the PITF predictions are taken from the training data set (`train$pred_prob_plus1`). The next line is a hack extending the shorter `weight` vector with missing values to avoid a R warning when it is multiplied with the longer vector of escalation model test set predictions. Similarly in the 6-month version of this file.] This appears to be a coding error.
+We infer that the intent is that the escalation model's predictions for the test set are weighted by the PITF model predictions for the test set. B&S, however, actually weights the \textbf{test} set predictions using the PITF model predictions for the \textbf{training} set.^[See `1mo_run_escalation_weighted_PITF.R` line 4, where the PITF predictions are taken from the training data set (`train$pred_prob_plus1`). The next line is a hack extending the shorter `weight` vector with missing values to avoid a R warning when it is multiplied with the longer vector of escalation model test set predictions. Similarly in the 6-month version of this file.] This appears to be an easily corrected coding error on the part of B&S.
 
 
 ## Incorrect "PITF Split Population" implementation
 
-Similarly, the "PITF Split Population" model appears to be incorrectly implemented. B&S describe it on page 20:
+Similarly, the "PITF Split Population" model appears to be incorrectly implemented, owing to a coding error. B&S describe it on page 20:
 
 > The final approach is a random forest analog to split-population modeling.
 first compute the average PITF predicted probability for each country across all years in our training set. We define those that fall in the bottom quartile as "low risk" and the rest as "high risk." We then run our escalation model on the high-risk and low-risk subsets separately, combining the results into a single random forest (column 4).
 
-The intention clearly was to run two separate random forest models, one each on the low- and high-risk training data splits. The replication code does indeed run two separate random forecasts, but they are both run on the *exact same training data*, which consists of the full training data all other models are run on. The models are also identical otherwise, i.e. they use the same *x* variables and the same random forest hyper-parameter settings. The *only* difference in the models as they are implemented in the B&S replication code is due to the non-deterministic nature of the random forest model itself. If we ran both with the same random seed, they would be identical in every respect, producing identical predictions.^[Disentangling this coding error is not straightforward as it occurs over several R scripts and requires (or at least is easier to verify by) running partway through the actual replication until the objects holding the training data for the models are instantiated and can be examined. We have documented details at https://github.com/rickmorgan2/Blair-Sambanis-replication/issues/5.] 
+The intention if B&S appears to have been to run two separate random forest models, one each on the low- and high-risk training data splits. The replication code does indeed run two separate random forecasts, but they are both run on the *exact same training data*, which consists of the full training data all other models are run on. The models are also identical otherwise, i.e. they use the same *x* variables and the same random forest hyper-parameter settings. The *only* difference in the models as they are implemented in the B&S replication code is due to the non-deterministic nature of the random forest model itself. If we ran both with the same random seed, they would be identical in every respect, producing identical predictions.^[Disentangling this coding error is not straightforward as it occurs over several R scripts and requires (or at least is easier to verify by) running partway through the actual replication until the objects holding the training data for the models are instantiated and can be examined. We have documented details at https://github.com/rickmorgan2/Blair-Sambanis-replication/issues/5.] 
 
 The implementation error aside, this split-population analog model is actually quite odd and does not actually replicate an analogue of the idea behind split-population modeling. Although the two RFs are trained on separate data (in our updated, fixed replication), the process of combining them actually just creates a new, larger RF using both component model's underlying decision (regression^[See further below. Although the RF models are used for a binary decision problem, the actual implementation uses regression RFs for continuous outcomes.]) trees. Thus, while all RF models throughout (except for one of the robustness checks) are trained with 100,000 decision trees (`ntree`), the new RF model after combination does indeed have 200,000 decision trees. Furthermore, the PITF model predictions do not impact the way the combined RF model predicts at all, not even through a binary low-/high-risk split. The split-population PITF RF model is practically speaking just another escalation model trained with N=200,000 instead of N=100,000 trees and an extra odd randomization step added to the already existing RF randomization facilities (row and column sampling for each decision tree). This does not adequately implement their research strategy.
 
 ## Inconsistent test set N for the models in Table 2
 
 Further, the AUC-ROC values reported in the original B&S Table 2 are calculated on the basis of slightly different numbers of underlying test set cases (see Table \ref{tab:table2-N}). ROC calculations for a set of predictions can only be done on the set of cases for which both non-missing predictions and non-missing outcomes are available. Those sets differ across models (columns) for each row in Table 2. The top portion of Table \ref{tab:table2-N} shows the number of valid test set predictions that can be scored for each model in the original B&S Table 2. For the 1-month data version, the number of predictions differs by up to 500 cases, and in the 6-month data version by around 100 cases. These numbers appear small enough to be not important, but crucially the already small number of positive cases also changes: the "With PITF Predictors" and "PITF Only" models lose 2 and 1 of 11 positive cases, respectively, in the 1- and 6-month data versions. 
+
+
+## Incorrect scoring of the 2016 forecasts
+
+B&S show a confusion matrix to score their 2016-H1 forecasts in Table 4. Although the forecasts are for the probability of civil war onset, in the replication code they are actually scored using the much more common incidence of civil war, i.e. including ongoing civil wars as "1"'s. 
+
+The relevant variables in the data are "incidence_civil_ns" and "incidence_civil_ns_plus1", which appears to be a 1-period lead version of the DV that is used in the actual prediction models. The incidence DV contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. This reflects common practice in how these are coded. 
+
+By examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable back to incidence. 
+
+# Results of the updated analysis
+
+We now turn to an examination of our analysis that addresses and fixes the issues discussed above.^[The code for all of our analysis undertaken for this effort may be found at https://github.com/rickmorgan2/Blair-Sambanis-replication.]  The bottom line is that the changes we make turn on their heads the conclusions of B&S.
+
+## Smoothed ROC curves and AUC calculations
+
+A reference to smoothing is made in a single sentence in the paper (p. 12):
+
+> Figure 1 displays the corresponding ROC curves, smoothed for ease of interpretation.
+
+This implies that the ROC curves were only smoothed in the references Figure 1, but actually all AUC-ROC calculations throughout the replication code use an option to smooth the ROC curves prior to AUC calculation. ROC curves are constructed from the false positive and true positive rates as one moves through a set of ranked predictions, and as a result appear step-like. Figure 1 shows our replication of both the smoothed ROC curves B&S report, and the actual ROC curves on the right. The standard method is to compute the area under the curve AUC statistic on the original, non-smooth ROC curves that are shown on the right. 
+
+![Replication of B&S Figure 1 with both smooth and non-smoothed ROC curves.](figures/figure1-replicated.png)
+
+The specific predictions here also include groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines as seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the *y*-axis only changes when the prediction for a observed positive case is reached. For these ROC curves, and for that matter in the basic train/test split used for 12 of the 18 rows/models in B&S Table 1, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct *y* coordinates.  Notice also that the smoothing averages the left most almost straight line with the right most almost straight line in a monotonic way.
+
+## The effect of using smoothed ROC curves
+
+What impact did the ROC smoothing have overall on the results reported in Table \ref{tab:table1-nosmooth} (B&S Table 1) and Table \ref{tab:table2-fixed} (B&S Table 2)? Figure \ref{fig:benefit} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each of the gray points corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed}. The red crosses mark the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to "PITF Only", smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible in average. The Escalation model _always_ benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the result B&S find, namely that the escalation model is generally superior. 
+
+
+```{r benefit, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2)"}
+table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
+table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
+
+benefit <- bind_rows(
+  table1_benefit %>%
+    rename(setting = Model) %>%
+    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff"),
+  table2_benefit %>%
+    rename(setting = Model, Escalation = `Escalation Only`) %>%
+    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff")
+)
+
+# mean benefit by model
+means <- benefit %>%
+  group_by(model) %>%
+  summarize(avg_benefit = mean(diff))
+
+ann_text <- tibble(horizon = "1 month", diff = 0.07, model = 8.6, label = "Mean")
+
+model_levels <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average", 
+                  "With PITF Predictors", "Weighted by PITF", "PITF Split Population",
+                  "PITF Only")
+benefit %>%
+  mutate(model = factor(model, levels = rev(model_levels))) %>%
+  ggplot(aes(y = model)) + 
+  #facet_wrap(~ horizon, scales = "free_x") +
+  geom_point(aes(x = diff), alpha = 0.5, size = 2, color = "gray50") +
+  geom_point(data = means, aes(x = avg_benefit), shape = 4, color = "red", size = 4) +
+  labs(x = "AUC(smoothed ROC) - AUC(ROC)",
+       y = "") +
+  theme_bw() +
+  geom_text(data = ann_text, aes(x = diff, label = label), col = "red") +
+  geom_vline(xintercept = 0, linetype = 3) +
+  theme(axis.text.y = element_text(size = 12))
+```
+
+In sum, it is not only the case that using smoothed ROC curves alters the results: the use of smoothed ROC curves to calculate AUC-ROC values clearly benefits \textbf{only} the escalation model. It does so consistently and by a considerable margin. All eight alternative models reported in Tables 1 and 2 on average do not gain when using smoothed ROC curves to calculate AUC. 
+
+## Using Inconsistent Ns
 
 Thus a difference in AUC-ROC values for two models could be due to the fact that they were calculated on different sets of underlying cases, not because the models are systemically performing at a different level. In other words, the results for different models in B&S Table 2 are actually not comparable to one another, and any conclusions drawn from such comparison are potentially incorrect. 
 
@@ -150,58 +211,6 @@ table2_full %>%
 ```
 
 We fix this issue by only using predictions for common joint subset of cases that all models have non-missing predictions for. The resulting number of cases for each model are shown in the bottom portion of the table. Since the sets of incomplete cases in the original version above do not completely overlap themselves, the common subset for all models is actually slightly smaller than the smallest N in the top portion of the table.
-
-## Incorrect scoring of the 2016 forecasts
-
-B&S show a confusion matrix to score their 2016-H1 forecasts in Table 4. Although the forecasts are for the probability of civil war onset, in the replication code they are actually scored using the much more common incidence of civil war, i.e. including ongoing civil wars as "1"'s. 
-
-The relevant variables in the data are "incidence_civil_ns" and "incidence_civil_ns_plus1", which appears to be a 1-period lead version of the DV that is used in the actual prediction models. The incidence DV contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. This reflects common practice in how these are coded. 
-
-By examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable back to incidence. 
-
-## Random forest hyperparameters
-
-What initially sparked our interest in the paper was the unusual choice of hyperparameter settings for the random forest models estimated. Table \ref{tab:hp} shows the default values used by the implementation of random forest that B&S use (from the **randomForest** R package), in contrast to the basic settings used by B&S for most the models reported in the paper. 
-
-As the outcome is a binary indicator of civil war onset, one would typically use a classification random forest that predicts 0 or 1 labels directly. The implementation of random forests that B&S use ([@liaw:wiener:2002]) is based on the original @breiman:2001 implementation and calculates predictive probabilities by averaging over the "0" or "1" votes from all constituent decision trees. The conventional wisdom regarding the number of trees in a random forest is that it needs to be large enough to stabilize performance, but without any additional gain or harm in accuracy beyond a certain number. From the other default settings, which are generally not uninformed choices, one can see that the basic logic is to grow a forest with a relatively small number of trees, but where each tree is fairly extensive, and operates on a large bootstrapped sample of the original training data. These are of course only heuristics and it is usual to attempt to find better hyper-parameter methods through some form of tuning. 
-
-\begin{table}
-\caption{\label{tab:hp} Random forest (\texttt{randomForest()}) default versus B\&S hyperparameters}
-\begin{tabular}{l>{\raggedright\arraybackslash}p{2in}ll}
-\toprule
-Hyperparameter & Default heuristic & Default values (Escalation) & B\&S value \\
-\midrule
-type & & classification & regression \\
-ntree & & 500 & 100,000 or 1e6 \\
-mtry & \texttt{floor(sqrt(ncol(x)))} & 3 & 3 \\
-replace & & true & false \\
-sampsize & \texttt{nrow(x)} if replace, else \texttt{ceiling(.632*nrow(x))} & 11,869 & 100 or
-500 \\
-nodesize & 1 for classification & 1 & 1 \\
-maxnodes & & null & 5 or 10 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-B&S in contrast fit very large forests with 100,000 trees in the basic model form, but where each tree only operates on a very small sub-sample (N=100 or 500), drawn without replacement, of the available training data. This approach only works due to the choice to use regression, not classification, trees. Trying to use classification trees with the other parameter settings not work at all because it is almost guaranteed that a sample of 100 from the ~11,000 training data rows with 9 positive cases will only include 0 (negative) outcomes in the sample. As it is, using regression with a 0 or 1 outcome produces warnings when estimating the models: 
-
-```
-Warning message:
-In randomForest.default(y = as.integer(train_df$incidence_civil_ns_plus1 ==  :
-  The response has five or fewer unique values.  Are you sure you want to do regression?
-```
-
-As it turns out, using regression random forests for this kind of binary classification problem in order to obtain probability estimates matches the probability random forest approach suggested and positively evaluated in @malley:etal:2012, and which is used in another prominent R implementation of random forests.^[The **ranger** package.] It is not clear whether this is intentional, as the Malley paper is not cited in B&S. 
-
-In any case, B&S's random forest approach appears to work really well. We tried to construct classification random forests tuned via cross-validation on the training data set partition, i.e. without touching the test data, but were unable to develop models that consistently match the B&S random forest method in both cross-validated out-of-sample training predictions and test set predictions. 
-
-Given that they are relatively unorthodox, yet appear to work very well, we wonder how the hyper-parameter values were determined. Two specific concerns are that this was not done with an eye towards test set accuracy, which would invalidate the independence of the out-of-sample test set, and whether the specific hyper-parameter values are optimized for only one model, or were optimized and found to work well for all models. There is no discussion of the random forest tuning strategy or how the specific hyper-parameter methods were determined in the paper. 
-
-Given the dramatic changes in results as a result of the preceding issues, we did not further investigate these potential concerns.
-
-# Results of the updated analysis
-
-We now turn to an examination of our replication that fixes the above issues.  The bottom line is that the changes we make turn on their heads the conclusions of B&S.
 
 ## Is the Escalation model superior to the alternative ICEWS models?
 
@@ -257,49 +266,6 @@ The weighted model performs roughly on par with the Escalation Only model. One f
 
 The most straightforward method of incorporating the annual, structural PITF variables--adding them to the predictors of the Escalation RF model--strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard and that the "PITF Split Population" model does not in fact actually incorporate structural information at all. We thus conclude that adding structural variables improves predictive performance.
 
-## The effect of using smoothed ROC curves
-
-What impact did the ROC smoothing have overall on the results reported in Table \ref{tab:table1-nosmooth} (B&S Table 1) and Table \ref{tab:table2-fixed} (B&S Table 2)? Figure \ref{fig:benefit} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each of the gray points corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed}. The red crosses mark the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to "PITF Only", smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible in average. The Escalation model _always_ benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the result B&S find, namely that the escalation model is generally superior. 
-
-
-```{r benefit, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2)"}
-table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
-table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
-
-benefit <- bind_rows(
-  table1_benefit %>%
-    rename(setting = Model) %>%
-    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff"),
-  table2_benefit %>%
-    rename(setting = Model, Escalation = `Escalation Only`) %>%
-    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff")
-)
-
-# mean benefit by model
-means <- benefit %>%
-  group_by(model) %>%
-  summarize(avg_benefit = mean(diff))
-
-ann_text <- tibble(horizon = "1 month", diff = 0.07, model = 8.6, label = "Mean")
-
-model_levels <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average", 
-                  "With PITF Predictors", "Weighted by PITF", "PITF Split Population",
-                  "PITF Only")
-benefit %>%
-  mutate(model = factor(model, levels = rev(model_levels))) %>%
-  ggplot(aes(y = model)) + 
-  #facet_wrap(~ horizon, scales = "free_x") +
-  geom_point(aes(x = diff), alpha = 0.5, size = 2, color = "gray50") +
-  geom_point(data = means, aes(x = avg_benefit), shape = 4, color = "red", size = 4) +
-  labs(x = "AUC(smoothed ROC) - AUC(ROC)",
-       y = "") +
-  theme_bw() +
-  geom_text(data = ann_text, aes(x = diff, label = label), col = "red") +
-  geom_vline(xintercept = 0, linetype = 3) +
-  theme(axis.text.y = element_text(size = 12))
-```
-
-In sum, it is not only the case that using smoothed ROC curves alters the results: the use of smoothed ROC curves to calculate AUC-ROC values clearly benefits \textbf{only} the escalation model. It does so consistently and by a considerable margin. All eight alternative models reported in Tables 1 and 2 on average do not gain when using smoothed ROC curves to calculate AUC. 
 
 ## How accurate were the 2016 forecasts?
 
@@ -337,11 +303,7 @@ Another, minor issue or rather coding error, is related to using a lead version 
 
 # Conclusion
 
-B&S have a clear misunderstanding of the role that out-of-sample prediction can play in analysis.  On the one hand it can be used for simple forecasting, while on the other it can be used to evaluate the performance of models, specifically to overfitting and bias.  They further misrepresent cross-validation---which is not about fishing for results, as claimed by B&S.  The current state-of-the-art uses prediction and cross-validation most frequently to provide supportive evidence that is independent of the estimation procedure and the in-sample data. It is incorrect to paint this procedure as atheoretical since many studies will have some explanation for how the model was constructed. These procedures may simply be used to provide evidence for a theoretical argument.  Though that argument may be unconvincing and/or atheoretical.
-
-The B&S approach that is advocated is to use theory to guide prediction. But theory is an ambiguous and undefined concept.  It is not a procedure.  What they actually do is to create a model with four right hand side variables that is supposed to capture a complicated repression-dissent dynamic.  The dynamic is probably not linear, but their model is. There is a wide-ranging literature on this dynamic that they do not rely on to construct their model.  As such their baseline comparison is a poor standard bearer for strong theory.
-
-Further, they completely misunderstand the use of ICEWS event data in current research. They claim that most uses to date have focused on the quad categories, but this ignores a wide swath of literature (Steinert-Threlkeld APSR 2017) and Metternich et al (AJPS 2013) that uses a specific action---such as protest---defined in the CAMEO ontology. In the AJPS article we hand coded, for example, every actor in Thailand and focused on an analysis of how those have been interacting.
+The B&S approach that is advocated is to use theory to guide prediction. But theory is an ambiguous and undefined concept.  It is not a procedure.  What they actually do is to create a model with four right hand side variables that is supposed to capture a complicated repression-dissent dynamic.  The dynamic is probably not linear, but their model is. There is a wide-ranging literature on this dynamic that they do not rely on to construct their model.  As such their baseline comparison is a poor standard bearer for strong theory. Moreover, they misunderstand the use of ICEWS event data in current research. They claim that most uses to date have focused on the quad categories, but this ignores a wide swath of literature (Steinert-Threlkeld APSR 2017) and Metternich et al (AJPS 2013) that uses a specific action---such as protest---defined in the CAMEO ontology. In the AJPS article on Thailand, Metternich et al hand coded, for example, every actor in Thailand and focused on an analysis of how those interact.
 
 
 We encountered several issues in the code underlying the B&S analysis. The issues we encountered are not subjective modeling choices. When we fix these issues and perform an updated analysis, the B&S conclusions are all essentially overturn. In other words, B&S findings are based on a faulty analysis, and invalid. 
@@ -395,7 +357,10 @@ Indeed this scholarship has brought us to the point where predictive analysis of
 @mhw:2012.
 
 
+\newpage
 
+# (APPENDIX) Appendix {-}
+# Appendix A
 
 ```{r}
 table2_full <- read_csv("data/table2-for-appendix.csv")
@@ -421,9 +386,8 @@ table2_full %>%
   collapse_rows(1:3, row_group_label_position = "stack")
 
 ```
-\newpage
 
-# Appendix
+
 
 Table \ref{tab:table1-smooth} is our replication of B&S Table 1 with smoothed AUC-ROC. The results differ slightly from the original B&S Table 1, typically by no more than 0.01, due to the non-deterministic nature of the RF models. It is the case that B&S set the RNG seed in their replication code, which should theoretically allow exact reproduction, but (1) there was a change in more recent versions of R that affected the RNG seeding process, and (2) we refactored the replication script to allow one to run the models in parallel. In any case, the interpretation of results should not be sensitive to random variation, i.e. it should not depend on using a specific RNG seed. On the basis of these results, B&S conclude that the escalation model is generally superior to the alternatives, and we can replicate that interpretation when using smoothed ROC curves. 
 
@@ -460,5 +424,46 @@ table2_benefit %>%
   pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1))
 ```
 
+# Appendix B
+## Some additional, minor issues
+### Random forest hyperparameters
+
+What initially sparked our interest in the paper was the unusual choice of hyperparameter settings for the random forest models estimated. Table \ref{tab:hp} shows the default values used by the implementation of random forest that B&S use (from the **randomForest** R package), in contrast to the basic settings used by B&S for most the models reported in the paper. 
+
+As the outcome is a binary indicator of civil war onset, one would typically use a classification random forest that predicts 0 or 1 labels directly. The implementation of random forests that B&S use ([@liaw:wiener:2002]) is based on the original @breiman:2001 implementation and calculates predictive probabilities by averaging over the "0" or "1" votes from all constituent decision trees. The conventional wisdom regarding the number of trees in a random forest is that it needs to be large enough to stabilize performance, but without any additional gain or harm in accuracy beyond a certain number. From the other default settings, which are generally not uninformed choices, one can see that the basic logic is to grow a forest with a relatively small number of trees, but where each tree is fairly extensive, and operates on a large bootstrapped sample of the original training data. These are of course only heuristics and it is usual to attempt to find better hyper-parameter methods through some form of tuning. 
+
+\begin{table}
+\caption{\label{tab:hp} Random forest (\texttt{randomForest()}) default versus B\&S hyperparameters}
+\begin{tabular}{l>{\raggedright\arraybackslash}p{2in}ll}
+\toprule
+Hyperparameter & Default heuristic & Default values (Escalation) & B\&S value \\
+\midrule
+type & & classification & regression \\
+ntree & & 500 & 100,000 or 1e6 \\
+mtry & \texttt{floor(sqrt(ncol(x)))} & 3 & 3 \\
+replace & & true & false \\
+sampsize & \texttt{nrow(x)} if replace, else \texttt{ceiling(.632*nrow(x))} & 11,869 & 100 or
+500 \\
+nodesize & 1 for classification & 1 & 1 \\
+maxnodes & & null & 5 or 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+B&S in contrast fit very large forests with 100,000 trees in the basic model form, but where each tree only operates on a very small sub-sample (N=100 or 500), drawn without replacement, of the available training data. This approach only works due to the choice to use regression, not classification, trees. Trying to use classification trees with the other parameter settings not work at all because it is almost guaranteed that a sample of 100 from the ~11,000 training data rows with 9 positive cases will only include 0 (negative) outcomes in the sample. As it is, using regression with a 0 or 1 outcome produces warnings when estimating the models: 
+
+```
+Warning message:
+In randomForest.default(y = as.integer(train_df$incidence_civil_ns_plus1 ==  :
+  The response has five or fewer unique values.  Are you sure you want to do regression?
+```
+
+As it turns out, using regression random forests for this kind of binary classification problem in order to obtain probability estimates matches the probability random forest approach suggested and positively evaluated in @malley:etal:2012, and which is used in another prominent R implementation of random forests.^[The **ranger** package.] It is not clear whether this is intentional, as the Malley paper is not cited in B&S. 
+
+In any case, B&S's random forest approach appears to work really well. We tried to construct classification random forests tuned via cross-validation on the training data set partition, i.e. without touching the test data, but were unable to develop models that consistently match the B&S random forest method in both cross-validated out-of-sample training predictions and test set predictions. 
+
+Given that they are relatively unorthodox, yet appear to work very well, we wonder how the hyper-parameter values were determined. Two specific concerns are that this was not done with an eye towards test set accuracy, which would invalidate the independence of the out-of-sample test set, and whether the specific hyper-parameter values are optimized for only one model, or were optimized and found to work well for all models. There is no discussion of the random forest tuning strategy or how the specific hyper-parameter methods were determined in the paper. 
+
+Given the dramatic changes in results as a result of the preceding issues, we did not further investigate these potential concerns.
 
 # References
