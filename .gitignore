@@ -7,20 +7,20 @@
 .Rapp.history
 
 # chunks are only used for monitoring progress
-table1-redo/output/chunks
-tuning-experiments/output/chunks
-
 rep_nosmooth/output/predictions
-rep_nosmooth/trafo-data
+tuning/table1-redo/output/chunks
+tuning/tuning-experiments/output/chunks
 
 # > 100 MB
-table1-redo/trafo-data
-table1-redo/output/full-model-grid.rds
-tuning-experiments/trafo-data
+rep_nosmooth/trafo-data
+rep_original/workspaces
+tuning/table1-redo/trafo-data
+tuning/table1-redo/output/full-model-grid.rds
+tuning/tuning-experiments/trafo-data
 
 # Ignore latex artifacts
 paper.log
 *.aux
 *.tex
 
-rep_original/workspaces
+
