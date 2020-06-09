@@ -121,7 +121,7 @@ prediction_robust_civil_ns_alt2[is.na(escalation_test_frame_civil_ns_alt2$test_D
 
 # Calculate AUC
 
-performance <- port$port$prediction(prediction, test_DV_civil_ns)
+performance <- port$prediction(prediction, test_DV_civil_ns)
 roc <- roc(test_DV_civil_ns, prediction, smooth=TRUE, auc = TRUE)
 AUC_obs <- data.frame(as.numeric(roc$auc))
 

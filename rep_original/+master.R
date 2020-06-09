@@ -275,11 +275,12 @@ lgr$info("start 6 month models")
 
 # Clear environment
 
-rm(list = ls())
+# we need to retain the ROCR::prediction fix
+rm(list = setdiff(ls(), "port"))
 
 # Load data
 
-data <- read.dta13("data/6mo_data.rds")
+data <- read.dta13("data/6mo_data.dta")
 
 # Define training and testing sets for base specification
 
@@ -377,7 +378,7 @@ source("code/6mo_run_escalation.R", local = TRUE)
 saveRDS(escalation_6mo_train_formula_civil_ns, "extra/escalation_6mo_train_formula_civil_ns.rds")
 saveRDS(escalation_6mo_train_frame_civil_ns, "extra/escalation_6mo_train_frame_civil_ns.rds")
 saveRDS(train_model, "extra/6mo_train_model.rds")
-saveRDS(escalation_test_frame_civil_ns, "extra/escalation_6mo_test_frame_civil_ns.rds")
+saveRDS(escalation_6mo_test_frame_civil_ns, "extra/escalation_6mo_test_frame_civil_ns.rds")
 saveRDS(test_DV_civil_ns, "extra/6mo_test_DV_civil_ns.rds")
 
 lgr$info("6 month quad models")
@@ -504,7 +505,8 @@ lgr$info("Create 2016-H1 forecasts")
 
 # Clear environment
 
-rm(list = ls())
+# we need to retain the ROCR::prediction fix
+rm(list = setdiff(ls(), "port"))
 
 # Load data
 
