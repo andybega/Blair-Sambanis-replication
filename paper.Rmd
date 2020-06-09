@@ -153,7 +153,7 @@ The specific predictions here also include groups of cases with identical predic
 
 What impact did the ROC smoothing have overall on the performance of the Escalation model relative to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B&S Table 1) and structural extensions (our Table \ref{tab:table2-fixed}, B&S Table 2)?  Figure \ref{fig:benefit} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each of the gray points corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed}. The red crosses mark the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to "PITF Only", smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible in average. The Escalation model _always_ benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the result B&S find, namely that the escalation model is generally superior. 
 
-```{r benefit, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2)"}
+```{r benefit-plot, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2)"}
 table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
 table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
 
@@ -438,6 +438,74 @@ table2_benefit %>%
   column_spec(2:6, width = "2cm") %>%
   pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1))
 ```
+
+## Model to model comparison plots
+
+Figures \ref{fig:table1-plot} and \ref{fig:table2-plot} replicate the information in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed} in a way makes the comparison of the escalation model to the alternative models easier. Each facet shows the escalation AUC-ROC for all model settings (the rows in Table \ref{fig:table1-plot} and base specification for all models in Table \ref{tab:table2-fixed}) on the left, and the AUC-ROC for an alternative model on the right, with a connecting line. If the lines slope up to the right, the alternative model is better. 
+
+```{r table1-plot, fig.height=5, fig.width=8, out.width = ".9\\linewidth", fig.align = "center", fig.cap = "Escalation to alternative comparisons for the ICEWS models (B\\&S Table 1)"}
+table1_nosmooth <- read_csv("data/table1-nosmooth.csv")
+
+icews_lvls <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average")
+
+df <- table1_nosmooth %>%
+  rename(Spec = Model) %>%
+  pivot_longer(Escalation:Average, names_to = "Model", values_to = "auc_roc") %>%
+  mutate(Model = factor(Model, levels = icews_lvls)) %>%
+  nest(data = c(Spec, auc_roc))
+
+pairs <- full_join(
+  df %>% filter(Model!="Escalation"),
+  df %>% filter(Model=="Escalation") %>% rename(data2 = data) %>% select(horizon, data2),
+  by = c("horizon")
+) %>%
+  pivot_longer(data:data2, names_to = "xname", values_to = "data") %>%
+  mutate(xname = ifelse(xname=="data", as.character(Model), "Escalation"),
+         xname = factor(xname, levels = icews_lvls))
+
+pairs %>%
+  unnest(data) %>%
+  ggplot(aes(x = xname, y = auc_roc)) +
+  facet_grid(horizon ~ Model, scales = "free_x") +
+  geom_point() +
+  geom_line(aes(group = Spec)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+  labs(x = "", y = "AUC-ROC (empirical)")
+```
+
+```{r table2-plot, fig.height=5, fig.width=8, out.width = ".9\\linewidth", fig.align = "center", fig.cap = "Escalation to alternative comparisons for the structural models (B\\&S Table 2)"}
+table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
+
+model_lvls <- colnames(table2_nosmooth)[-c(1:2)]
+
+df <- table2_nosmooth %>%
+  rename(Spec = Model) %>%
+  pivot_longer(`Escalation Only`:`PITF Only`, names_to = "Model", values_to = "auc_roc") %>%
+  mutate(Model = factor(Model, levels = model_lvls)) %>%
+  nest(data = c(Spec, auc_roc))
+
+pairs <- full_join(
+  df %>% filter(Model!="Escalation Only"),
+  df %>% filter(Model=="Escalation Only") %>% rename(data2 = data) %>% select(horizon, data2),
+  by = c("horizon")
+) %>%
+  pivot_longer(data:data2, names_to = "xname", values_to = "data") %>%
+  mutate(xname = ifelse(xname=="data", as.character(Model), "Escalation Only"),
+         xname = factor(xname, levels = model_lvls))
+
+pairs %>%
+  unnest(data) %>%
+  ggplot(aes(x = xname, y = auc_roc)) +
+  facet_grid(horizon ~ Model, scales = "free_x") +
+  geom_point() +
+  geom_line(aes(group = Spec)) +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 30, hjust = 1)) +
+  labs(x = "", y = "AUC-ROC (empirical)")
+```
+
 
 ## Random forest hyper-parameter selection
 
