@@ -58,7 +58,7 @@ registerDoFuture()
 plan("multisession", workers = WORKERS)
 
 model_table <- crossing(
-  model   = c("Escalation", "Quad"),
+  model   = c("Escalation", "Quad", "Goldstein"),
   horizon = c("1 month", "6 months"),
   sample  = c(1:SAMPLES)
 )
@@ -164,14 +164,14 @@ Comparing across the two dimensions--horizon and smoothed--actually smoothing ha
 # two digits. Since the plot below is faceted, need to use a separate data frame
 # for this with facet variable
 hlines <- bind_rows(
-  tibble(smoothed = "Smoothed", horizon = "1 month", 
-         y = c(.79, .80, .81, .82, .83, .84, .85) + .005),
-  tibble(smoothed = "Original", horizon = "1 month", 
-         y = c(.77, .78, .79, .8) + .005),
-  tibble(smoothed = "Smoothed", horizon = "6 months", 
-         y = c(.77, .78, .79, .80, .81, .82) + .005),
-  tibble(smoothed = "Original", horizon = "6 months", 
-         y = c(.76, .77, .78, .79) + .005)
+  tibble(horizon = "1 month", smoothed = "Original", 
+         y = c(.77, .78, .79, .8, .81) + .005),
+  tibble(horizon = "1 month", smoothed = "Smoothed", 
+         y = c(.78, .79, .80, .81, .82, .83, .84, .85) + .005),
+  tibble(horizon = "6 months", smoothed = "Original", 
+         y = seq(.76, .83, by = 0.01) + .005),
+  tibble(horizon = "6 months", smoothed = "Smoothed", 
+         y = seq(.76, .82, by = 0.01) + .005)
 )
 
 res_long %>%

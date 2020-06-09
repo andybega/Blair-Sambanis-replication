@@ -66,7 +66,7 @@ registerDoFuture()
 plan("multisession", workers = WORKERS)
 
 model_table <- crossing(
-  model   = c("Escalation", "Quad"),
+  model   = c("Escalation", "Quad", "Goldstein"),
   horizon = c("1 month", "6 months"),
   sample  = c(1:SAMPLES)
 )
@@ -167,14 +167,18 @@ res_tbl %>%
 
 | smoothed | horizon  | model      |  N |  mean |   min |   max |    sd |
 | :------- | :------- | :--------- | -: | ----: | ----: | ----: | ----: |
-| FALSE    | 1 month  | Escalation | 40 | 0.784 | 0.781 | 0.789 | 0.002 |
-| FALSE    | 1 month  | Quad       | 40 | 0.787 | 0.781 | 0.812 | 0.009 |
-| FALSE    | 6 months | Escalation | 40 | 0.771 | 0.770 | 0.773 | 0.001 |
-| FALSE    | 6 months | Quad       | 40 | 0.788 | 0.782 | 0.794 | 0.002 |
-| TRUE     | 1 month  | Escalation | 40 | 0.852 | 0.841 | 0.859 | 0.004 |
-| TRUE     | 1 month  | Quad       | 40 | 0.802 | 0.796 | 0.808 | 0.003 |
-| TRUE     | 6 months | Escalation | 40 | 0.824 | 0.820 | 0.828 | 0.002 |
-| TRUE     | 6 months | Quad       | 40 | 0.775 | 0.772 | 0.778 | 0.002 |
+| FALSE    | 1 month  | Escalation | 40 | 0.784 | 0.782 | 0.788 | 0.001 |
+| FALSE    | 1 month  | Goldstein  | 40 | 0.792 | 0.785 | 0.797 | 0.003 |
+| FALSE    | 1 month  | Quad       | 40 | 0.788 | 0.780 | 0.815 | 0.011 |
+| FALSE    | 6 months | Escalation | 40 | 0.771 | 0.769 | 0.772 | 0.001 |
+| FALSE    | 6 months | Goldstein  | 40 | 0.831 | 0.825 | 0.836 | 0.002 |
+| FALSE    | 6 months | Quad       | 40 | 0.787 | 0.780 | 0.792 | 0.002 |
+| TRUE     | 1 month  | Escalation | 40 | 0.852 | 0.845 | 0.861 | 0.003 |
+| TRUE     | 1 month  | Goldstein  | 40 | 0.787 | 0.782 | 0.793 | 0.003 |
+| TRUE     | 1 month  | Quad       | 40 | 0.801 | 0.796 | 0.810 | 0.003 |
+| TRUE     | 6 months | Escalation | 40 | 0.823 | 0.819 | 0.826 | 0.002 |
+| TRUE     | 6 months | Goldstein  | 40 | 0.821 | 0.817 | 0.825 | 0.001 |
+| TRUE     | 6 months | Quad       | 40 | 0.775 | 0.765 | 0.778 | 0.002 |
 
 Comparing across the two dimensions–horizon and smoothed–actually
 smoothing has more impact on the results than the forecast horizon.
@@ -184,14 +188,14 @@ smoothing has more impact on the results than the forecast horizon.
 # two digits. Since the plot below is faceted, need to use a separate data frame
 # for this with facet variable
 hlines <- bind_rows(
-  tibble(smoothed = "Smoothed", horizon = "1 month", 
-         y = c(.79, .80, .81, .82, .83, .84, .85) + .005),
-  tibble(smoothed = "Original", horizon = "1 month", 
-         y = c(.77, .78, .79, .8) + .005),
-  tibble(smoothed = "Smoothed", horizon = "6 months", 
-         y = c(.77, .78, .79, .80, .81, .82) + .005),
-  tibble(smoothed = "Original", horizon = "6 months", 
-         y = c(.76, .77, .78, .79) + .005)
+  tibble(horizon = "1 month", smoothed = "Original", 
+         y = c(.77, .78, .79, .8, .81) + .005),
+  tibble(horizon = "1 month", smoothed = "Smoothed", 
+         y = c(.78, .79, .80, .81, .82, .83, .84, .85) + .005),
+  tibble(horizon = "6 months", smoothed = "Original", 
+         y = seq(.76, .83, by = 0.01) + .005),
+  tibble(horizon = "6 months", smoothed = "Smoothed", 
+         y = seq(.76, .82, by = 0.01) + .005)
 )
 
 res_long %>%
