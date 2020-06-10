@@ -314,7 +314,7 @@ Another, minor issue or rather coding error, is related to using a lead version 
 
 The B&S advocate the use theory to guide prediction. But theory as used by B&S is an ambiguous and undefined concept.  It is not a procedure.  They actually create a model with ten right hand side variables that are supposed to capture a complicated repression-dissent dynamic. There is wide-ranging literature on this dynamic that could justify many specifications.  As such, their baseline comparison is an unfortunate standard bearer for strong theory.
 
-Moreover, they misunderstand the use of ICEWS event data in current research. They claim that most applications to date have focused on the quad categories, but this ignores a wide swath of literature (@steinert-threlkeld:2017 and @metternich:etal:2013) that uses a specific action---such as protest---defined in the CAMEO ontology. In their article on conflict in Thailand, Metternich et alia hand-coded, for example, every actor in Thailand and focused on an analysis of how those interact.
+Moreover, they misunderstand the use of ICEWS event data in current research. They claim that most applications to date have focused on the quad categories, but this ignores a wide swath of literature [@steinert-threlkeld:2017; and @metternich:etal:2013] that uses a specific action---such as protest---defined in the CAMEO ontology. In their article on conflict in Thailand, Metternich et alia hand-coded, for example, every actor in Thailand and focused on an analysis of how those interact.
 
 We encountered several issues in the code underlying the B&S analysis. The problems we encountered are not subjective modeling choices. When we fix these issues and perform an updated analysis, the B&S conclusions are all essentially overturned. In other words, B&S findings are based on a faulty analysis, and invalid. 
 
@@ -322,7 +322,7 @@ Using the same analysis B&S intend to use, we, in fact, find that:
 - the theory-driven escalation model is outperformed both by the low-effort 1,160 predictor all-CAMEO model. The Average ensemble model
 - structural variables substantially improve the escalation model's performance when added to the pool of predictors on which the underlying random forest model is based.
 
-Blair & Sambanis have focused attention on comparing forecasting models and forecasts in the civil war domain.  As social science becomes more adept at predictive analysis, this will doubtless be of increasing importance.  However, these comparisons must be made carefully to ensure those correct inferences are drawn.  We continue to think that theory is overrated (@ward:2016), and that machine learning and big data will allow us to learn new things, but it will be interesting to see how the evidence for these claims are adjudicated with additional usage and careful evaluation.
+Blair & Sambanis have focused attention on comparing forecasting models and forecasts in the civil war domain.  As social science becomes more adept at predictive analysis, this will doubtless be of increasing importance.  However, these comparisons must be made carefully to ensure those correct inferences are drawn.  We continue to think that theory is overrated [@ward:2016], and that machine learning and big data will allow us to learn new things, but it will be interesting to see how the evidence for these claims are adjudicated with additional usage and careful evaluation.
 
 
 # References
