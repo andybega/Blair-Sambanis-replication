@@ -2,7 +2,7 @@
 title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
 author: 
  - Andreas Beger^[Predictive Heuristics, adbeger@gmail.com. corresponding author]
- - Richard K. Morgan^[VDEM, rick.morgan2@gmail.com.]
+ - Richard K. Morgan^[V-Dem, rick.morgan2@gmail.com.]
  - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com]
 date: "`r format(Sys.time(), '%d %B %Y')`"
 thanks: Cassy L. Dorff and Shahryar Minhas both provided helpful feedback on this project. All the code and several additional analyses can be found at our replication archive at https://github.com/rickmorgan2/Blair-Sambanis-replication.
@@ -35,16 +35,8 @@ library(stringr)
 B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars ``remarkable accurately.'' Indeed they argue that this so-called theoretical model outperforms four other ``more mechanical'' alternatives. Second, they claim that the integration of structure with process is better over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects. B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust, and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
 
 Before proceeding, we quote B&S (page 24):
-\begin{quote}
-Our theoretically driven model generates accurate forecasts, with base specification
-AUCs of 0.82 and 0.85 over one- and six-month windows, respectively, and AUCs
-as high as 0.92 in other specifications. Our model also consistently and sometimes
-dramatically outperforms the alternatives we test... Cederman and Weidmann (2017, 476) argue that "the hope that
-big data will somehow yield valid forecasts through theory-free 'brute force' is
-misplaced in the area of political violence." Our results lend some credence to this
-claim.
-\end{quote}
 
+> Our theoretically driven model generates accurate forecasts, with base specification AUCs of 0.82 and 0.85 over one- and six-month windows, respectively, and AUCs as high as 0.92 in other specifications. Our model also consistently and sometimes dramatically outperforms the alternatives we test... Cederman and Weidmann (2017, 476) argue that "the hope that big data will somehow yield valid forecasts through theory-free 'brute force' is misplaced in the area of political violence." Our results lend some credence to this claim.
 
 # Summary of Blair and Sambanis (2020)
 
@@ -97,10 +89,13 @@ We believe that these research decisions and issues lead B\&S to incorrect concl
 
 ## Smoothed ROC curves
 
-The most consequential issue that we found is that all AUC-ROC values reported in B&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, actual ROC curves. The data in rare events problems like this one restricts the number of distinct true positive rate values. As we show below, the use of smoothed ROC curves to calculate AUC has a dramatic impact on the results. To our knowledge, the norm is to calculate AUC-ROC values using original, not smoothed ROC curves. In fact, we are not aware of other work that uses smoothed ROC curves for AUC calculations. It might be that theoretical reasons are justifying the use of smoothed ROC curves over the original ROC curves; but given that this decision dramatically impacts the interpretation of the B&S results, it minimally would have warranted an explicit discussion in the paper. As it is, B&S offer no justification for using smoothed ROC curves in the AUC-ROC calculations.  
+The most consequential issue that we found is that all AUC-ROC values reported in B&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, empirical ROC curves. The data in rare events problems like this one restricts the number of distinct true positive rate values. As we show below, the use of  smoothed ROC curves to calculate AUC has a dramatic impact on the results. 
 
-Smoothing of ROC curves is well known.  Basically, the smoothed curves transform the false positive rate and the false negative rates jointly in a monotone fashion.  The assumption is that there is a monotone transformation that produces normal distributions for the sensitivity and specificity. It is well-known that there is substantial bias that can be introduced by bias. Indeed, bootstrapping is often used as a diagnostic to see the amount of bias introduced by smoothing.
+Although smoothing might appear to be a simple option to aid in the visual interpretation of ROC curves, and is presented as such by B&S, it actually involves estimating an underlying population ROC curve, using a parametric binormal model in this case. There is a literature in statistics and the medical field on such ROC estimators and the conditions under which they might be preferable to ...
 
+The option to smooth the ROC curves is presented by B&S as a trivial choice to aid visual interpretation, but it actually delves into a broader area of parametric or non-parametric population ROC curve estimation. A common motivating scenario is in the area of medical testing, where test results might only be binary or ordinal, not continuous, where only a small number of tests with verified accuracy might be available, and where there is a clear larger population one wants to infer to. The particular application here deviates in several ways from the conditions under which the properties of these estimators have been studies: rare events, our data is more of a census than independent samples from a much larger population, and the use of non-deterministic random forest models. 
+
+Far from being a trivial choice, the question of whether to use ROC estimates rather than the empirical ROC curves is a major decision that dramatically impacts the results. B&S do not offer a justification for departing from the common practice of using the empirical ROC curves. 
 
 The next three issues we encountered all concern information in B&S Table 2. 
 
@@ -155,7 +150,7 @@ The specific predictions also include groups of cases with identical predicted p
 
 ## The effect of using smoothed ROC curves
 
-What impact did the ROC smoothing have overall on the performance of the Escalation model relative to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B&S Table 1) and structural extensions (our Table \ref{tab:table2-fixed}, B&S Table 2)?  Figure \ref{fig:benefit} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each of the gray points corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed}. The red crosses mark the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to "PITF Only", smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible in average. The Escalation model _always_ benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the result B&S find, namely that the escalation model is generally superior. 
+What impact did the ROC smoothing have overall on the performance of the Escalation model relative to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B&S Table 1) and structural extensions (our Table \ref{tab:table2-fixed}, B&S Table 2)?  Figure \ref{fig:benefit-plot} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each of the gray points corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed}. The red crosses mark the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to "PITF Only", smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible in average. The Escalation model _always_ benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the result B&S find, namely that the escalation model is generally superior. 
 
 ```{r benefit-plot, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2)"}
 table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
