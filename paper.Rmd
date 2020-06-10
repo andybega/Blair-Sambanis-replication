@@ -270,7 +270,7 @@ The weighted model performs roughly on par with the Escalation Only model. One f
 
 4. B&S: "Overall, our results suggest that while measures of structural risk may improve predictive performance, the value they add is marginal and inconsistent. [...] Incorporating PITF thus significantly reduces or only slightly improves the performance of the escalation model, regardless of the approach we take. \ldots "
 
-The most straightforward method of incorporating the annual structural PITF variables--adding them to the predictors of the Escalation RF model--strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard and that the "PITF Split Population" model does not incorporate structural information at all. We thus conclude that adding structural variables improves predictive performance.
+The most straightforward method of incorporating the annual structural PITF variables---adding them to the predictors of the Escalation RF model---strictly outperforms the Escalation Only model. Note that the two other combination models considered are both non-standard and that the "PITF Split Population" model does not incorporate structural information at all. We thus conclude that adding structural variables improves predictive performance.
 
 ## How accurate were the 2016 forecasts?
 
@@ -287,7 +287,7 @@ tab4o <- tab4o %>%
   rename(header = type) %>%
   mutate(source = "Original, scored with civil war incidence")
 tab4f <- tab4f %>%
-  rename(`Predicted 0` = `0`, `Predicted 1` = `1`) %>%
+  rename(Predicted0 = `0`, Predicted1 = `1`) %>%
   mutate(source = "Fixed, scored with civil war onset")
 
 tab4 <- bind_rows(tab4o, tab4f) %>%
