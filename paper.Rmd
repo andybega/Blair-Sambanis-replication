@@ -12,7 +12,8 @@ output:
     keep_tex: true
     keep_md: true
     toc: false
-# spacing: double
+#header-includes:
+#  - \usepackage{setspace}\doublespacing
 bibliography: 
   - "`r user <- Sys.info()[['user']]; if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else 'references.bib'`"
 ---
