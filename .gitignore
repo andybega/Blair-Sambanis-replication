@@ -20,6 +20,7 @@ tuning/tuning-experiments/trafo-data
 
 # Ignore latex artifacts
 paper.log
+paper.md
 *.aux
 *.tex
 

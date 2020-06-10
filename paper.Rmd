@@ -5,15 +5,16 @@ author:
  - Richard K. Morgan^[VDEM, rick.morgan2@gmail.com.]
  - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com]
 date: "`r format(Sys.time(), '%d %B %Y')`"
-thanks: Cassy L. Dorff and Shahryar Minhas both provided helpful feedback on this project. All the code and several additional analyses can be found at our replication archive.
+thanks: Cassy L. Dorff and Shahryar Minhas both provided helpful feedback on this project. All the code and several additional analyses can be found at our replication archive at https://github.com/rickmorgan2/Blair-Sambanis-replication.
 abstract: We examine the research protocols in Blair and Sambanis (2020).  We find that there are several important mistakes and research decisions that determine their results. Fixing these mistakes results in a reversal of their claim that theory based models of escalation are better at predicting onsets of civil war than other kinds of models.  While their model is not very theoretical, it is outperformed by several of the ad hoc, putatively non-theoretical models they devise and examine.  
 output: 
   bookdown::pdf_document2:
     keep_tex: true
+    keep_md: true
     toc: false
 # spacing: double
 bibliography: 
-  - "`r user <- Sys.info()[['user']]; if (user=='andybega')  '/Users/andybega/Work/whistle/master.bib' else if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else 'references.bib'`"
+  - "`r user <- Sys.info()[['user']]; if (user=='mdw') '/Users/mdw/Git/whistle/master.bib' else 'references.bib'`"
 ---
 
 ```{r setup, include=FALSE}
