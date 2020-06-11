@@ -14,8 +14,7 @@ output:
     toc: false
 #header-includes:
 #  - \usepackage{setspace}\doublespacing
-bibliography: 
-  - "`r user <- Sys.info()[['user']]; if (user=='MooseJaw') '/Users/mdw/Git/whistle/master.bib' else 'references.bib'`"
+bibliography: "./references.bib"
 ---
 
 ```{r setup, include=FALSE}
@@ -33,7 +32,7 @@ library(stringr)
 # Introduction
 @blair:sambanis:2020 (hereafter B\&S) argue that theory is essential for creating models that have high accuracy in forecasting civil war onset. Indeed they assert that with such theory, forecasting is more accurate than has previously been possible. Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article. We find that these claims are false. Their theory-based escalation model does not do better than the alternatives that they examine.Actually, it does worse. The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure. The performance results they report are based on smoothed performance curves, not the original unsmoothed curves. Two of the structural alternatives to their basic escalation model were incorrectly implemented. We also found that the scoring of their forecasts for the first half of 2016 were incorrectly performed using civil war incidence, not onset. In what follows, we show the impact of these mistakes on the conclusions. 
 
-B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars remarkably accurately. Indeed they argue that this so-called theoretical model outperforms four other``more mechanical'' alternatives. Second, they claim that the integration of structure with process is better over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects. B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust, and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
+B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars remarkably accurately. Indeed they argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they claim that the integration of structure with process is better over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects. B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust, and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
 
 Before proceeding, we quote B&S (page 24):
 
@@ -59,6 +58,7 @@ Both the first and second questions above rely on comparing their escalation mod
 4. Calculate AUC-ROC measures for each set of OOS predictions.
 
 To examine the first question, B&S compare the test set of the escalation model to four alternative models. The independent variables for the first set of analysis reported in Table 1 in the paper are all derived from the ICEWS event data, using domestic events between actors within a country. The models are:
+
 \begin{itemize}
 \item Escalation: a set of ten indicators, putatively drawn from a theoretical escalation model.
 \item Quad: ICEWS quad counts, i.e. material conflict, material cooperation, verbal conflict, verbal cooperation.
@@ -141,9 +141,14 @@ A reference to smoothing is made in a single sentence in the paper (p. 12):
 
 > Figure 1 displays the corresponding ROC curves, smoothed for ease of interpretation.
 
-This implies that the ROC curves were only smoothed in the referenced Figure 1. However, this is not the case. All AUC-ROC calculations throughout the replication code use an option to smooth the ROC curves prior to AUC calculation. ROC curves are constructed from the false positive and true positive rates as one moves through a set of ranked predictions, and as a result they appear step-like. Figure 1 shows our replication of both the estimated smoothed ROC curves from the B&S report (left-hand side) and the actual empirical ROC curves (right-hand side). The standard method is to compute the area under the curve (AUC) statistic on the original, empirical ROC curves that are shown on the right. 
+This implies that the ROC curves were only smoothed in the referenced Figure 1. However, this is not the case. All AUC-ROC calculations throughout the replication code use an option to smooth the ROC curves prior to AUC calculation. ROC curves are constructed from the false positive and true positive rates as one moves through a set of ranked predictions, and as a result they appear step-like. Figure \ref{fig:rocs} shows our replication of both the estimated smoothed ROC curves from the B&S report (left-hand side) and the actual empirical ROC curves (right-hand side). The standard method is to compute the area under the curve (AUC) statistic on the original, empirical ROC curves that are shown on the right. 
 
-![Replication of B&S Figure 1 with both smooth and non-smoothed ROC curves.](figures/figure1-replicated.png)
+\begin{figure}
+\caption{Replication of B\&S Figure 1 with both smooth and non-smoothed ROC curves\label{fig:rocs}}
+\centering
+\includegraphics[width=.8\linewidth]{figures/figure1-replicated.png}
+\end{figure}
+
 The specific predictions also include groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the *y*-axis only changes when the prediction for an observed positive case is reached. For these ROC curves, and for that matter in the fundamental train/test split used for 12 of the 18 rows/models in B&S Table 1, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct *y* coordinates. Notice also that the smoothing averages the left-most almost straight line with the right-most almost straight line in a monotonic way.
 
 ## The effect of using smoothed ROC curves
@@ -253,7 +258,7 @@ table2_nosmooth %>%
 
 B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
 
-1. B&S: "Of the approaches we test, the split-population analog is most promising \ldots "
+1. B&S: "Of the approaches we test, the split-population analog is most promising ..."
 
 The PITF split-population analog still performs well, but the simple Escalation + PITF predictors model arguable performs better still. 
 
@@ -305,13 +310,14 @@ Another, minor issue or rather coding error, is related to using a lead version 
 
 # Conclusion
 
-B&S advocate the use of theory to guide prediction. But ``theory'' as used by B&S is an ambiguous and undefined concept.  It is not a procedure.  They actually create a model with ten right-hand side variables that are supposed to capture a complicated repression-dissent dynamic. There is wide-ranging literature on this dynamic that could justify many specifications.  As such, their baseline comparison is an unfortunate standard bearer for strong theory.
+B&S advocate the use of theory to guide prediction. But "theory" as used by B&S is an ambiguous and undefined concept.  It is not a procedure.  They actually create a model with ten right-hand side variables that are supposed to capture a complicated repression-dissent dynamic. There is wide-ranging literature on this dynamic that could justify many specifications.  As such, their baseline comparison is an unfortunate standard bearer for strong theory.
 
 Moreover, they misunderstand the use of ICEWS event data in current research. They claim that most applications to date have focused on the quad categories, but this ignores a wide swath of literature [@steinert-threlkeld:2017; and @metternich:etal:2013] that uses a specific action---such as protest---defined in the CAMEO ontology. In their article on conflict in Thailand, Metternich et alia hand-coded, for example, every actor in Thailand and focused on an analysis of how those interact.
 
 We encountered several issues in the code underlying the B&S analysis. The problems we encountered are not subjective modeling choices. When we fix these issues and perform an updated analysis, the B&S conclusions are all essentially overturned. In other words, B&S findings are based on a faulty analysis, and invalid. 
 
 In contradistinction to the conclusions offered by B&S, we find that:
+
 \begin{itemize}
 \item The theory-driven escalation model is outperformed both by the low-effort 1,160 predictor all-CAMEO model.
 \item The Average ensemble model and the CAMEO models outperform the escalation model in all instances.
