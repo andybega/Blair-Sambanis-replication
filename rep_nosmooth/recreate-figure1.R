@@ -62,7 +62,7 @@ par(mfrow = c(2, 2))
 
 plot(roc[["1mo-smooth-escalation"]],
   ylab = "True positive rate",
-  xlab = "False positive rate",
+  xlab = "True Negative Rate",
   main = "ROC - Smoothed (1-mon)",             lty = 1, col = cols["esc"], lwd = ll)
 pROC::lines.roc(roc[["1mo-smooth-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
 pROC::lines.roc(roc[["1mo-smooth-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
@@ -75,7 +75,7 @@ legend("bottomright",
 
 plot(roc[["1mo-orig-escalation"]],
      ylab = "True positive rate",
-     xlab = "False positive rate",
+     xlab = "True Negative Rate",
      main = "ROC - Not Smoothed (1-mon)",    lty = 1, col = cols["esc"], lwd = ll)
 pROC::lines.roc(roc[["1mo-orig-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
 pROC::lines.roc(roc[["1mo-orig-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
@@ -84,7 +84,7 @@ pROC::lines.roc(roc[["1mo-orig-average"]],   lty = 5, col = cols["avg"], lwd = l
 
 plot(roc[["6mo-smooth-escalation"]],
      ylab = "True positive rate",
-     xlab = "False positive rate",
+     xlab = "True Negative Rate",
      main = "ROC - Smoothed (6-mon)",          lty = 1, col = cols["esc"], lwd = ll)
 pROC::lines.roc(roc[["6mo-smooth-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
 pROC::lines.roc(roc[["6mo-smooth-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
@@ -97,7 +97,7 @@ legend("bottomright",
 
 plot(roc[["6mo-orig-escalation"]],
      ylab = "True positive rate",
-     xlab = "False positive rate",
+     xlab = "True Negative Rate",
      main = "ROC - Not Smoothed (6-mon)",    lty = 1, col = cols["esc"], lwd = ll)
 pROC::lines.roc(roc[["6mo-orig-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
 pROC::lines.roc(roc[["6mo-orig-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
