@@ -32,7 +32,7 @@ library(stringr)
 # Introduction
 Blair and Sambanis [-@blair:sambanis:2020, hereafter B\&S] argue that theory is essential for creating models that have high accuracy in forecasting civil war onset. Indeed they assert that with such theory, forecasting is more accurate than has previously been possible. Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article. We find that these claims are false. Their theory-based escalation model does not do better than the alternatives that they examine. Actually, it does worse. The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure. The performance results they report are based on smoothed performance curves, not the original unsmoothed curves. Two of the structural alternatives to their basic escalation model were incorrectly implemented. We also found that the scoring of their forecasts for the first half of 2016 were incorrectly performed using civil war incidence, not onset. In what follows, we show the impact of these mistakes on the conclusions. 
 
-B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars remarkably accurately. Indeed they argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they claim that the integration of structure with process is better over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects. B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust, and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
+B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars "remarkably accurately". Indeed they argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they claim that the integration of structure with process is better over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects. B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust, and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
 
 Before proceeding, we quote B&S (page 24):
 
@@ -59,13 +59,11 @@ Both the first and second questions above rely on comparing their escalation mod
 
 To examine the first question, B&S compare the test set of the escalation model to four alternative models. The independent variables for the first set of analysis reported in Table 1 in the paper are all derived from the ICEWS event data, using domestic events between actors within a country. The models are:
 
-\begin{itemize}
-\item Escalation: a set of ten indicators, putatively drawn from a theoretical escalation model, for interactions between the government on one side and opposition or rebel actors on the other. 
-\item Quad: ICEWS quad counts, i.e. material conflict, material cooperation, verbal conflict, verbal cooperation, for interactions between the government and opposition or rebels. These are directed, thus making for four directed dyads, which with four quad categories make for a total of sixteen covariates. 
-\item Goldstein: -10 (conflictual) to 10 (cooperative) scores derived from the ICEWS data for the same four directed dyads, for a toal of four covariates. 
-\item CAMEO: counts for all CAMEO event codes over the four actor dyads, totaling $1,160$ covariates, which are mostly zero for any country in any month. 
-\item Average: unweighted average of the predictions from the four models briefly described above.
-\end{itemize}
+- Escalation: a set of ten indicators, putatively drawn from a theoretical escalation model, for interactions between the government on one side and opposition or rebel actors on the other. 
+- Quad: ICEWS quad counts, i.e. material conflict, material cooperation, verbal conflict, verbal cooperation, for interactions between the government and opposition or rebels. These are directed, thus making for four directed dyads, which with four quad categories make for a total of sixteen covariates. 
+- Goldstein: -10 (conflictual) to 10 (cooperative) scores derived from the ICEWS data for the same four directed dyads, for a toal of four covariates. 
+- CAMEO: counts for all CAMEO event codes over the four actor dyads, totaling $1,160$ covariates, which are mostly zero for any country in any month. 
+- Average: unweighted average of the predictions from the four models briefly described above.
 
 The corresponding results for each question are shown in B&S Tables 1 and 2, which we examine further below. We accurately replicate their Tables 1 and 2, with very tiny differences. The results in Table 1, aside from the core base specification results, include eight additional robustness tests for both the 1-month and 6-month versions. These robustness checks vary either (1) random forecast hyperparameter values, or (2) the year used to split the train/test data, or (3) alternative codings of the civil war onset dependent variable. 
 
@@ -330,11 +328,9 @@ We encountered several issues in the code underlying the B&S analysis. The probl
 
 In contradistinction to the conclusions offered by B&S, we find that:
 
-\begin{itemize}
-\item The theory-driven escalation model is outperformed both by the low-effort 1,160 predictor all-CAMEO model.
-\item The Average ensemble model and the CAMEO models outperform the escalation model in all instances.
-\item Adding structural variables substantially improves the escalation model's performance.
-\end{itemize}
+- The theory-driven escalation model is outperformed both by the low-effort 1,160 predictor all-CAMEO model.
+- The Average ensemble model and the CAMEO models outperform the escalation model in all instances.
+- Adding structural variables substantially improves the escalation model's performance.
 
 Blair & Sambanis have focused attention on comparing forecasting models and forecasts in the civil war domain.  As social science becomes more adept at predictive analysis, this will doubtless be of increasing importance.  However, these comparisons must be made carefully to ensure those correct inferences are drawn.  We continue to think that theory is overrated [@ward:2016], and that machine learning and big data will allow us to learn new things. It will be interesting to see how the evidence for these claims is adjudicated with additional usage and careful evaluation.
 
