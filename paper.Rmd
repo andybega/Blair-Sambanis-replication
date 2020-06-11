@@ -263,7 +263,7 @@ table2_nosmooth %>%
     label = "table2-fixed") %>%
   column_spec(2:6, width = "2cm") %>%
   pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1)) %>%
-  footnote("Differences from the original B\\&S Table 2: (1) AUC-ROC values are computed on the common subset of cases, meaning that N is equal in each row; (2) AUC-ROC values are computed using original, non-smoothed ROC curves.", footnote_as_chunk = TRUE, threeparttable = TRUE)
+  footnote("Differences from the original B&S Table 2: (1) AUC-ROC values are computed on the common subset of cases, meaning that N is equal in each row; (2) AUC-ROC values are computed using original, non-smoothed ROC curves.", footnote_as_chunk = TRUE, threeparttable = TRUE)
 ```
 
 B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
