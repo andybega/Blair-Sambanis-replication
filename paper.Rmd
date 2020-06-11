@@ -1,9 +1,9 @@
 ---
 title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
 author: 
- - Andreas Beger^[Predictive Heuristics, adbeger@gmail.com. corresponding author]
+ - Andreas Beger^[Predictive Heuristics, adbeger@gmail.com.]
  - Richard K. Morgan^[V-Dem, rick.morgan2@gmail.com.]
- - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com]
+ - Michael D. Ward^[Predictive Heuristics, Duke University, University of Washington, michael.don.ward@gmail.com. Corresponding author.]
 date: "`r format(Sys.time(), '%d %B %Y')`"
 thanks: Cassy L. Dorff and Shahryar Minhas both provided helpful feedback on this project. All the code and several additional analyses can be found at our replication archive at https://github.com/rickmorgan2/Blair-Sambanis-replication.
 abstract: We examine the research protocols in Blair and Sambanis (2020).  We find that there are several important mistakes and research decisions that determine their results. Fixing these mistakes results in a reversal of their claim that theory based models of escalation are better at predicting onsets of civil war than other kinds of models.  While their model is not very theoretical, it is outperformed by several of the ad hoc, putatively non-theoretical models they devise and examine.  
@@ -30,7 +30,7 @@ library(kableExtra)
 library(stringr)
 ```
 # Introduction
-@blair:sambanis:2020 (hereafter B\&S) argue that theory is essential for creating models that have high accuracy in forecasting civil war onset. Indeed they assert that with such theory, forecasting is more accurate than has previously been possible. Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article. We find that these claims are false. Their theory-based escalation model does not do better than the alternatives that they examine.Actually, it does worse. The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure. The performance results they report are based on smoothed performance curves, not the original unsmoothed curves. Two of the structural alternatives to their basic escalation model were incorrectly implemented. We also found that the scoring of their forecasts for the first half of 2016 were incorrectly performed using civil war incidence, not onset. In what follows, we show the impact of these mistakes on the conclusions. 
+Blair and Sambanis [-@blair:sambanis:2020, hereafter B\&S] argue that theory is essential for creating models that have high accuracy in forecasting civil war onset. Indeed they assert that with such theory, forecasting is more accurate than has previously been possible. Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article. We find that these claims are false. Their theory-based escalation model does not do better than the alternatives that they examine. Actually, it does worse. The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure. The performance results they report are based on smoothed performance curves, not the original unsmoothed curves. Two of the structural alternatives to their basic escalation model were incorrectly implemented. We also found that the scoring of their forecasts for the first half of 2016 were incorrectly performed using civil war incidence, not onset. In what follows, we show the impact of these mistakes on the conclusions. 
 
 B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars remarkably accurately. Indeed they argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they claim that the integration of structure with process is better over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects. B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust, and a more precise test is undertaken. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
 
@@ -146,7 +146,7 @@ This implies that the ROC curves were only smoothed in the referenced Figure 1. 
 \begin{figure}
 \caption{Replication of B\&S Figure 1 with both smooth and non-smoothed ROC curves\label{fig:rocs}}
 \centering
-\includegraphics[width=.8\linewidth]{figures/figure1-replicated.png}
+\includegraphics[width=.95\linewidth]{figures/figure1-replicated.png}
 \end{figure}
 
 The specific predictions also include groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the *y*-axis only changes when the prediction for an observed positive case is reached. For these ROC curves, and for that matter in the fundamental train/test split used for 12 of the 18 rows/models in B&S Table 1, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct *y* coordinates. Notice also that the smoothing averages the left-most almost straight line with the right-most almost straight line in a monotonic way.
@@ -158,6 +158,18 @@ What impact did the ROC smoothing have overall on the performance of the Escalat
 ```{r benefit-plot, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2)"}
 table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
 table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
+
+cols <- c(
+  Escalation = "#e41a1c",
+  Goldstein = "#ff7f00",
+  Quad = "#984ea3",
+  CAMEO = "#377eb8",
+  Average = "#4daf4a",
+  `With PITF Predictors` = "gray50", 
+  `Weighted by PITF` = "gray50", 
+  `PITF Split Population` = "gray50",
+  `PITF Only` = "gray50"
+)
 
 benefit <- bind_rows(
   table1_benefit %>%
@@ -182,9 +194,10 @@ benefit %>%
   mutate(model = factor(model, levels = rev(model_levels))) %>%
   ggplot(aes(y = model)) + 
   #facet_wrap(~ horizon, scales = "free_x") +
-  geom_point(aes(x = diff), alpha = 0.5, size = 2, color = "gray50") +
+  geom_point(aes(x = diff, color = model), alpha = 0.5, size = 2) +
+  scale_color_manual(guide = FALSE, values = cols) +
   geom_point(data = means, aes(x = avg_benefit), shape = "|", color = "black", size = 6) +
-  labs(x = "AUC(smoothed ROC) - AUC(ROC)",
+  labs(x = "AUC(smoothed ROC) - AUC(empirical ROC)",
        y = "") +
   theme_bw() +
   geom_text(data = ann_text, aes(x = diff, label = label), col = "black") +

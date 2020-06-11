@@ -11,7 +11,7 @@ library(readr)
 library(tibble)
 
 setwd(here("rep_nosmooth"))
-dir.create("output/figures")
+dir.create("output/figures", showWarnings = FALSE)
 
 all_predictions <- read_rds("output/all-predictions.rds") %>%
   group_by(cell_id) %>%
@@ -43,8 +43,19 @@ roc <- rocs %>%
   select(list_name, object) %>%
   deframe()
 
+cols <- c(
+  esc = "#e41a1c",
+  gold = "#ff7f00",
+  quad = "#984ea3",
+  cameo = "#377eb8",
+  avg = "#4daf4a"
+)
+
+# linewidth
+ll <- 4
+
 png("output/figures/figure1-replicated.png", width = 1100, height = 1000,
-    units = "px", pointsize = 20)
+    units = "px", pointsize = 24)
 par(mfrow = c(2, 2))
 
 # Plot ROC curves
@@ -52,42 +63,46 @@ par(mfrow = c(2, 2))
 plot(roc[["1mo-smooth-escalation"]],
   ylab = "True positive rate",
   xlab = "False positive rate",
-  main = "ROC - Smoothed (1-mon)", lty = 1)
-pROC::lines.roc(roc[["1mo-smooth-quad"]],      lty = 2)
-pROC::lines.roc(roc[["1mo-smooth-goldstein"]], lty = 3)
-pROC::lines.roc(roc[["1mo-smooth-cameo"]],     lty = 4)
-pROC::lines.roc(roc[["1mo-smooth-average"]],   lty = 5)
-legend("bottomright", c("Escalation", "Quad", "Goldstein", "CAMEO", "Average"), lty = c(1, 2, 3, 4, 5))
+  main = "ROC - Smoothed (1-mon)",             lty = 1, col = cols["esc"], lwd = ll)
+pROC::lines.roc(roc[["1mo-smooth-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
+pROC::lines.roc(roc[["1mo-smooth-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
+pROC::lines.roc(roc[["1mo-smooth-cameo"]],     lty = 4, col = cols["cameo"], lwd = ll)
+pROC::lines.roc(roc[["1mo-smooth-average"]],   lty = 5, col = cols["avg"], lwd = ll)
+legend("bottomright",
+       c("Escalation", "Quad", "Goldstein", "CAMEO", "Average"),
+       lty = c(1, 2, 3, 4, 5),
+       col = cols, lwd = ll)
 
 plot(roc[["1mo-orig-escalation"]],
      ylab = "True positive rate",
      xlab = "False positive rate",
-     main = "ROC - Not Smoothed (1-mon)",    lty = 1)
-pROC::lines.roc(roc[["1mo-orig-quad"]],      lty = 2)
-pROC::lines.roc(roc[["1mo-orig-goldstein"]], lty = 3)
-pROC::lines.roc(roc[["1mo-orig-cameo"]],     lty = 4)
-pROC::lines.roc(roc[["1mo-orig-average"]],   lty = 5)
-# legend("bottomright", c("Escalation", "Quad", "Goldstein", "CAMEO", "Average"), lty = c(1, 2, 3, 4, 5))
+     main = "ROC - Not Smoothed (1-mon)",    lty = 1, col = cols["esc"], lwd = ll)
+pROC::lines.roc(roc[["1mo-orig-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
+pROC::lines.roc(roc[["1mo-orig-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
+pROC::lines.roc(roc[["1mo-orig-cameo"]],     lty = 4, col = cols["cameo"], lwd = ll)
+pROC::lines.roc(roc[["1mo-orig-average"]],   lty = 5, col = cols["avg"], lwd = ll)
 
 plot(roc[["6mo-smooth-escalation"]],
      ylab = "True positive rate",
      xlab = "False positive rate",
-     main = "ROC - Smoothed (6-mon)", lty = 1)
-pROC::lines.roc(roc[["6mo-smooth-quad"]],      lty = 2)
-pROC::lines.roc(roc[["6mo-smooth-goldstein"]], lty = 3)
-pROC::lines.roc(roc[["6mo-smooth-cameo"]],     lty = 4)
-pROC::lines.roc(roc[["6mo-smooth-average"]],   lty = 5)
-legend("bottomright", c("Escalation", "Quad", "Goldstein", "CAMEO", "Average"), lty = c(1, 2, 3, 4, 5))
+     main = "ROC - Smoothed (6-mon)",          lty = 1, col = cols["esc"], lwd = ll)
+pROC::lines.roc(roc[["6mo-smooth-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
+pROC::lines.roc(roc[["6mo-smooth-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
+pROC::lines.roc(roc[["6mo-smooth-cameo"]],     lty = 4, col = cols["cameo"], lwd = ll)
+pROC::lines.roc(roc[["6mo-smooth-average"]],   lty = 5, col = cols["avg"], lwd = ll)
+legend("bottomright",
+       c("Escalation", "Quad", "Goldstein", "CAMEO", "Average"),
+       lty = c(1, 2, 3, 4, 5),
+       col = cols, lwd = ll)
 
 plot(roc[["6mo-orig-escalation"]],
      ylab = "True positive rate",
      xlab = "False positive rate",
-     main = "ROC - Not Smoothed (6-mon)", lty = 1)
-pROC::lines.roc(roc[["6mo-orig-quad"]],      lty = 2)
-pROC::lines.roc(roc[["6mo-orig-goldstein"]], lty = 3)
-pROC::lines.roc(roc[["6mo-orig-cameo"]],     lty = 4)
-pROC::lines.roc(roc[["6mo-orig-average"]],   lty = 5)
-# legend("bottomright", c("Escalation", "Quad", "Goldstein", "CAMEO", "Average"), lty = c(1, 2, 3, 4, 5))
+     main = "ROC - Not Smoothed (6-mon)",    lty = 1, col = cols["esc"], lwd = ll)
+pROC::lines.roc(roc[["6mo-orig-quad"]],      lty = 2, col = cols["quad"], lwd = ll)
+pROC::lines.roc(roc[["6mo-orig-goldstein"]], lty = 3, col = cols["gold"], lwd = ll)
+pROC::lines.roc(roc[["6mo-orig-cameo"]],     lty = 4, col = cols["cameo"], lwd = ll)
+pROC::lines.roc(roc[["6mo-orig-average"]],   lty = 5, col = cols["avg"], lwd = ll)
 
 dev.off()
 
