@@ -1,6 +1,10 @@
 Original B&S replication code
 =============
 
+`_rep-check.R` is a script that compares the replication output to the Table 1 and 2 values reported in the paper. It writes the results to `extra/rep-check-tableX.csv`.
+
+The table values this is compared against are in `extra/tableX-original.csv`. These are coded in `rep_nosmooth/make-original-tables.R` and I manually copied them over here. 
+
 ## Changes
 
 Due to a bug with RStudio's job runner (`https://github.com/rstudio/rstudio/issues/4586`), we replaces all `source(...)` commands with `source(..., local = TRUE)`. 
