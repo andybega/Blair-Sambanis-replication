@@ -51,6 +51,11 @@ Run through the files in the following order:
 
 In addition, there are some ancillary materials.
 
+  - [replication-check.md](replication-check.md) compares the AUC-ROC
+    results we obtain when using smoothed ROC curves to the original
+    B\&S results (hand-copied from the paper). When taking into account
+    the implementation fixes we made for two models, and RNG seed
+    variation, we are able to replicate the original results/patterns.
   - [variance.md](variance.md) examines how much the AUC-ROC results
     vary when you don’t set an RNG seed. For the base specification
     escalation model, the variance is significantly below 0.01, and
@@ -59,6 +64,8 @@ In addition, there are some ancillary materials.
     e.g. 0.825.
   - `make-original-tables.R` is a by-hand coding of the values reported
     for Tables 1, 2, and 4 in B\&S 2020.
+  - `rep-check.R` compares the results of our modified replication to
+    the original values reported in Tables 1 and 2 of the B\&S paper.
 
 ## Model definitions
 

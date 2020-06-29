@@ -1,24 +1,23 @@
-#
-#   How much do the replication results differ from the values reported in the
-#   B&S paper?
-#
+---
+title: "Replication verification"
+output: github_document
+---
 
-library(readr)
+How much do the replication results differ from the values reported in the B&S paper?
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
+
 library(dplyr)
+library(readr)
 library(tidyr)
+```
 
-setwd(here::here("rep_original"))
+The values in `table1-original.csv` and `table2-original.csv` are hand-copied values from the paper tables. The paper tables include two decimal digits. In this note, we compare the original Table 1 and 2 AUC-ROC values to the values we obtained from re-running the replication code. 
 
+```{r load-data, message=FALSE, warning=FALSE}
 table1_orig <- read_csv("extra/table1-original.csv")
 table2_orig <- read_csv("extra/table2-original.csv")
-
-table1_orig <- table1_orig %>%
-  rename(row = model) %>%
-  pivot_longer(-c(horizon, row), names_to = "column", values_to = "auc_roc_paper")
-
-table2_orig <- table2_orig %>%
-  pivot_longer(-horizon, names_to = "column", values_to = "auc_roc_paper")
-
 
 t1_top <- read_csv("tables/table1_top.csv") %>%
   rename(row = X1) %>%
@@ -26,6 +25,27 @@ t1_top <- read_csv("tables/table1_top.csv") %>%
 t1_bottom <- read_csv("tables/table1_bottom.csv") %>%
   rename(row = X1) %>%
   mutate(horizon = "6 months")
+
+t2_top <- read_csv("tables/table2_top.csv") %>%
+  rename(row = X1) %>%
+  mutate(horizon = "1 month")
+t2_bottom <- read_csv("tables/table2_bottom.csv") %>%
+  rename(row = X1) %>%
+  mutate(horizon = "6 months")
+```
+
+## Table 1
+
+The table below shows the difference between B&S Table 1 and our re-creation. All values are 0, meaning that we match the paper results. 
+
+```{r}
+table1_orig <- table1_orig %>%
+  rename(row = model) %>%
+  pivot_longer(-c(horizon, row), names_to = "column", values_to = "auc_roc_paper")
+
+table2_orig <- table2_orig %>%
+  pivot_longer(-horizon, names_to = "column", values_to = "auc_roc_paper")
+
 t1 <- bind_rows(t1_top, t1_bottom) %>%
   pivot_longer(-c(row, horizon), names_to = "column", values_to = "auc_roc_rep") %>%
   mutate(
@@ -58,16 +78,14 @@ table1 <- table1 %>%
 
 write_csv(table1, "extra/rep-check-table1.csv")
 table1 %>%
-  knitr::kable("markdown", digits = 2)
+  knitr::kable("markdown", digits = 2, format.args = list(nsmall = 2))
+```
 
+## Table 2
 
-t2_top <- read_csv("tables/table2_top.csv") %>%
-  rename(row = X1) %>%
-  mutate(horizon = "1 month")
-t2_bottom <- read_csv("tables/table2_bottom.csv") %>%
-  rename(row = X1) %>%
-  mutate(horizon = "6 months")
+Our reproduction values also match the B&S paper values for Table 2. 
 
+```{r}
 t2 <- bind_rows(t2_top, t2_bottom) %>%
   pivot_longer(-c(row, horizon), names_to = "column", values_to = "auc_roc_rep") %>%
   mutate(
@@ -91,4 +109,6 @@ table2 <- table2 %>%
 
 write_csv(table2, "extra/rep-check-table2.csv")
 table2 %>%
-  knitr::kable("markdown", digits = 2)
+  knitr::kable("markdown", digits = 2, format.args = list(nsmall = 2))
+```
+
