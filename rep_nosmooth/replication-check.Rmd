@@ -1,13 +1,29 @@
-#
-#   How much do our replication results differ from the values reported in the
-#   B&S paper?
-#
+---
+title: "Replication verification"
+output: github_document
+---
 
+How much do our replication results differ from the values reported in the B&S paper? This note compares the B&S Table 1 and 2 AUC-ROC values we obtain from our modified replication, when using smoothed ROC curves (not the standard empirical ROC curves) to calculate AUC, as B&S do. 
+
+Our replication relies on completely rewritten code that differs substantially from B&S' original replication code, and thus we want to verify that the results are not spuriously different because our replication code is different. (The reason for rewriting the code was to allow for running the replication in parallel, which reduces the time needed to run it.)
+
+There are a couple of known deviations:
+
+- RNG seed variation: the original B&S code sets a RNG seed value and then proceeds sequentially through the dozens of random forest models reflected in the paper. Even if we were to set the same RNG seed value, our code runs models in parallel and thus the RNG state for any given model will be different than it is for a given model in the sequence of models B&S' code runs. In experiments (see [variance.md](variance.md)) we find that this generally produces on the order of 0.01 differences in AUC-ROC values, but sometimes more.
+- We fixed the implementations of the "Weighted by PITF" and "PITF Split Population" models in Table 2, which probably accounts for the more dramatic AUC-ROC differences there. 
+
+Overall, it doesn't look to us like there are any glaring deviations from the original B&S results. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+```
+
+
+```{r}
 library(readr)
 library(dplyr)
 library(tidyr)
 
-setwd(here::here("rep_nosmooth"))
 dir.create("output/tables")
 
 stopifnot(
@@ -27,6 +43,11 @@ table1_orig <- table1_orig %>%
 table2_orig <- table2_orig %>%
   pivot_longer(-horizon, names_to = "column", values_to = "auc_roc_paper")
 
+```
+
+## B&S Table 1
+
+```{r}
 table1_smooth <- results %>%
   filter(table=="Table 1") %>%
   dplyr::select(horizon, row, column, auc_roc_smoothed) %>%
@@ -43,9 +64,11 @@ table1 <- table1 %>%
 write_csv(table1, "output/tables/ourrep-check-table1.csv")
 table1 %>%
   knitr::kable("markdown", digits = 2)
+```
 
+## B&S Table 2
 
-
+```{r}
 table2_smooth <- results %>%
   filter(table=="Table 2") %>%
   dplyr::select(horizon, row, column, auc_roc_smoothed) %>%
@@ -62,3 +85,5 @@ table2 <- table2 %>%
 write_csv(table2, "output/tables/ourrep-check-table2.csv")
 table2 %>%
   knitr::kable("markdown", digits = 2)
+```
+
