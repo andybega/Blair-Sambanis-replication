@@ -15,6 +15,8 @@ output:
 #header-includes:
 #  - \usepackage{setspace}\doublespacing
 bibliography: "./references.bib"
+nocite: |
+  @cederman:weidmann:2017
 ---
 
 ```{r setup, include=FALSE}
@@ -30,13 +32,10 @@ library(kableExtra)
 library(stringr)
 ```
 # Introduction
+
 Blair and Sambanis [-@blair:sambanis:2020, hereafter B\&S] argue that theory is essential for creating models that have high accuracy in forecasting civil war onset. Indeed they assert that with such theory forecasting is more accurate than has previously been possible. Setting aside the validity of this argument, we re-examine the empirical basis for the claims made in their article. We find that these claims are false. Their theory-based escalation model does not do better than the alternatives that they examine. Actually, it does worse. The reason for this reversal of their conclusion is that they have made several mistakes in their research procedure. The performance results they report are based on smoothed performance curves, not the original unsmoothed curves. Further, two of the structural alternatives to their basic escalation model were incorrectly implemented. We also found that the scoring of their forecasts for the first half of 2016 were incorrectly performed using civil war incidence, not onset. In what follows, we show the impact of these mistakes on the conclusions. 
 
 B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars "remarkably accurately". Indeed, B&S argue that this so-called theoretical model outperforms four other "more mechanical" alternatives. Second, they claim that the integration of structure with process is better over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects. B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
-
-nocite: |
-  @cederman:weidmann:2017 
-...
 
 Before proceeding, we quote B&S (page 24):
 
