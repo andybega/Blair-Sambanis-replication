@@ -16,6 +16,7 @@ output:
 header-includes:
   - \usepackage{setspace}\doublespacing
 bibliography: "./references.bib"
+biblio-style: chicago.bst
 nocite: |
   @cederman:weidmann:2017
 ---
