@@ -22,7 +22,7 @@ The other folders and files at the repo top level pertain to the replication wri
 
 ## Replication
 
-To re-run the replication, see the instructions in [rep_nosmooth/README.md](rep_nosmooth/README.md).
+To re-run the replication, see the instructions in [rep_nosmooth/README.md](rep_nosmooth/).
 
 ## Misc
 
