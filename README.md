@@ -20,6 +20,12 @@ In `table4` we verify that the 2016-H1 forecasts created by B&S are in their Tab
 
 The other folders and files at the repo top level pertain to the replication writeup in `paper.pdf`. 
 
+## Replication
+
+To re-run the replication, see the instructions in [rep_nosmooth/README.md].
+
+## Misc
+
 For the paper word count:
 
 ```bash
