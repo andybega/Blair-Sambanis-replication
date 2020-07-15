@@ -332,7 +332,7 @@ We encountered several issues in the code underlying the B&S analysis. The probl
 
 In contradistinction to the conclusions offered by B&S, we find that when correctly specified and implemented:
 
-- The theory-driven escalation model is outperformed both by the low-effort 1,160 predictor all-CAMEO model.
+- The theory-driven escalation model is outperformed both by the low-effort 1,160 predictor all-CAMEO model and the ensemble average model.
 - The Average ensemble model and the CAMEO models outperform the escalation model in all instances.
 - Adding structural variables substantially improves the escalation model's performance.
 
