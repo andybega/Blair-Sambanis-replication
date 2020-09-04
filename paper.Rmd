@@ -269,7 +269,7 @@ table2_nosmooth %>%
   footnote("Differences from the original B&S Table 2: (1) AUC-ROC values are computed on the common subset of cases, meaning that N is equal in each row; (2) AUC-ROC values are computed using original, non-smoothed ROC curves.", footnote_as_chunk = TRUE, threeparttable = TRUE)
 ```
 
-B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out of order, last, for clarity.]
+B&S interpret their results as follows, on page 20 and we comment on the conclusions seratim:^[We list the "Overall, ..." interpretation out-of-order for clarity.]
 
 1. B&S: "Of the approaches we test, the split-population analog is most promising ..."
 
@@ -316,7 +316,7 @@ tab4 %>%
   kableExtra::collapse_rows(1:2, row_group_label_position = "stack")
 ```
 
-The correct confusion matrices when using observed onset (or the lack of it) are shown in the second part of Table \ref{tab:table4}. In the default "Assuming Persistence" coding, there are no civil war onsets in the data for 2016-H1. Thus, the recall value is undefined, while the precision is 0/30 = 0, compared to reported recall and precision values of 13/15 = 0.87 and 13/30 = 0.43. The alternative coding ("Assuming Change") produces two civil war onsets. Recall is 1.0 compared to 14/16 = 0.88 before, and precision is 2/30 = 0.07 instead of 14/30 = 0.47.\footnote{Another, minor issue or rather coding error, is related to using a lead version of the DV. With the lead version of the DV, "incidence_civil_ns_plus1", which is what the models are predicting, the predicted value for 2016-H1 indicates the risk of civil war onset in 2016-H2. In the Table 4 script referenced above, the 2016-H1 predictions (for 2016-H2) are assessed using the raw DV, "incidence_civil_ns", not the lead version. Essentially, the forecasts for 2016-H2 are assessed using observed outcomes for 2016-H1. In this case, it doesn't make a difference since both the raw DV and lead version for 2016-H1 do not have any positive values.}
+The correct confusion matrices when using observed onset (or the lack of it) are shown in the second part of Table \ref{tab:table4}. In the default "Assuming Persistence" coding, there are no civil war onsets in the data for 2016-H1. Thus, the recall value is undefined, while the precision is 0/30 = 0, compared to reported recall and precision values of 13/15 = 0.87 and 13/30 = 0.43. The alternative coding ("Assuming Change") produces two civil war onsets. Recall is 1.0 compared to 14/16 = 0.88 before, and precision is 2/30 = 0.07 instead of 14/30 = 0.47.^[Another, minor issue is related to using a lead version of the DV. With the lead version of the DV, "incidence_civil_ns_plus1", which is what the models are predicting, the predicted value for 2016-H1 indicates the risk of civil war onset in 2016-H2. In the Table 4 script referenced above, the 2016-H1 predictions (for 2016-H2) are assessed using the raw DV, "incidence_civil_ns", not the lead version. Essentially, the forecasts for 2016-H2 are assessed using observed outcomes for 2016-H1. In this case, it doesn't make a difference since both the raw DV and lead version for 2016-H1 do not have any positive values.]
 
 # Conclusion
 
