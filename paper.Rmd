@@ -524,3 +524,82 @@ Given that they are relatively unorthodox, yet appear to work very well, we wond
 
 Given the dramatic changes in results as a result of the preceding issues, we did not further investigate these potential concerns.
 
+## Different smoothing methods
+
+The **pROC** package `smooth()` function includes several different smoothing methods. The default, which BS use in their code, is binormal smoothing. Here is a replication of the smooth benefits shown in Figure \ref{fig:benefit-plot} with two other smoothing methods. (We could not get "logcondens" and "logcondens.smooth" to work, and they are based on another external package that has not been updated since 2016.)
+
+```{r smooth-benefit-plot-extended, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2), with 3 different smoothing methods (binormal is the default method and used in B\\&S)"}
+
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(yardstick)
+  library(pROC)
+  library(forcats)
+})
+
+preds <- read_rds("rep_nosmooth/output/all-predictions.rds")
+
+auc_roc_vec <- function(pred, truth, smooth, sm = "binormal") {
+  roc_obj <- pROC::roc(truth, pred, auc = TRUE, quiet = TRUE, smooth = smooth, smooth.method = sm)
+  as.numeric(roc_obj$auc)
+}
+
+rocs <- preds %>% 
+  filter(!is.na(value)) %>%
+  group_by(cell_id) %>% 
+  summarize(
+    no = auc_roc_vec(pred = pred, truth = value, smooth = FALSE),
+    binormal = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "binormal"),
+    density = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "density"),
+    fitdistr = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "fitdistr")
+  )
+
+# these two take a long time and error out for some reason
+#logcondens = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens"),
+#logcondens.smooth = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens.smooth")
+
+mt <- read_rds("rep_nosmooth/output/model-table-w-results.rds")
+mt <- mt %>% left_join(rocs, by = "cell_id")
+
+cols <- c(
+  Escalation = "#e41a1c",
+  Goldstein = "#ff7f00",
+  Quad = "#984ea3",
+  CAMEO = "#377eb8",
+  Average = "#4daf4a",
+  `With PITF Predictors` = "gray50", 
+  `Weighted by PITF` = "gray50", 
+  `PITF Split Population` = "gray50",
+  `PITF Only` = "gray50"
+)
+
+model_levels <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average", 
+                  "With PITF Predictors", "Weighted by PITF", "PITF Split Population",
+                  "PITF Only")
+
+benefit <- mt %>% 
+  mutate(column = fct_recode(column, Escalation = "Escalation Only"),
+         column = factor(column, levels = rev(model_levels))) %>%
+  mutate(binormal = binormal - no,
+         density  = density - no,
+         fitdistr = fitdistr - no) %>%
+  select(cell_id:non_RF, binormal:fitdistr) %>%
+  pivot_longer(binormal:fitdistr, names_to = "method") 
+
+means <- benefit %>%
+  group_by(column, method) %>%
+  summarize(avg_benefit = mean(value))
+
+ggplot(benefit, aes(x = value, y = column, color = column)) +
+  facet_wrap(~method) +
+  geom_point() +
+  scale_color_manual(guide = FALSE, values = cols) +
+  theme(axis.text.y = element_text(size = 12)) +
+  geom_point(data = means, aes(x = avg_benefit), shape = "|", color = "black", size = 6) +
+  labs(x = "AUC(smoothed ROC) - AUC(empirical ROC)",
+       y = "") +
+  theme_bw() +
+  geom_vline(xintercept = 0, linetype = 3) +
+  theme(axis.text.y = element_text(size = 12))
+```
+
