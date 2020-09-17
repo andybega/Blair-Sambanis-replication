@@ -1,0 +1,9 @@
+journal,volume,number,doi,title,binary_outcome,uses_roc,uses_auc,uses_smoothed_roc,uses_smoothed_auc,notes
+JCR,64,1,https://doi.org/10.1177/0022002719864140,"Climatic Stress, Internal Migration, and Syrian Civil War Onset",0,,,,,
+JCR,64,1,,Civil Society and the Democratic Peace,1,0,1,0,0,
+JCR,64,1,https://doi.org/10.1177/0022002719849676,Secrecy among Friends: Covert Military Alliances and Portfolio Consistency,1,0,0,0,0,
+JCR,64,1,https://doi.org/10.1177/0022002719849623,"Diamonds, Rebel’s and Farmer’s Best Friend: Impact of Variation in the Price of a Lootable, Labor-intensive Natural Resource on the Intensity
+of Violent Conflict",0,,,,,
+JCR,64,1,https://doi.org/10.1177/0022002719843989,Communications Technology and Terrorism,0,,,,,
+JCR,64,1,https://doi.org/10.1177/0022002719841125,A Gendered Imperative: Does Sexual Violence Attract UN Attention in Civil Wars?,1,0,0,0,0,one of the DVs is binary
+JCR,64,1,https://doi.org/10.1177/0022002719857145,"Introducing Extended Data on Terrorist Groups (EDTG), 1970 to 2016",1,0,0,0,0,logit regression but no fit assessment

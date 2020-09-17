@@ -1,0 +1,70 @@
+---
+title: "Journal survey"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Survey journals to check use of ROC/AUC and specifically how common it is to use smoothed ROC curves or AUCs derived from them. 
+
+"template.csv" is a template for adding a new journal issue (or other group of articles).
+
+## Results
+
+_(This README page is generated from a Rmarkdown file; re-knit that to update the results.)_
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+})
+
+
+setwd(here::here("journal-survey"))
+
+articles <- tibble(file = dir("data-raw", full.names = TRUE)) %>%
+  mutate(data = suppressMessages(purrr::map(file, read_csv))) %>%
+  unnest(data)
+
+# mark articles that were referenced in B&S
+articles$bsref <- as.integer(str_detect(articles$file, "bs\\-references"))
+articles$file <- NULL
+
+# take out items that are not coded yet (missing binary_outcome column)
+articles <- articles[!is.na(articles$binary_outcome), ]
+
+# if one of the payload columns is NA, set it to 0
+articles$uses_auc[is.na(articles$uses_auc)] <- 0L
+articles$uses_roc[is.na(articles$uses_roc)] <- 0L
+articles$uses_smoothed_auc[is.na(articles$uses_smoothed_auc)] <- 0L
+articles$uses_smoothed_roc[is.na(articles$uses_smoothed_roc)] <- 0L
+
+cat("How many samples articles had binary outcome?\n")
+table(articles$binary_outcome)
+
+# The rest below is only for binary outcome articles
+binary <- articles %>% filter(binary_outcome==1L)
+
+smry <- binary %>%
+  mutate(any_smoothed = uses_smoothed_auc | uses_smoothed_roc,
+         any_empirical = uses_auc | uses_roc,
+         uses_any = any_smoothed | any_empirical,
+         only_smoothed = any_smoothed & !any_empirical,
+         only_empirical = any_empirical & !any_smoothed,
+         both = any_smoothed & any_empirical) %>%
+  summarize(
+    articles_coded = nrow(articles),
+    articles_with_binary_outcome = n(),
+    use_any_roc_measure = sum(uses_any),
+    only_smoothed = sum(only_smoothed),
+    only_empirical = sum(only_empirical),
+    both = sum(both)
+  ) %>%
+  pivot_longer(everything())
+
+knitr::kable(smry)
+
+```
+
