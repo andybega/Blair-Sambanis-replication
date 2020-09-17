@@ -1,5 +1,5 @@
 ---
-title: "Comments on Blair and Sambanis, 2020, \"Forecasting Civil Wars: Theory and Structure in an Age of 'Big Data' and Machine Learning\", *JCR*"
+title: "Reassessing the role of theory and machine learning in forecasting civil conflict"
 author: 
  - Andreas Beger^[Predictive Heuristics, adbeger@gmail.com.]
  - Richard K. Morgan^[Varieties of Democracy Institute, University of Gothenburg, rick.morgan2@gmail.com.]
@@ -90,7 +90,8 @@ We believe that these research decisions and issues lead B\&S to incorrect concl
 
 ## Smoothed ROC Curves
 
-The most consequential issue that we found is that all AUC-ROC values reported in B&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, empirical ROC curves. The data in rare events problems like this one restrict the number of true positive rate values and lead to non-continuous ROC curves; B&S refer to smoothing in the context of their Figure 1 with ROC curves justified as easing interpretation. Smoothing is used to produce all AUC-ROC values they report. There is no difficulty to be overcome in using non-smoothed plots. Indeed, such plots are standard practice in conflict research and forecasting, both for visualization and when calculating AUCs.  
+The most consequential issue that we found is that all AUC-ROC values reported in B&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, empirical ROC curves. The data in rare events problems like this one restrict the number of true positive rate values and lead to non-continuous ROC curves; B&S refer to smoothing in the context of their Figure 1 with ROC curves justified as easing interpretation. Smoothing is used to produce all AUC-ROC values they report. There is no difficulty to be overcome in using non-smoothed plots. Indeed, such plots are standard practice in conflict research and forecasting, both for visualization and when calculating AUCs. We examined N articles in K journals over the period from 20xx-2020 looking for articles which have a binary dependent variable and use the ROC techonology in the analysis section. We found that XX percent of these articles use the empirical ROC calculations and only 100-XX use a smoothed curve.  This is not surprising since the original ideal as well as contemporaneous documentation suggest this is the gold standard.  What is surprising is that anyone would choose the smoothed ROC implementation.
+INSERT SMALL STUDY HERE WITH DETAILS.
 
 The next three issues we encountered all concern information in B&S Table 2. 
 
@@ -320,7 +321,22 @@ The correct confusion matrices when using observed onset (or the lack of it) are
 
 # Conclusion
 
-B&S advocate the use of theory to guide prediction. But "theory" as used by B&S is an ambiguous and undefined concept.  It is not a procedure.  They actually create a model with ten right-hand side variables that are supposed to capture a complicated repression-dissent dynamic. There is wide-ranging literature on this dynamic that could justify many specifications.  As such, their baseline comparison is an unfortunate standard bearer for strong theory.
+B\&S advocate the use of theory to guide prediction. But "theory" as used by B\&S is an ambiguous and undefined concept. `Theory'' has many interpretations in social science.  A theory is a system of internally consistent, logically connected propositions from which additional statements may be deduced.  The additional statements can be subjected to empirical scrutiny.  An example might be William Riker's theory of coalitions which posits propositions in game theoretic form from which the size principal of minimal winning coalitions may be deduced and further examined empirically.  For the purposes of discussion we call this strong theory.
+
+However, this is not what many mean by theory in the contemporary social science. For many,
+a theory is a falsifiable story or narrative that makes causal claims about the relationships among variables. A theory in this sense could be entirely created by the scholar. More typically it is fused together from a meta-analysis of prior work on the topic under consideration.   We call these types of theory weak theory.
+
+They are weak because they do not include two characteristics of strong theory, though they may include one:
+1. A theory is separate from the case or cases being examined. It is intented to be general.
+2. A theory generates new statements that in principle can be empirically falsified, not proven.
+
+
+
+Throwing a bunch of variables that you think are related to a dependent variable and popping then Into a non parametric model is not a theory-driven model.
+
+
+
+It is not a procedure.  They actually create a model with ten right-hand side variables that are supposed to capture a complicated repression-dissent dynamic. There is wide-ranging literature on this dynamic that could justify many specifications.  As such, their baseline comparison is an unfortunate standard bearer for strong theory.
 
 Another important consideration when developing a predictive model is to do so without contaminating the out-of-sample test set. This occurs if test set performance is used to inform specification---predictive modeling's analogue to p-hacking---and special care is needed [e.g. see the approach by @colaresi:mahmood:2017]. B&S did pre-register their 2016-H1 forecasts, which verifies the integrity of the forecasts, but this does not assure the model development process. To be clear: there is no reason to suspect test set contamination in the escalation or other models. Rather, it is challenging to provide verifiable assurance thereof in a single analysis iteration that both develops and tests a model on data that was available contemporaneously. 
 

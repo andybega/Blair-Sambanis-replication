@@ -12,6 +12,12 @@ group of articles).
 *(This README page is generated from a Rmarkdown file; re-knit that to
 update the results.)*
 
+    ## Warning: package 'tibble' was built under R version 3.6.2
+
+    ## Warning: package 'tidyr' was built under R version 3.6.2
+
+    ## Warning: package 'dplyr' was built under R version 3.6.2
+
     ## How many samples articles had binary outcome?
 
     ## 
