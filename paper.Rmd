@@ -330,10 +330,7 @@ They are weak because they do not include two characteristics of strong theory, 
 1. A theory is separate from the case or cases being examined. It is intented to be general.
 2. A theory generates new statements that in principle can be empirically falsified, not proven.
 
-
-
-Throwing a bunch of variables that you think are related to a dependent variable and popping then Into a non parametric model is not a theory-driven model.
-
+There is another type of theory we can define ostensibly. It consists of taking a variety of variables that putatively relate to another (dependent) variable and running a non-parametric model such as a logistic regression with this set of variables.  This even weaker form of theory is the most widespread use of theory in the contemporary social sciences, and it is the type of theory that is employed in B\&S:
 
 
 It is not a procedure.  They actually create a model with ten right-hand side variables that are supposed to capture a complicated repression-dissent dynamic. There is wide-ranging literature on this dynamic that could justify many specifications.  As such, their baseline comparison is an unfortunate standard bearer for strong theory.
