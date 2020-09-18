@@ -11,6 +11,13 @@ Survey journals to check use of ROC/AUC and specifically how common it is to use
 
 "template.csv" is a template for adding a new journal issue (or other group of articles).
 
+The sample consists of:
+
+1. All references in the Blair and Sambanis paper, excluding books and non-academic articles. 
+2. Two issues of JCR; 2020 volumes 1 and 9. 
+
+
+
 ## Results
 
 _(This README page is generated from a Rmarkdown file; re-knit that to update the results.)_
@@ -32,14 +39,16 @@ articles <- tibble(file = dir("data-raw", full.names = TRUE)) %>%
 articles$bsref <- as.integer(str_detect(articles$file, "bs\\-references"))
 articles$file <- NULL
 
-# take out items that are not coded yet (missing binary_outcome column)
-articles <- articles[!is.na(articles$binary_outcome), ]
+# take out items that are not coded yet (missing "journal" column)
+articles <- articles[!is.na(articles$journal), ]
 
 # if one of the payload columns is NA, set it to 0
 articles$uses_auc[is.na(articles$uses_auc)] <- 0L
 articles$uses_roc[is.na(articles$uses_roc)] <- 0L
 articles$uses_smoothed_auc[is.na(articles$uses_smoothed_auc)] <- 0L
 articles$uses_smoothed_roc[is.na(articles$uses_smoothed_roc)] <- 0L
+articles$unclear_auc[is.na(articles$unclear_auc)] <- 0L
+articles$unclear_roc[is.na(articles$unclear_roc)] <- 0L
 
 cat("How many samples articles had binary outcome?\n")
 table(articles$binary_outcome)
@@ -47,24 +56,59 @@ table(articles$binary_outcome)
 # The rest below is only for binary outcome articles
 binary <- articles %>% filter(binary_outcome==1L)
 
-smry <- binary %>%
+binary <- binary %>%
   mutate(any_smoothed = uses_smoothed_auc | uses_smoothed_roc,
          any_empirical = uses_auc | uses_roc,
-         uses_any = any_smoothed | any_empirical,
-         only_smoothed = any_smoothed & !any_empirical,
-         only_empirical = any_empirical & !any_smoothed,
-         both = any_smoothed & any_empirical) %>%
+         any_unclear = unclear_roc | unclear_auc,
+         uses_any = any_smoothed | any_empirical | any_unclear,
+         only_smoothed = any_smoothed & !any_empirical & !any_unclear,
+         only_empirical = any_empirical & !any_smoothed & !any_unclear,
+         only_unclear = any_unclear & !any_empirical & !any_smoothed) 
+
+smry <- binary %>%
   summarize(
-    articles_coded = nrow(articles),
+    items_coded = nrow(articles),
     articles_with_binary_outcome = n(),
     use_any_roc_measure = sum(uses_any),
     only_smoothed = sum(only_smoothed),
     only_empirical = sum(only_empirical),
-    both = sum(both)
+    only_unclear = sum(only_unclear)
   ) %>%
   pivot_longer(everything())
 
 knitr::kable(smry)
 
+```
+
+What items had unclear or ambiguous codings?
+
+```{r}
+binary %>% 
+  filter(any_unclear) %>%
+  select(title, year, journal, notes) %>%
+  knitr::kable()
+```
+
+Note that both articles include Blair as co-author. 
+
+## Data
+
+- "uses_roc", "uses_smoothed_roc", "unclear_roc": Does the paper include figures showing (empirical / smoothed / unclear) ROC curves?
+- "uses_auc", "uses_smoothed_auc", "unclear_auc": Does the paper include tables showing (empirical / smoothed / unclear) AUC-ROC values?
+
+If the paper includes visually obvious empirical ROC curves, we assumed that any corresponding AUC-ROC values were also generated from empirical ROC curves. 
+
+Some papers had AUC values but no ROC curves. In these cases we consulted replication code. These are listed below. 
+
+```{r}
+articles %>% 
+  filter(!uses_roc & uses_auc) %>%
+  select(title, year, journal, notes) %>%
+  knitr::kable()
+```
+
+
+```{r}
+write_csv(articles, "coded-items.csv")
 ```
 

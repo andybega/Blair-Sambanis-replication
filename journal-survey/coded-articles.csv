@@ -1,0 +1,73 @@
+journal,volume,number,year,doi,title,binary_outcome,uses_roc,uses_auc,uses_smoothed_roc,uses_smoothed_auc,unclear_roc,unclear_auc,notes,bsref
+non-academic,NA,NA,2008,NA,The End of Theory: The Data Deluge Makes the Scientific Method Obsolete,NA,0,0,0,0,0,0,NA,1
+JCR,NA,NA,2015,https://journals.sagepub.com/doi/abs/10.1177/0022002713520530,Modeling Two Types of Peace: The Zero-inflated Ordered Probit (ZiOP) Model in Conflict Research,0,0,0,0,0,0,0,NA,1
+NBER WP,NA,NA,2019,https://www.nber.org/papers/w25980,The Promise and Pitfalls of Conflict Prediction: Evidence from Colombia and Indonesia,1,0,0,0,0,1,1,"There is no mention of smoothing, replication code is not available.",1
+APSR,NA,NA,2000,https://www.cambridge.org/core/journals/american-political-science-review/article/improving-quantitative-studies-of-international-conflict-a-conjecture/827DD8EAADED1EA47B3EA14683B0C163,Improving Quantitative Studies of International Conflict: A Conjecture,1,0,0,0,0,0,0,NA,1
+IJF,NA,NA,2016,NA,"Irregular Leadership Changes in 2014: Forecasts Using Ensemble, Split-population Duration Models",1,1,1,0,0,0,0,NA,1
+JPR,NA,NA,2017,https://doi.org/10.1177%2F0022343316684009,Predicting Local Violence: Evidence from a Panel Survey in Liberia,1,0,0,0,0,1,1,"Figures 1 looks like smoothed ROC, but Figure 2 is not. No mention of smooth in the text. It's not smoothed, but kind of.",1
+IO,NA,NA,2006,https://doi.org/10.1017/S002081830606019X,Decentralization: Fueling the Fire or Dampening the Flames of Ethnic Conflict,0,0,0,0,0,0,0,NA,1
+CMPS,NA,NA,2011,https://doi.org/10.1177%2F0738894210388125,"Real Time, Time Series Forecasting of Inter- and Intra-state Political Conflict",0,0,0,0,0,0,0,NA,1
+Machine Learning,45,1,2001,https://link.springer.com/article/10.1023/A:1010933404324,Random Forests,1,0,0,0,0,0,0,"includes some 2-class classification tasks, but assessment is with accuracy %",1
+ARS,NA,NA,1998,https://doi.org/10.1146/annurev.soc.24.1.423,Ethnic and Nationalist Violence,0,0,0,0,0,0,0,NA,1
+APSR,NA,NA,2015,https://doi.org/10.1017/S0003055415000118,"Territorial Autonomy in the Shadow of Conflict: Too Little, Too Late?",1,0,0,0,0,0,0,NA,1
+Science,NA,NA,2017,https://science.sciencemag.org/content/355/6324/474,Predicting Armed Conflict: Time to Adjust Our Expectations?,0,0,0,0,0,0,0,NA,1
+APSR,NA,NA,2011,https://doi.org/10.1017/S0003055411000207,Horizontal Inequalities and Ethnonationalist Civil War: A Global Comparison,1,0,0,0,0,0,0,NA,1
+WP,NA,NA,2010,https://doi.org/10.1017/S0043887109990219,Why Do Ethnic Groups Rebel? New Data and Analysis,1,0,0,0,0,0,0,NA,1
+book,NA,NA,2012,NA,Why Civil Resistance Works,NA,0,0,0,0,0,0,NA,1
+JCR,NA,NA,2015,https://doi.org/10.1177%2F0022002715576574,Can Structural Conditions Explain the Onset of Nonviolent Uprisings?,1,0,1,0,0,0,0,verified against replication code,1
+JPR,NA,NA,2017,https://doi.org/10.1177%2F0022343316684192,The Shape of Things to Come? Expanding the Inequality and Grievance Model for Civil War Forecasts with Event Data,1,1,1,0,0,0,0,NA,1
+OEP,NA,NA,2004,https://www.econ.nyu.edu/user/debraj/Courses/Readings/CollierHoeffler.pdf,Greed and Grievance in Civil War,1,0,0,0,0,0,0,NA,1
+PA,NA,NA,2017,https://doi.org/10.1017/pan.2017.3,What Can We Learn from Predictive Modeling?,1,1,1,0,0,0,0,verified against replication code,1
+JPR,NA,NA,2017,https://doi.org/10.1177%2F0022343317712576,Words and Deeds: From Incompatibilities to Outcomes in Anti- government Disputes,1,0,0,0,0,0,0,NA,1
+JOP,NA,NA,2020,https://doi.org/10.1086/706459,Networks of Violence: Predicting Conflict in Nigeria,1,1,1,0,0,0,0,NA,1
+APSR,NA,NA,2003,https://www.jstor.org/stable/3118222,"Ethnicity, Insurgency, and Civil War",1,0,0,0,0,0,0,NA,1
+JPR,NA,NA,2013,https://journals.sagepub.com/doi/10.1177/0022343312449033,"Forecasting Is Difficult, Especially about the Future: Using Contentious Issues to Forecast Interstate Disputes",1,1,1,0,0,0,0,NA,1
+JCR,NA,NA,1992,https://journals.sagepub.com/doi/10.1177/0022002792036002007,A Conflict-Cooperation Scale for WEIS Events Data,0,0,0,0,0,0,0,NA,1
+AJPS,NA,NA,2009,https://doi.org/10.1111/j.1540-5907.2009.00426.x,A Global Model for Forecasting Political Instability,1,0,0,0,0,0,0,NA,1
+AJPS,NA,NA,2011,https://doi.org/10.1111/j.1540-5907.2011.00525.x,The Separation Plot: A New Visual Method for Evaluating the Fit of Binary Models,1,1,1,0,0,0,0,NA,1
+non-academic,NA,NA,2016,NA,10 Conflicts to Watch in 2016,NA,0,0,0,0,0,0,NA,1
+book,NA,NA,1970,NA,Why Men Rebel,NA,0,0,0,0,0,0,NA,1
+IPSR,NA,NA,1993,https://doi.org/10.1177%2F019251219301400203,Why Minorities Rebel: A Global Analysis of Communal Mobilization and Conflict Since 1945,0,0,0,0,0,0,0,appears to be several ordinal DVs,1
+book,NA,NA,2000,NA,Containing Nationalism,NA,0,0,0,0,0,0,NA,1
+ISQ,57,2,2013,https://www.jstor.org/stable/24016137,"Predicting Armed Conflict, 2010Ð2050",1,1,1,0,0,0,0,NA,1
+APSR,108,3,2014,NA,An Empirical Evaluation of Explanations for State Repression,0,0,0,0,0,0,0,NA,1
+book,NA,NA,1985,NA,Ethnic Groups in Conflict,NA,0,0,0,0,0,0,NA,1
+book,NA,NA,2001,NA,Dynamics of Contention,NA,0,0,0,0,0,0,NA,1
+PA,NA,NA,2019,https://doi.org/10.1017/pan.2018.50,Inferential Approaches for Network Analysis: AMEN for Latent Factor Models,1,1,1,0,0,0,0,NA,1
+PA,NA,NA,2012,https://doi.org/10.1093/pan/mps002,Improving Predictions Using Ensemble Bayesian Model Averaging,1,0,1,0,0,0,0,NA,1
+PA,NA,NA,2015,https://doi.org/10.1093/pan/mpv024,Comparing Random Forest with Logistic Regression for Predicting Class-imbalanced Civil War Onset Data,1,1,1,0,0,0,0,NA,1
+book,NA,NA,2002,NA,"Understanding Ethnic Violence: Fear, Hatred, and Resentment in
+Twentieth-century Eastern Europe",NA,0,0,0,0,0,0,NA,1
+CPS,NA,NA,2014,https://journals.sagepub.com/doi/abs/10.1177/0010414013520524,Explaining Regional Autonomy Differences in Decentralized Countries,0,0,0,0,0,0,0,NA,1
+II,NA,NA,2005,https://doi.org/10.1080/03050620590919452,"Repression, Grievances, Mobilization, and Rebellion: A New Test of GurrÕs Model of Ethnopolitical Rebellion",0,0,0,0,0,0,0,NA,1
+book-chapter,NA,NA,2013,NA,Automated Coding of Political Event Data,0,0,0,0,0,0,0,NA,1
+conference,NA,NA,2011,http://parusanalytics.com/eventdata/papers.dir/Schrodt.EPSA.2011.final.pdf,Forecasting Political Conflict in Asia Using Latent Dirichlet Allocation Models,1,1,1,0,0,0,0,no specific mention of using smoothed ROC curves; uses ROCR which by default does empirical; Figure 4 is empirical,1
+JOP,NA,NA,2014,https://www.jstor.org/stable/10.1017/s0022381614000267,"Mobilization, Repression, and Revolution: Grievances and Opportunities in Contentious Politics",0,0,0,0,0,0,0,NA,1
+Statistics Surveys,NA,NA,2009,https://projecteuclid.org/euclid.ssu/1257431567,Navigating Random Forests and Related Advances in Algorithmic Modeling,0,0,0,0,0,0,0,NA,1
+book,NA,NA,1989,NA,"Democracy and Disorder: Social Conflict, Political Protest, and Democracy in Italy, 1965Ð1975",NA,0,0,0,0,0,0,NA,1
+JCR,57,3,2013,https://doi.org/10.1177/0022002712446129,Prediction of Intrastate Conflict Using State Structural Factors and Events Data,1,0,0,0,0,0,0,NA,1
+book,NA,NA,1978,NA,From Mobilization to Revolution,NA,0,0,0,0,0,0,NA,1
+IO,NA,NA,2006,https://doi.org/10.1017/S0020818306060048,"Information, Uncertainty, and the Decision to Secede",1,0,0,0,0,0,0,NA,1
+ORE,NA,NA,2017,NA,"Do We Have Too Much Theory in International Relations or Do We Need Less? Waltz Was Wrong, Tetlock Was Right",0,0,0,0,0,0,0,NA,1
+JPR,47,4,2010,https://doi.org/10.1177/0022343309356491,The Perils of Policy by P-value: Predicting Civil Conflicts,1,1,1,0,0,0,0,NA,1
+ISR,15,4,2013,https://doi.org/10.1111/misr.12072,Learning from the Past and Stepping into the Future: Toward a New Generation of Conflict Prediction,1,0,1,0,0,0,0,NA,1
+AJPS,60,1,2016,https://doi.org/10.1111/ajps.12196,A Closer Look at Reporting Bias in Conflict Event Data,1,0,1,0,0,0,0,NA,1
+JCR,54,6,2010,https://doi.org/10.1177/0022002710371669,Predicting Conflict in Space and Time,1,1,1,0,0,0,0,NA,1
+ASR,NA,NA,2009,https://doi.org/10.1177/000312240907400208,Ethnic Politics and Armed Conflict: A Configurational Analysis of a New Global Dataset,1,0,0,0,0,0,0,NA,1
+APSR,113,1,2019,https://doi.org/10.1017/S000305541800076X,The Psychology of State Repression,0,0,0,0,0,0,0,NA,1
+JCR,64,1,NA,https://doi.org/10.1177/0022002719864140,"Climatic Stress, Internal Migration, and Syrian Civil War Onset",0,0,0,0,0,0,0,NA,0
+JCR,64,1,NA,NA,Civil Society and the Democratic Peace,1,0,1,0,0,0,0,NA,0
+JCR,64,1,NA,https://doi.org/10.1177/0022002719849676,Secrecy among Friends: Covert Military Alliances and Portfolio Consistency,1,0,0,0,0,0,0,NA,0
+JCR,64,1,NA,https://doi.org/10.1177/0022002719849623,"Diamonds, RebelÕs and FarmerÕs Best Friend: Impact of Variation in the Price of a Lootable, Labor-intensive Natural Resource on the Intensity
+of Violent Conflict",0,0,0,0,0,0,0,NA,0
+JCR,64,1,NA,https://doi.org/10.1177/0022002719843989,Communications Technology and Terrorism,0,0,0,0,0,0,0,NA,0
+JCR,64,1,NA,https://doi.org/10.1177/0022002719841125,A Gendered Imperative: Does Sexual Violence Attract UN Attention in Civil Wars?,1,0,0,0,0,0,0,one of the DVs is binary,0
+JCR,64,1,NA,https://doi.org/10.1177/0022002719857145,"Introducing Extended Data on Terrorist Groups (EDTG), 1970 to 2016",1,0,0,0,0,0,0,logit regression but no fit assessment,0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720912323,The Impact of Economic Coercion on Public Opinion: The Case of 1555 USâ€“China Currency Relations,0,0,0,0,0,0,0,NA,0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720908314,"Nowhere to Go: FDI, Terror, and Market-specific Assets",0,0,0,0,0,0,0,NA,0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720909884,How and When Amnesty during Conflict Affects Conflict Termination,0,0,0,0,0,0,0,"multinomial outcome,  but no one-hot assessment of ROC",0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720912823,"Framing the Narrative: Female Fighters, External Audience Attitudes, and Transnational Support for Armed Rebellions",0,0,0,0,0,0,0,NA,0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720907675,Comfortably Numb: Effects of Prolonged Media Coverage,0,0,0,0,0,0,0,NA,0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720906446,"Political Trust, Shocks, and Accountability: Quasi-experimental Evidence 1693 from a Rebel Attack",0,0,0,0,0,0,0,NA,0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720909886,Explaining Support for Political Violence: Grievance and 1724 Perceived Opportunity,0,0,0,0,0,0,0,NA,0
+JCR,64,9,NA,https://doi.org/10.1177/0022002720907660,Modes of Ingroup Identification and Notions of Justice Provide Distinct 1754 Pathways to Normative and Nonnormative Collective Action in the Israeliâ€“Palestinian Conflict,0,0,0,0,0,0,0,NA,0
