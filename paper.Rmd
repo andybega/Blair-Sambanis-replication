@@ -15,6 +15,7 @@ output:
 header-includes:
   - \usepackage{floatrow}
   - \floatsetup[figure]{capposition=bottom}
+  - \floatsetup[table]{capposition=top}
   - \usepackage[format=plain,labelfont=bf,up]{caption}
 #  - \usepackage{setspace}\doublespacing
 bibliography: "./references.bib"
