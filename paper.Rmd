@@ -304,7 +304,9 @@ It's not clear to us under what conditions forecasting civil war onset risk for 
 
 When creating the confusion matrices, B&S treat these ongoing civil war instances equivalent to civil war onsets, as positive events ("1"). In the text, B&S do acknowledge a distinction between predicting an actual onset versus predicting a continuation, but they also do try to claim credit for the fact that the model places high probabilities on most of the ongoing civil war cases. This would only make sense if the civil war coding was at the conflict, not country-level, so that a country could experience more than one civil war at any given time, e.g. two separatists conflicts in different portions of the country. But this is not the case; ongoing conflicts are consistently in all other analyses dropped from the data. Thus it is not possible to treat incidence of civil war similar to onset of civil war, which is what the model actually predicts. 
 
-We replicate the B&S confusion matrices but distinguish between non-evens that correspond to countries with no civil war, those with an ongoing civil war, and those with an actual civil war onset in Table \ref{tab:table4}. With the "Assuming Persistence" version of the outcomes, shown in the first confusion matrix, B\&S report that there are 15 civil war onsets, of which the forecasts capture 13 (true positives) and miss 2 (false negatives). With the "Assuming Persistence" coding of outcomes, shown in the second confusion matrix, they report that there are 16 onsets and the forecasts capture 14 of those with, still, 2 misses. Fifteen to 16 civil war _onsets_ in the first half of 2016 is incredible, especially considering that the entire historical data from 2001 to 2015 only has 20 recorded civil war _onsets_. Indeed, it turns out that B&S scored their forecasts for civil war \textit{onset} using civil war \textit{incidence}, i.e. counting ongoing civil wars as if they were onsets. 
+We replicate the B&S confusion matrices but distinguish between non-evens that correspond to countries with no civil war, those with an ongoing civil war, and those with an actual civil war onset in Table \ref{tab:table4}. The original B&S confusion matrices collapse the second two rows in each matrix and treat ongoing and onset as part of the same group. It is now more apparent that essentially all of the apparent true positives ($P=1, Y=1$) in the original B&S confusion matrices are actually ongoing civil war cases which by definition _cannot_ experience another civil war onset. The alternative outcome coding B&S evaluate, under "Assuming Change", produces the only two civil war onsets we would have observed in 2016-H1. 
+
+With the "Assuming Persistence" version of the outcomes, shown in the first confusion matrix, B\&S report that there are 15 civil war onsets, of which the forecasts capture 13 (true positives) and miss 2 (false negatives). With the "Assuming Persistence" coding of outcomes, shown in the second confusion matrix, they report that there are 16 onsets and the forecasts capture 14 of those with, still, 2 misses. Fifteen to 16 civil war _onsets_ in the first half of 2016 is incredible, especially considering that the entire historical data from 2001 to 2015 only has 20 recorded civil war _onsets_. Indeed, it turns out that B&S scored their forecasts for civil war \textit{onset} using civil war \textit{incidence}, i.e. counting ongoing civil wars as if they were onsets. 
 
 
 ```{r, include=FALSE}
@@ -336,27 +338,6 @@ tab4 %>%
 \caption{Replication of B\&S Table 4: Confusion Matrices for Six-month Escalation Model forecasts for the first half of 2016.}\label{tab:table4}
 \centering
 \begin{tabular}{ll|c|c|l}
-\multicolumn{5}{c}{\textbf{Original confusion matrices with civil war \textit{incidence}}} \\
-% BS, assuming persistence
-\multicolumn{1}{l}{\multirow{4}{*}{Assuming Persistence}} & \multicolumn{3}{c}{} \\
-\multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
-\cline{3-4}
-& $Y=0$ & 132 & 17 \\
-\cline{3-4}
-& $Y=1$ & 2 & 13 \\
-\cline{3-4}
-% BS, assuming change
-\multicolumn{1}{l}{\multirow{4}{*}{Assuming Change}} & \multicolumn{3}{c}{} \\
-\multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
-\cline{3-4}
-& $Y=0$ & 132 & 16 \\
-\cline{3-4}
-& $Y=1$ & 2 & 14 \\
-\cline{3-4}
-\\ \midrule
-\\
-\multicolumn{5}{c}{\textbf{Fixed confusion matrices with civil war \textit{onset}}} \\
-% fixed, assuming persistence
 \multicolumn{1}{l}{\multirow{5}{*}{Assuming Persistence}} & \multicolumn{3}{c}{} \\
 \multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
 \cline{3-4}
