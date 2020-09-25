@@ -134,7 +134,7 @@ Thus a difference in AUC-ROC values for two models could be because they were ca
 
 ## Incorrect scoring of the 2016 forecasts
 
-B&S present a confusion matrix to score their 2016-H1 forecasts in Table 4. Although the forecasts are for the probability of civil war _onset_, in the replication code, they are actually scored using _incidence_ of civil war. By definition the incidence of civil war is much more common than onset, which is only coded for the starting year of a conflict. When forecasting rare events, it is common to have many false positives, i.e. instances where we predict onset but no onsets occur. _Ex ante_, using incidence rather than onset to score onset forecasts should decrease the number of false positives and correspondingly increase the number of true positives (good predictions) and false negatives (missed onsets). 
+B&S present a confusion matrix to score their 2016-H1 forecasts in Table 4. Although the forecasts are for the probability of civil war _onset_, they are actually scored using _incidence_ of civil war. By definition the incidence of civil war is much more common than onset, which is only coded for the starting year of a conflict. When forecasting rare events, it is common to have many false positives, i.e. instances where we predict onset but no onsets occur. _Ex ante_, using incidence rather than onset to score onset forecasts should decrease the number of false positives and correspondingly increase the number of true positives (good predictions) and false negatives (missed onsets). 
 
 # Results of the updated analysis
 
@@ -294,9 +294,17 @@ The most straightforward method of incorporating the annual structural PITF vari
 
 ## How Accurate Were the 2016 Forecasts?
 
-B&S made forecasts for the first half of 2016 (2016-H1), and assess the accuracy of these forecasts. The forecasts themselves are probabilistic, i.e. range from 0 to 1, but for the purpose of scoring the forecasts they consider the 30 highest predictions to have been positive forecasts ("1") and the remaining forecasts to have been for no onset ("0"). They then construct confusion matrices for the forecasts, in their Table 4 and which we replicate here in the top half of our Table \ref{tab:table4}. They use two alternative codings of the outcomes for 2016-H1, one of which they call "Assuming Persistence" (this is what is in their replication data), and one of which they call "Assuming Change" (hand-coded in one of their replication scripts). 
+B&S made forecasted the risk of civil war onset for the first half of 2016 (2016-H1, where H2 would be the second half), and assess the accuracy of these forecasts. The forecasts themselves are probabilistic, i.e. range from 0 to 1, but for the purpose of scoring the forecasts they consider the 30 highest predictions to have been positive forecasts ("1") and the remaining forecasts to have been for no onset ("0"). They evaluate two alternative codings of observed civil war outcomes, one in which 15 countries, including Colombia, had ongoing civil wars at the end of 2015 (labeled "Assuming Persistence"), and an alternative coding in which the civil war in Colombia ends but Turkey and Benin experience civil war onsets ("Assuming Change").\footnote{\label{fn:leadDV}The former coding is in the main replication data, while the latter is hand-coded in the Stata script that produces their confusion matrices. There is also some potential ambiguity about the discussion in this section because the forecasts B\&S claim are for the first half of 2016 are actually for the second half of 2016, but scored against outcomes for the first half of 2016.} However, when they score the forecasts to produce the confusion matrices they report in their Table 4, they score them using civil war incidence, not onset. In fact, this a conscious choice B&S seem to acknowledge in the text (if not the table with confusion matrices), but it's not clear to us how this is justifiable.
 
-With the "Assuming Persistence" version of the outcomes, shown in the first confusion matrix, B\&S report that there are 15 civil war onsets, of which the forecasts capture 13 (true positives) and miss 2 (false negatives). With the "Assuming Persistence" coding of outcomes, shown in the second confusion matrix, they report that there are 16 onsets and the forecasts capture 14 of those with, still, 2 misses. Fifteen to 16 civil war _onsets_ in the first half of 2016 is incredible, especially considering that the entire historical data from 2001 to 2015 only has 20 recorded civil war _onsets_. Indeed, it turns out that B&S scored their forecasts for civil war \textit{onset} using civil war \textit{incidence}, i.e. counting ongoing civil wars as if they were onsets. 
+The way civil war is operationalized by Sambanis is so that a country at any given point in time is either at civil war or not, and it cannot experience another civil war onset when it is already at war. In the data, ongoing civil wars are coded as having a missing outcome value, since a new onset is conceptually impossible, and dropped. If we place ourselves back to the beginning of 2016, when the forecasts were made (the forecasts are pre-registered in early March), we would presumable already have observed civil war state for the second half of 2015 and seen that 15 countries had ongoing conflicts. In all previous analyses in the paper, these kinds of cases drop out of the data. However, B&S re-introduce, produce forecasts for them, and include them as positive events ("1"s) in their confusion matrices. They write, on page 21:
+
+> Importantly, we make no assumptions about the persistence of civil war between the second half of 2015 and the first half of 2016, meaning that all countries—even those with ongoing conflicts as of December 31, 2015--are included in the 2016 test set. As a result, 14 of the 30 countries on the list (and nine of the top 10) are cases of ongoing conflict.
+
+It's not clear to us under what conditions forecasting civil war onset risk for countries with ongoing civil wars make sense. Theoretically, a conflict could have ended in 2015-H2 and a new one started right away in 2016-H1, but when making the forecasts, _we would have already known that_. Including those cases in 2016-H1 risk set that we are forecasting for would only make sense if all of them had seen civil war termination in 2015-H2, but when making the forecast we would have already known this is not the case. 
+
+When creating the confusion matrices, B&S treat these ongoing civil war instances equivalent to civil war onsets, as positive events ("1"). In the text, B&S do acknowledge a distinction between predicting an actual onset versus predicting a continuation, but they also do try to claim credit for the fact that the model places high probabilities on most of the ongoing civil war cases. This would only make sense if the civil war coding was at the conflict, not country-level, so that a country could experience more than one civil war at any given time, e.g. two separatists conflicts in different portions of the country. But this is not the case; ongoing conflicts are consistently in all other analyses dropped from the data. Thus it is not possible to treat incidence of civil war similar to onset of civil war, which is what the model actually predicts. 
+
+We replicate the B&S confusion matrices but distinguish between non-evens that correspond to countries with no civil war, those with an ongoing civil war, and those with an actual civil war onset in Table \ref{tab:table4}. With the "Assuming Persistence" version of the outcomes, shown in the first confusion matrix, B\&S report that there are 15 civil war onsets, of which the forecasts capture 13 (true positives) and miss 2 (false negatives). With the "Assuming Persistence" coding of outcomes, shown in the second confusion matrix, they report that there are 16 onsets and the forecasts capture 14 of those with, still, 2 misses. Fifteen to 16 civil war _onsets_ in the first half of 2016 is incredible, especially considering that the entire historical data from 2001 to 2015 only has 20 recorded civil war _onsets_. Indeed, it turns out that B&S scored their forecasts for civil war \textit{onset} using civil war \textit{incidence}, i.e. counting ongoing civil wars as if they were onsets. 
 
 
 ```{r, include=FALSE}
@@ -349,20 +357,24 @@ tab4 %>%
 \\
 \multicolumn{5}{c}{\textbf{Fixed confusion matrices with civil war \textit{onset}}} \\
 % fixed, assuming persistence
-\multicolumn{1}{l}{\multirow{4}{*}{Assuming Persistence}} & \multicolumn{3}{c}{} \\
+\multicolumn{1}{l}{\multirow{5}{*}{Assuming Persistence}} & \multicolumn{3}{c}{} \\
 \multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
 \cline{3-4}
-& $Y=0$ & 134 & 30 \\
+& $Y=0$, no civil war & 134 & 17 \\
 \cline{3-4}
-& $Y=1$ & 0 & 0 \\
+& $Y=0$, ongoing & 2 & 13 \\
+\cline{3-4}
+& $Y=1$, onset & 0 & 0 \\
 \cline{3-4}
 % fixed, assuming change
-\multicolumn{1}{l}{\multirow{4}{*}{Assuming Change}} & \multicolumn{3}{c}{} \\
+\multicolumn{1}{l}{\multirow{5}{*}{Assuming Change}} & \multicolumn{3}{c}{} \\
 \multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
 \cline{3-4}
-& $Y=0$ & 134 & 28 \\
+& $Y=0$, no civil war & 134 & 16 \\
 \cline{3-4}
-& $Y=1$ & 0 & 2 \\
+& $Y=0$, ongoing & 2 & 12 \\
+\cline{3-4}
+& $Y=1$, onset & 0 & 2 \\
 \cline{3-4}
 \end{tabular}
 \end{table}
@@ -455,9 +467,15 @@ Disentangling this coding error is not straightforward as it occurs over several
 
 ### Section 3.5: Incorrect scoring of the 2016 forecasts
 
+Regarding the claim in footnote \ref{fn:leadDV} that the 2016-H1 forecasts are actually forecasts for 2016-H2: 
+
+1. Throughout the R code for the main analyses, the models predict a 1-time period lead version of the civil war onset variables (ending in "_plus1"). This means that, for example, in the 6-month version of the data, a value of "1" for the "_plus1" outcome variable for 2015-H2 actually refers to a civil war onset in the first half of 2016. One can confirm, through some tracing to work back to the original variable assignments, that the ROC curves and AUC are correspondingly, and correctly, also scored using the lead versions of the DV. 
+2. The nominally 2016-H1 forecasts are created at the bottom of `+master.R` using the data for 2016-H1 and still the lead DV. Thus the lead DV here refers to outcomes in 2016-H2. 
+3. The scoring of the forecasts, whatever time period they are actually for, is done in a separate Stata do file, `6mo_make_confusion_matrix.do`. Here, the scoring is done using the non-lead version of the DV. Thus there is a mismatch between the time period the forecasts are for and the period who's observed outcomes are used to score them. 
+
 The relevant variables in the data are "incidence_civil_ns" and "incidence_civil_ns_plus1", which appears to be a 1-period lead (ie., $t_+1$) version of the dependent variable that is used in the actual prediction models. The incidence dependent variable  contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. This reflects common practice. 
 
-However, by examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable to incidence. 
+Furthermoe, by examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file `6mo_make_confusion_matrix.do` on line 52, missing values in "incidence_civil_ns" are recoded to 1, thus reverting the onset coding of this variable to incidence. 
 
 ## Additional replication tables
 
