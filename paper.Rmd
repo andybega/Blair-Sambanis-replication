@@ -306,8 +306,11 @@ When creating the confusion matrices, B&S treat these ongoing civil war instance
 
 We replicate the B&S confusion matrices but distinguish between non-evens that correspond to countries with no civil war, those with an ongoing civil war, and those with an actual civil war onset in Table \ref{tab:table4}. The original B&S confusion matrices collapse the second two rows in each matrix and treat ongoing and onset as part of the same group. It is now more apparent that essentially all of the apparent true positives ($P=1, Y=1$) in the original B&S confusion matrices are actually ongoing civil war cases which by definition _cannot_ experience another civil war onset. The alternative outcome coding B&S evaluate, under "Assuming Change", produces the only two civil war onsets we would have observed in 2016-H1. 
 
+MIKE: the two paragraphs below need to be fixed/updated. 
+
 With the "Assuming Persistence" version of the outcomes, shown in the first confusion matrix, B\&S report that there are 15 civil war onsets, of which the forecasts capture 13 (true positives) and miss 2 (false negatives). With the "Assuming Persistence" coding of outcomes, shown in the second confusion matrix, they report that there are 16 onsets and the forecasts capture 14 of those with, still, 2 misses. Fifteen to 16 civil war _onsets_ in the first half of 2016 is incredible, especially considering that the entire historical data from 2001 to 2015 only has 20 recorded civil war _onsets_. Indeed, it turns out that B&S scored their forecasts for civil war \textit{onset} using civil war \textit{incidence}, i.e. counting ongoing civil wars as if they were onsets. 
 
+The correct confusion matrices that use civil war onsets to score the forecasts are shown in the second part of Table \ref{tab:table4}. In the "Assuming Persistence" coding, there are no civil war onsets in the data for 2016-H1. The alternative "Assuming Persistence" coding records 2 civil war onsets in 2016-H1, according to the civil conflict dataset they rely on. As a result, if we compare the precision and recall of the forecasts with the correct scoring to the incorrect scoring in B&S, almost all of the forecasts are false positives. This is the norm when predicting rare events, and thus not unusual at all. The forecasts do correctly capture the 2 civil war onsets in the "Assuming Change" version of the outcome coding. This is, at face value, a credit to the model's accuracy. 
 
 ```{r, include=FALSE}
 # AB 2020-09-22: I redid the confusion matrices in latex so that the resulting table is clearer than what I could easily do with kable() programatically here in this chunk. 
@@ -360,8 +363,6 @@ tab4 %>%
 \end{tabular}
 \end{table}
 
-
-The correct confusion matrices that use civil war onsets to score the forecasts are shown in the second part of Table \ref{tab:table4}. In the "Assuming Persistence" coding, there are no civil war onsets in the data for 2016-H1. The alternative "Assuming Persistence" coding records 2 civil war onsets in 2016-H1, according to the civil conflict dataset they rely on. As a result, if we compare the precision and recall of the forecasts with the correct scoring to the incorrect scoring in B&S, almost all of the forecasts are false positives. This is the norm when predicting rare events, and thus not unusual at all. The forecasts do correctly capture the 2 civil war onsets in the "Assuming Change" version of the outcome coding. This is, at face value, a credit to the model's accuracy. 
 
 # Discussion
 
