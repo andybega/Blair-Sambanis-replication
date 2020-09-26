@@ -19,7 +19,7 @@ header-includes:
   - \floatsetup[figure]{capposition=bottom}
   - \floatsetup[table]{capposition=top}
   - \usepackage[format=plain,labelfont=bf,up]{caption}
-  - \usepackage{setspace}\doublespacing
+#  - \usepackage{setspace}\doublespacing
 bibliography: "./references.bib"
 nocite: |
   @cederman:weidmann:2017
