@@ -54,7 +54,7 @@ cols <- c(
 # linewidth
 ll <- 4
 
-png("output/figures/figure1-replicated.png", width = 1100, height = 1000,
+png("output/figures/fig-1-figure1-replicated.png", width = 1100, height = 1000,
     units = "px", pointsize = 24)
 par(mfrow = c(2, 2))
 

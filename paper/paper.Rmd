@@ -155,62 +155,18 @@ ROC curves are constructed from the false positive and true positive rates as on
 \begin{figure}
 \caption{Replication of B\&S Figure 1 with both smooth and non-smoothed ROC curves\label{fig:rocs}}
 \centering
-\includegraphics[width=.95\linewidth]{figures/figure1-replicated.png}
+\includegraphics[width=.95\linewidth]{figures/fig-1-figure1-replicated.png}
 \end{figure}
 
 The specific predictions also include groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the *y*-axis only changes when the prediction for an observed positive case is reached. For these ROC curves, and in the fundamental train/test split used for 12 of the 18 rows/models in B&S Table 1, for that matter, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct *y* coordinates. Notice also that the smoothing averages the left-most almost straight line with the right-most almost straight line in a monotonic way. Thus, smoothing changes the ordering of alternatives. It is not a cosmetic change as suggested.
 
 What impact did the ROC smoothing have overall on the evaluated performance of the Escalation model relative to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B\&S Table 1) and structural extensions (our Table \ref{tab:table2-fixed}, B\&S Table 2)?  Figure \ref{fig:benefit-plot} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each point corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed} (the colors match those in Figure \ref{fig:rocs}). The vertical bar in each plot marks the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to "PITF Only", smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible on average. The Escalation model, however, _always_ benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the incorrect result B&S report, namely that the escalation model is generally superior. 
 
-```{r benefit-plot, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2). The Escalation model is the only model which consistently benefits from using smoothed ROC curves, and this advantage accounts for its apparent superiority to the other models."}
-table1_benefit <- read_csv("data/table1-smooth-benefit.csv") 
-table2_benefit <- read_csv("data/table2-smooth-benefit.csv") 
-
-cols <- c(
-  Escalation = "#e41a1c",
-  Goldstein = "#ff7f00",
-  Quad = "#984ea3",
-  CAMEO = "#377eb8",
-  Average = "#4daf4a",
-  `With PITF Predictors` = "gray50", 
-  `Weighted by PITF` = "gray50", 
-  `PITF Split Population` = "gray50",
-  `PITF Only` = "gray50"
-)
-
-benefit <- bind_rows(
-  table1_benefit %>%
-    rename(setting = Model) %>%
-    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff"),
-  table2_benefit %>%
-    rename(setting = Model, Escalation = `Escalation Only`) %>%
-    pivot_longer(-c(horizon, setting), names_to = "model", values_to = "diff")
-)
-
-# mean benefit by model
-means <- benefit %>%
-  group_by(model) %>%
-  summarize(avg_benefit = mean(diff))
-
-ann_text <- tibble(horizon = "1 month", diff = 0.07, model = 8.6, label = "Mean")
-
-model_levels <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average", 
-                  "With PITF Predictors", "Weighted by PITF", "PITF Split Population",
-                  "PITF Only")
-benefit %>%
-  mutate(model = factor(model, levels = rev(model_levels))) %>%
-  ggplot(aes(y = model)) + 
-  #facet_wrap(~ horizon, scales = "free_x") +
-  geom_point(aes(x = diff, color = model), alpha = 0.5, size = 2) +
-  scale_color_manual(guide = FALSE, values = cols) +
-  geom_point(data = means, aes(x = avg_benefit), shape = "|", color = "black", size = 6) +
-  labs(x = "AUC(smoothed ROC) - AUC(empirical ROC)",
-       y = "") +
-  theme_bw() +
-  geom_text(data = ann_text, aes(x = diff, label = label), col = "black") +
-  geom_vline(xintercept = 0, linetype = 3) +
-  theme(axis.text.y = element_text(size = 12))
-```
+\begin{figure}
+\caption{Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\&S Tables 1 and 2). The Escalation model is the only model which consistently benefits from using smoothed ROC curves, and this advantage accounts for its apparent superiority to the other models.\label{fig:benefit-plot}}
+\centering
+\includegraphics[width=.8\linewidth]{figures/fig-2-benefit-plot.png}
+\end{figure}
 
 In sum, it is not only the case that using smoothed ROC curves alters the results, but also that the use of smoothed ROC curves to calculate AUC-ROC values \textbf{only} benefits the escalation model. It does so consistently and by a considerable margin. All eight alternative models reported in B&S Tables 1 and 2, on average, do not gain when using smoothed ROC curves to calculate AUC. Four of the eight show a small positive bias from smoothing, while the other four display a small negative bias. The magnitudes of these are not close to the level of positive bias found in the escalation model.
 
@@ -444,7 +400,7 @@ Uncovering which cases in the PITF training predictions are matched to the cases
 
 ### Section 3.3: Incorrect “PITF Split Population” Implementation
 
-The intention is to train seperate random forests on data split into high and low-risk groups based on PITF predictions, and then combine them back into one random forest. Actually both random forests are trained on identical data, essentially production a random forest that just has N_trees \* 2. 
+The intention is to train separate random forests on data split into high and low-risk groups based on PITF predictions, and then combine them back into one random forest. Actually both random forests are trained on identical data, essentially production a random forest that just has N_trees \* 2. 
 
 Disentangling this coding error is not straightforward as it occurs over several R scripts and requires (or at least is easier to verify by) running partway through the actual replication until the objects holding the training data for the models are instantiated and can be examined. Details are documented in issue #5 in the GitHub repo.
 
@@ -522,73 +478,28 @@ table2_benefit %>%
   pack_rows(index = c("One-month forecasts" = 1, "Six-month forecasts" = 1))
 ```
 
+\clearpage
+
 ## Model to model comparison plots
 
 Figures \ref{fig:table1-plot} and \ref{fig:table2-plot} replicate the information in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed} in a way makes the comparison of the escalation model to the alternative models easier. Each facet shows the escalation AUC-ROC for all model settings (the rows in Table \ref{fig:table1-plot} and base specification for all models in Table \ref{tab:table2-fixed}) on the left, and the AUC-ROC for an alternative model on the right, with a connecting line. If the lines slope up to the right, the alternative model is better. 
 
-```{r table1-plot, fig.height=5, fig.width=8, out.width = ".9\\linewidth", fig.align = "center", fig.cap = "Escalation to alternative comparisons for the ICEWS models (B\\&S Table 1)"}
-table1_nosmooth <- read_csv("data/table1-nosmooth.csv")
+\begin{figure}
+{\centering
+\includegraphics[width=.9\linewidth]{figures/fig-A1-table1-pairs.png}
+}
+\caption{Escalation to alternative comparisons for the ICEWS models (B\&S Table 1)\label{fig:table1-plot}}
+\end{figure}
 
-icews_lvls <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average")
 
-df <- table1_nosmooth %>%
-  rename(Spec = Model) %>%
-  pivot_longer(Escalation:Average, names_to = "Model", values_to = "auc_roc") %>%
-  mutate(Model = factor(Model, levels = icews_lvls)) %>%
-  nest(data = c(Spec, auc_roc))
+\begin{figure}
+{\centering
+\includegraphics[width=.9\linewidth]{figures/fig-A2-table2-pairs.png}
+}
+\caption{Escalation to alternative comparisons for the structural models (B\&S Table 2)\label{fig:table2-plot}}
+\end{figure}
 
-pairs <- full_join(
-  df %>% filter(Model!="Escalation"),
-  df %>% filter(Model=="Escalation") %>% rename(data2 = data) %>% select(horizon, data2),
-  by = c("horizon")
-) %>%
-  pivot_longer(data:data2, names_to = "xname", values_to = "data") %>%
-  mutate(xname = ifelse(xname=="data", as.character(Model), "Escalation"),
-         xname = factor(xname, levels = icews_lvls))
-
-pairs %>%
-  unnest(data) %>%
-  ggplot(aes(x = xname, y = auc_roc)) +
-  facet_grid(horizon ~ Model, scales = "free_x") +
-  geom_point() +
-  geom_line(aes(group = Spec)) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  labs(x = "", y = "AUC-ROC (empirical)")
-```
-
-```{r table2-plot, fig.height=5, fig.width=8, out.width = ".9\\linewidth", fig.align = "center", fig.cap = "Escalation to alternative comparisons for the structural models (B\\&S Table 2)"}
-table2_nosmooth <- read_csv("data/table2-nosmooth.csv")
-
-model_lvls <- colnames(table2_nosmooth)[-c(1:2)]
-
-df <- table2_nosmooth %>%
-  rename(Spec = Model) %>%
-  pivot_longer(`Escalation Only`:`PITF Only`, names_to = "Model", values_to = "auc_roc") %>%
-  mutate(Model = factor(Model, levels = model_lvls)) %>%
-  nest(data = c(Spec, auc_roc))
-
-pairs <- full_join(
-  df %>% filter(Model!="Escalation Only"),
-  df %>% filter(Model=="Escalation Only") %>% rename(data2 = data) %>% select(horizon, data2),
-  by = c("horizon")
-) %>%
-  pivot_longer(data:data2, names_to = "xname", values_to = "data") %>%
-  mutate(xname = ifelse(xname=="data", as.character(Model), "Escalation Only"),
-         xname = factor(xname, levels = model_lvls))
-
-pairs %>%
-  unnest(data) %>%
-  ggplot(aes(x = xname, y = auc_roc)) +
-  facet_grid(horizon ~ Model, scales = "free_x") +
-  geom_point() +
-  geom_line(aes(group = Spec)) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        axis.text.x = element_text(angle = 30, hjust = 1)) +
-  labs(x = "", y = "AUC-ROC (empirical)")
-```
-
+\newpage
 
 ## Random forest hyper-parameter selection
 
@@ -630,84 +541,17 @@ Given that they are relatively unorthodox, yet appear to work very well, we wond
 
 Given the dramatic changes in results as a result of the preceding issues, we did not further investigate these potential concerns.
 
+\newpage
+
 ## Different smoothing methods
 
 The **pROC** package `smooth()` function includes several different smoothing methods. The default, which BS use in their code, is binormal smoothing. Here is a replication of the smooth benefits shown in Figure \ref{fig:benefit-plot} with two other smoothing methods. (We could not get "logcondens" and "logcondens.smooth" to work, and they are based on another external package that has not been updated since 2016.) 
 
 Only the "binormal" smoothing method produces a pattern of AUC-ROCs that clearly elevates the Escalation model above the alternatives. The "density" method does not on average change the AUC-ROC values very much from their empirical ROC curve equivalents. The "fitdistr" method tends to increase all AUC-ROC values, although maybe slightly more so for the Escalation model than the main alternatives. 
 
-```{r smooth-benefit-plot-extended, fig.height=3.5, fig.width=5.5, out.width = ".8\\linewidth", fig.align = "center", fig.cap = "Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\\&S Tables 1 and 2), with 3 different smoothing methods (binormal is the default method and used in B\\&S)"}
+\begin{figure}
+{\centering \includegraphics[width=.95\linewidth]{figures/fig-a3-benefit-plot-extended.png}}
+\caption{Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\&S Tables 1 and 2), with 3 different smoothing methods (binormal is the default method and used in B\&S)\label{fig:smooth-benefit-plot-extended}}
+\end{figure}
 
-suppressPackageStartupMessages({
-  library(tidyverse)
-  library(yardstick)
-  library(pROC)
-  library(forcats)
-})
-
-preds <- read_rds("rep_nosmooth/output/all-predictions.rds")
-
-auc_roc_vec <- function(pred, truth, smooth, sm = "binormal") {
-  roc_obj <- pROC::roc(truth, pred, auc = TRUE, quiet = TRUE, smooth = smooth, smooth.method = sm)
-  as.numeric(roc_obj$auc)
-}
-
-rocs <- preds %>% 
-  filter(!is.na(value)) %>%
-  group_by(cell_id) %>% 
-  summarize(
-    no = auc_roc_vec(pred = pred, truth = value, smooth = FALSE),
-    binormal = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "binormal"),
-    density = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "density"),
-    fitdistr = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "fitdistr")
-  )
-
-# these two take a long time and error out for some reason
-#logcondens = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens"),
-#logcondens.smooth = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens.smooth")
-
-mt <- read_rds("rep_nosmooth/output/model-table-w-results.rds")
-mt <- mt %>% left_join(rocs, by = "cell_id")
-
-cols <- c(
-  Escalation = "#e41a1c",
-  Goldstein = "#ff7f00",
-  Quad = "#984ea3",
-  CAMEO = "#377eb8",
-  Average = "#4daf4a",
-  `With PITF Predictors` = "gray50", 
-  `Weighted by PITF` = "gray50", 
-  `PITF Split Population` = "gray50",
-  `PITF Only` = "gray50"
-)
-
-model_levels <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average", 
-                  "With PITF Predictors", "Weighted by PITF", "PITF Split Population",
-                  "PITF Only")
-
-benefit <- mt %>% 
-  mutate(column = fct_recode(column, Escalation = "Escalation Only"),
-         column = factor(column, levels = rev(model_levels))) %>%
-  mutate(binormal = binormal - no,
-         density  = density - no,
-         fitdistr = fitdistr - no) %>%
-  select(cell_id:non_RF, binormal:fitdistr) %>%
-  pivot_longer(binormal:fitdistr, names_to = "method") 
-
-means <- benefit %>%
-  group_by(column, method) %>%
-  summarize(avg_benefit = mean(value))
-
-ggplot(benefit, aes(x = value, y = column, color = column)) +
-  facet_wrap(~method) +
-  geom_point() +
-  scale_color_manual(guide = FALSE, values = cols) +
-  theme(axis.text.y = element_text(size = 12)) +
-  geom_point(data = means, aes(x = avg_benefit), shape = "|", color = "black", size = 6) +
-  labs(x = "AUC(smoothed ROC) - AUC(empirical ROC)",
-       y = "") +
-  theme_bw() +
-  geom_vline(xintercept = 0, linetype = 3) +
-  theme(axis.text.y = element_text(size = 12))
-```
 

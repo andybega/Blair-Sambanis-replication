@@ -23,7 +23,17 @@ if (any(success==FALSE)) {
                   paste0(files_needed[!success], collapse = "\n")))
 }
 
-file.copy("../rep_nosmooth/output/figures/figure1-replicated.png",
-          "figures/", overwrite = TRUE)
+plots_needed <- c("../rep_nosmooth/output/figures/fig-1-figure1-replicated.png",
+                  "../rep_nosmooth/output/figures/fig-2-benefit-plot.png",
+                  "../rep_nosmooth/output/figures/fig-A1-table1-pairs.png",
+                  "../rep_nosmooth/output/figures/fig-A2-table2-pairs.png",
+                  "../rep_nosmooth/output/figures/fig-A3-benefit-plot-extended.png")
+
+success <- file.copy(plots_needed, "figures/", overwrite = TRUE)
+
+if (any(success==FALSE)) {
+  warning(sprintf("Could not find and copy file(s):\n%s",
+                  paste0(plots_needed[!success], collapse = "\n")))
+}
 
 
