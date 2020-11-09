@@ -2,14 +2,14 @@
 #   Create the local references.bib file from the private central bib file
 #
 
-setwd(here::here("./"))
+setwd(here::here("paper"))
 
 remotes::install_github("andybega/condensebib")
 library(condensebib)
 
 res <- reduce_bib(
   file = "paper.Rmd",
-  master_bib = "../../whistle/master.bib",
+  master_bib = "../../../whistle/master.bib",
   out_bib    = "references.bib"
 )
 
@@ -21,7 +21,7 @@ writeLines(bib, "references.bib")
 
 # If some references are not showing, check if RefManageR complains about them
 if (FALSE) {
-  msgs <- capture.output(bib <- read_bib("../../whistle/master.bib", quiet = FALSE),
+  msgs <- capture.output(bib <- read_bib("../../../whistle/master.bib", quiet = FALSE),
                          type = "message")
 }
 
