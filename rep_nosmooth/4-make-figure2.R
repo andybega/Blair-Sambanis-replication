@@ -10,7 +10,7 @@ library(tidyr)
 library(here)
 
 setwd(here::here("rep_nosmooth"))
-
+dir.create("output/figures", showWarnings = FALSE)
 
 table1_benefit <- read_csv("output/tables/table1-smooth-benefit.csv")
 table2_benefit <- read_csv("output/tables/table2-smooth-benefit.csv")

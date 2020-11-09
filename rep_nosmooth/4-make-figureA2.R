@@ -10,6 +10,7 @@ library(tidyr)
 library(here)
 
 setwd(here::here("rep_nosmooth"))
+dir.create("output/figures", showWarnings = FALSE)
 
 table2_nosmooth <- read_csv("output/tables/table2-nosmooth.csv")
 

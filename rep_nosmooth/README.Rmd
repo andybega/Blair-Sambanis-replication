@@ -24,7 +24,7 @@ In order to be able to run the models needed to create tables 1 and 2 more quick
 
 Below are instructions for how to run the script in order to replicate the updated analysis. To do a clean replication, delete the `output/` folder; this is not required though. 
 
-The file numbering indicates the order in which files should be run, and correspond to the steps above. Files with the same number can be run in any order, as long as lower number files have already been run. 
+The file numbering indicates the order in which files should be run, and roughly correspond to the steps above. Files with the same number can be run in any order, as long as lower number files have already been run. 
 
 Setup:
 
@@ -40,15 +40,27 @@ Estimate all models (this is where the heavy lifting takes places):
 
 - `2-model-runner.R` runs the models. Adjust the number of WORKERS at the top of the script as needed based on the number of cores on your computer. The primary output of this script is `output/model-table-w-results.csv` and `output/all-predictions.R`.
 
-Process results; figures, tables, etc.:
+Recreate AUC-ROC tables:
 
-- `3-...`: the various scripts starting with "3-" recreate the various tables and figures that end up in the paper. These are written to the `rep_nosmooth/output` folder here; the `paper/` folder includes a `update-inputs.R` script that will copy needed pieces over to that folder. 
+- `3-recreate-tables.R` produces various tables summarizing the performance of the core event data models (B&S Table 1) and the structural models (B&S Table 2); some of these are used as inputs to generate figures below. 
+
+Generate figures:
+
+- `4-...`: the various scripts starting with "4-" recreate the various figures that end up in the paper.
+
+The processed results created in the above two sets of scripts ("3-..." and "4-...") are written to the `rep_nosmooth/output` folder here. The `paper/` folder includes a `update-inputs.R` script that will copy needed pieces over to that folder. 
 
 In addition, there are some ancillary materials that are not required for replicating the results in the paper, but add additional information. These are easiest to read in GitHub.  
 
 - [replication-check.md](replication-check.md) compares the AUC-ROC results we obtain when using smoothed ROC curves to the original B&S results (hand-copied from the paper). When taking into account the implementation fixes we made for two models, and RNG seed variation, we are able to replicate the original results/patterns. 
 - [variance.md](variance.md) examines how much the AUC-ROC results vary when you don't set an RNG seed. For the base specification escalation model, the variance is significantly below 0.01, and small changes in the Table 1 and 2 replications mainly occur when the distribution straddles a threshold used for rounding, e.g. 0.825. 
 - `rep-check.R` compares the results of our modified replication to the original values reported in Tables 1 and 2 of the B&S paper. 
+
+## Variation due to random number generator seed
+
+We consciously chose not do set a random number generator (RNG) seed in the model estimation script (`2-model-runner.R`), because the substantive results should not change as a result of the small amount of variation related to RNG state. The [variance.md](variance.md) note explores this to some extent and leads us to believe that this is the case, with variation for the Table 1 models generally less than 0.01 AUC-ROC. 
+
+Anyways, the model runner script does include a provision for setting a RNG seed, in which case the key output files will be suffixed with the RNG seed value. Note that the results processing scripts are not setup to work this these output files, but it should be fairly obvious what lines need modifications to make them work. 
 
 ## Model definitions
 

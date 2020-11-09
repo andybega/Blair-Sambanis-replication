@@ -1,6 +1,8 @@
 #
 #   Run all the models behind Tables 1 and 2
 #
+#   2020-11-09: It took me ~1h15m to run this script. (AB)
+#
 
 WORKERS  <- 8
 # if RNG_SEED is NULL, no seed will be set and the output file name will be as

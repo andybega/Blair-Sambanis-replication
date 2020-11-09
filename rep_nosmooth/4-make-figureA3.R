@@ -10,7 +10,7 @@ library(forcats)
 library(here)
 
 setwd(here::here("rep_nosmooth"))
-
+dir.create("output/figures", showWarnings = FALSE)
 
 preds <- read_rds("output/all-predictions.rds")
 
