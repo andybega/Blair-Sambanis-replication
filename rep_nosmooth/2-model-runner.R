@@ -340,22 +340,32 @@ preds <- cell_ids %>%
   select(-pred_file) %>%
   tidyr::unnest(preds)
 
+
+# Calculate a summary of just the AUC-ROCs for git
+short_results <- model_table_w_results %>%
+  dplyr::select(cell_id, table, horizon, row, column, auc_roc, auc_roc_smoothed)
+
 if (!is.null(RNG_SEED)) {
   out_file <- sprintf("output/model-table-w-results-%s.rds", RNG_SEED)
   write_rds(model_table_w_results, out_file)
 
   out_file <- sprintf("output/all-predictions-%s.rds", RNG_SEED)
   write_rds(preds, out_file)
+
+  out_file <- sprintf("output/model-table-w-results-%s.md", RNG_SEED)
+  short_results %>%
+    knitr::kable("markdown", digits = 2) %>%
+    writeLines(out_file)
+
 } else {
   write_rds(model_table_w_results, "output/model-table-w-results.rds")
   write_rds(preds, "output/all-predictions.rds")
+  short_results %>%
+    knitr::kable("markdown", digits = 2) %>%
+    writeLines("output/model-table-w-results.md")
 }
 
 
-# Write a summary of just the AUC-ROC for git
-model_table_w_results %>%
-  dplyr::select(cell_id, table, horizon, row, column, auc_roc, auc_roc_smoothed) %>%
-  knitr::kable("markdown", digits = 2) %>%
-  writeLines("output/model-table-w-results.md")
+
 
 lgr$info("Script finished")
