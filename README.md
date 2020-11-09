@@ -26,3 +26,4 @@ The other folders and files at the repo top level pertain to the replication wri
 
 To re-run the replication, see the instructions in [rep_nosmooth/README.md](rep_nosmooth/).
 
+Here is a direct link to download a ZIP archive of the contents of this repo (around 500 MB unzipped): https://github.com/andybega/Blair-Sambanis-replication/archive/master.zip
