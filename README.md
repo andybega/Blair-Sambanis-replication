@@ -12,9 +12,11 @@ In `table4` we verify that the 2016-H1 forecasts created by B&S are in their Tab
 
 ## Folders
 
+- `journal_survey`: survey of previous journal articles regarding AUC-ROC usage
 - `original_materials`: the paper, SI, and other documents
-- `rep_original/`: the original replication code, with some trivial changes to be able to run it 
-- `rep_nosmooth/`: our version of the replication; code restructured to allow running in parallel; corrects for the issues we bring up in the paper
+- `paper`: materials related to our paper
+- `rep_original/`: the original replication code, with some trivial changes to be able to run it (see its README)
+- `rep_nosmooth/`: our version of the replication, which calculates both smoothed and empirical ROC curves and fixes two model implementation errors; these are the results reported in the paper
 - `table4/`: investigating how B&S Table 4 was created; and a fixed assessment
 - `tuning/`: abortive tuning experiments that we did not include in the paper
 
@@ -24,10 +26,3 @@ The other folders and files at the repo top level pertain to the replication wri
 
 To re-run the replication, see the instructions in [rep_nosmooth/README.md](rep_nosmooth/).
 
-## Misc
-
-For the paper word count:
-
-```bash
-ps2ascii paper.pdf | wc -w
-```
