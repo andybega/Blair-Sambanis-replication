@@ -22,7 +22,7 @@ tuning/tuning-experiments/trafo-data
 paper.log
 paper.md
 *.aux
-*.tex
+#*.tex
 
 
 ~$paper.docx
