@@ -17,6 +17,15 @@ Notes:
 
 ## Misc
 
+References are pulled from whistle using `make-references.R`. To fix reference errors, update in whistle and then re-run that script to generate a new local `references.bib`. 
+
+To get a Word document output (the references won't work in this):
+
+```bash
+Rscript -e 'rmarkdown::render("paper.Rmd")'
+pandoc paper.md -o paper.docx
+```
+
 For the paper word count:
 
 ```bash
