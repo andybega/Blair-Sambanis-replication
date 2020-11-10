@@ -1,5 +1,7 @@
-Modified replication
+Replication materials for Beger, Morgan, Ward, nd
 ================
+
+**tl;dr:** run through `master.R`
 
 The code in this folder replicates the results in Tables 1 and 2 of
 B\&S, but does so with both the smoothed ROC curve AUC values B\&S
@@ -128,7 +130,7 @@ models that produce the \["Base specification", "Escalation"\] values in
 Table 1, but it is easier to duplicate them since the underlying models
 in any case estimate pretty quickly.)*
 
-One of the principal outputs of `setup-model-definitions.R` is this
+One of the principal outputs of `1-setup-model-definitions.R` is this
 encoding, in `output/model-definitions/model-table.rds`:
 
 ``` r

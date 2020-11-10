@@ -1,5 +1,5 @@
 ---
-title: "Modified replication"
+title: "Replication materials for Beger, Morgan, Ward, nd"
 output: 
   github_document
 always_allow_html: true
@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE)
 library(dplyr)
 library(readr)
 ```
+
+**tl;dr:** run through `master.R`
 
 The code in this folder replicates the results in Tables 1 and 2 of B&S, but does so with both the smoothed ROC curve AUC values B&S report, and regular, non-smoothed ROC curve AUC. 
 
@@ -70,7 +72,7 @@ The various models going into tables 1 and 2 vary over several dimensions. We st
 
 _(The "Escalation only" values in Table 2 actuall correspond to the models that produce the \["Base specification", "Escalation"\] values in Table 1, but it is easier to duplicate them since the underlying models in any case estimate pretty quickly.)_
 
-One of the principal outputs of `setup-model-definitions.R` is this encoding, in `output/model-definitions/model-table.rds`:
+One of the principal outputs of `1-setup-model-definitions.R` is this encoding, in `output/model-definitions/model-table.rds`:
 
 ```{r, echo = TRUE}
 model_table <- read_rds("output/model-definitions/model-table.rds")
