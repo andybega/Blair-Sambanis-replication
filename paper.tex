@@ -70,9 +70,7 @@
 \setcounter{secnumdepth}{5}
 \usepackage{floatrow}
 \floatsetup[figure]{capposition=bottom}
-\floatsetup[table]{capposition=top}
 \usepackage[format=plain,labelfont=bf,up]{caption}
-\usepackage{setspace}\doublespacing
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -95,21 +93,21 @@
   {\par}
 
 \title{Reassessing the Role of Theory and Machine Learning in Forecasting Civil Conflict\thanks{John Ahlquist, Cassy L. Dorff, and Shahryar Minhas both provided helpful feedback on this project. We are especially grateful to Paul Huth for his comments and guidance. All the code and several additional analyses can be found at our replication archive at \url{https://github.com/andybega/Blair-Sambanis-replication}.}}
-\author{Andreas Beger\footnote{Predictive Heuristics, \href{mailto:adbeger@gmail.com}{\nolinkurl{adbeger@gmail.com}}.} \and Richard K. Morgan\footnote{Independent Researcher, \href{mailto:rick.morgan2@gmail.com}{\nolinkurl{rick.morgan2@gmail.com}}.} \and Michael D. Ward\footnote{Predictive Heuristics, Duke University, University of Washington, \href{mailto:michael.don.ward@gmail.com}{\nolinkurl{michael.don.ward@gmail.com}}. Corresponding author.}}
-\date{11 November 2020}
+\author{Andreas Beger\footnote{Predictive Heuristics, \href{mailto:adbeger@gmail.com}{\nolinkurl{adbeger@gmail.com}}.} \and Richard K. Morgan\footnote{Varieties of Democracy Institute, University of Gothenburg, \href{mailto:rick.morgan2@gmail.com}{\nolinkurl{rick.morgan2@gmail.com}}.} \and Michael D. Ward\footnote{Predictive Heuristics, Duke University, University of Washington, \href{mailto:michael.don.ward@gmail.com}{\nolinkurl{michael.don.ward@gmail.com}}. Corresponding author.}}
+\date{24 September 2020}
 
 \begin{document}
 \maketitle
 \begin{abstract}
-We examine the research protocols in Blair and Sambanis (nd), who argue that their theory-based model can predict civil war onsets better than several atheoretical alternatives or a model with country-structural factors. We find that there are several important mistakes and that their key finding is entirely conditional on the use of parametrically smoothed ROC curves when calculating accuracy, rather than the standard empirical ROC curves that dominate the literature. Fixing these mistakes results in a reversal of their claim that theory-based models of escalation are better at predicting onsets of civil war than other kinds of models. Their model is outperformed by several of the ad hoc, putatively non-theoretical models they devise and examine. More importantly, we argue that rather than trying to contrast the roles of theory and "atheoretical" machine learning in predictive modeling, it would be more productive to focus on ways in which predictive modeling and machine learning could be used to strengthen extant predictive work. Instead, we argue that predictive modeling and machine learning are effective tools for theory testing.
+We examine the research protocols in Blair and Sambanis (nd), who argue that their theory-based model can predict civil war onsets better than several atheoretical alternatives or a model with country-structural factors. We find that there are several important mistakes and that their key finding is entirely conditional on the use of parametrically smoothed ROC curves when calculating accuracy, rather than the standard empirical ROC curves that dominate the literature. Fixing these mistakes results in a reversal of their claim that theory based models of escalation are better at predicting onsets of civil war than other kinds of models. Their model is outperformed by several of the ad hoc, putatively non-theoretical models they devise and examine. More importantly, we argue that rather than trying to contrast the roles of theory and "atheoretical" machine learning in predictive modeling, it would be more productive to focus on the ways in which predictive modeling and machine learning could be used to strengthen extant theories.
 \end{abstract}
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
-Blair and Sambanis (n.d., hereafter B\&S) argue that theory is essential for creating models that have high accuracy in forecasting civil war onset. Indeed, they assert that with such theory forecasting is more accurate than has previously been possible. We re-examine the empirical basis for the claims made in support of it. We find that these claims to be unsupported and evidence presented for them to be incorrect. Their theory-based escalation model does not do better than the alternatives they examine. It does worse. The reason for this is that they made several mistakes in their research procedure. Further, the performance results they report are based on smoothed performance curves, not the empirical, unsmoothed curves. This provides misleading results. In addition, two of the structural alternatives to their basic escalation model were incorrectly implemented. We also found that the scoring of their forecasts for the first half of 2016 was incorrectly performed using civil war incidence, not onset. In what follows, we show the impact of these mistakes on the conclusions.
+Blair and Sambanis (n.d., hereafter B\&S) argue that theory is essential for creating models that have high accuracy in forecasting civil war onset. Indeed, they assert that with such theory forecasting is more accurate than has previously been possible. We re-examine the empirical basis for the claims made in support of it. We find that these claims to be unsupported and evidence presented for them to be incorrect. Their theory-based escalation model does not do better than the alternatives that they examine. It does worse. The reason for this is that they have made several mistakes in their research procedure. Further, the performance results they report are based on smoothed performance curves, not the empirical, unsmoothed curves. This provides misleading results. In addition, two of the structural alternatives to their basic escalation model were incorrectly implemented. We also found that the scoring of their forecasts for the first half of 2016 was incorrectly performed using civil war incidence, not onset. In what follows, we show the impact of these mistakes on the conclusions.
 
-B\&S claim (page 3) to argue that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars ``remarkably accurately''. Indeed, B\&S argue that this theoretical model outperforms four other ``more mechanical'' alternatives. They also claim that the integration of structure with process is better than alternatives over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects.\footnote{PITF (e.g., Goldstone et al. 2010; Beger and Ward 2017), the W-ICEWS project (Ward et al. 2013), ViEWS (Hegre et al. 2019), and others, e.g., Beger, Morgan, and Maxwell (2020).} B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
+B\&S claim (page 3) to show that a model informed by procedural theories of escalation and de-escalation can predict the onset of civil wars ``remarkably accurately''. Indeed, B\&S argue that this theoretical model outperforms four other ``more mechanical'' alternatives. They also claim that the integration of structure with process is better than alternatives over short forecasting windows. Third, they preregistered the list of thirty countries that have the highest risk of civil war onset. They claim that such prospective predictions are rare in the literature when, in fact, they have been routine for many years with several prominent projects.\footnote{PITF (e.g., Goldstone et al. 2010; Beger and Ward 2017), the W-ICEWS project (Ward et al. 2013), VIEWS (Hegre et al. 2019), and others, e.g., Beger, Morgan, and Maxwell (2020).} B\&S claim to be unique in assessing these forecasts. A qualitative analysis of their predictions allows them to conclude that their model is robust. We will return to their analysis later, after correcting the procedural mistakes we found in their research process.
 
 Before proceeding, we quote B\&S (page 24):
 
@@ -117,7 +115,7 @@ Before proceeding, we quote B\&S (page 24):
 Our theoretically driven model generates accurate forecasts, with base specification AUCs of 0.82 and 0.85 over one- and six-month windows, respectively, and AUCs as high as 0.92 in other specifications. Our model also consistently and sometimes dramatically outperforms the alternatives we test. {[}\ldots{]} Cederman and Weidmann (2017, 476) argue that ``the hope that big data will somehow yield valid forecasts through theory-free `brute force' is misplaced in the area of political violence.'' Our results lend some credence to this claim.
 \end{quote}
 
-Although their analysis in the end does not support this point, we do not disagree that theory can be important in predictive modeling. Of the various ways one could contrast ad hoc machine learning with ``theoretical'' modeling, B\&S focus essentially on theory as a mechanism for variable selection. In this sense, theory is in fact already used, informally, in nominally ad hoc predictive modeling related to conflict forecasting. The problem is that the extent of extant theories for a phenomenon like civil war is so broad and non-specific in terms. They do not provide much guidance on an exact specification of what variables and which functional form is required. As a result, it is both not very clear what the ``correct'' model should be, nor easy to demonstrate that any particular ``theoretical'' model's ability to predict generalizes beyond the data that was used to create it in the first place. Rather than trying to contrast theory and machine learning as competing mechanisms for creating predictive models, it would be more productive to focus on how we can use the flexibility of machine learning models and the information predictive modeling may give us about our ability to ``explain'' a phenomenon to strengthen and whittle down the broad space of extant theories.
+Although their analysis in the end does not support this point, we do not disagree that theory is important in predictive modeling. Of the various ways one could contrast ad hoc machine learning with ``theoretical'' modeling, B\&S focus essentially on theory as a mechanism for variable selection. In this sense, theory is in fact already used, informally, in nominally ad hoc predictive modeling related to conflict forecasting. The problem is that the space of extant theories for a phenomenon like civil war is so broad and non-specific in terms of an exact specification of what variables and in which functional form should constitute a prediction model, that it's both not very clear what the ``correct'' model should be, nor easy to demonstrate that any particular ``theoretical'' model's ability to predict generalizes beyond the data that was used to create it in the first place. Rather than trying to contrast theory and machine learning as competing mechanisms for creating predictive models, it would be more productive to focus on how we can use the flexibility of machine learning models and the information predictive modeling may give us about our ability to ``explain'' a phenomenon to strengthen and whittle down the broad space of extant theories.
 
 \hypertarget{summary-of-blair-and-sambanis-2020}{%
 \section{Summary of Blair and Sambanis (2020)}\label{summary-of-blair-and-sambanis-2020}}
@@ -154,7 +152,7 @@ Both the first and second questions above rely on comparing their escalation mod
   Calculate AUC-ROC measures for each set of OOS predictions.
 \end{enumerate}
 
-To examine the first question, B\&S compare the test set of the escalation model to four alternative models. The independent variables for the first set of analyses reported in Table 1 in the paper are all derived from the ICEWS event data, using domestic events between actors within a country. The models are:
+To examine the first question, B\&S compare the test set of the escalation model to four alternative models. The independent variables for the first set of analysis reported in Table 1 in the paper are all derived from the ICEWS event data, using domestic events between actors within a country. The models are:
 
 \begin{itemize}
 \tightlist
@@ -167,7 +165,7 @@ To examine the first question, B\&S compare the test set of the escalation model
 \item
   CAMEO: counts for all CAMEO event codes over the four actor dyads, totaling \(1,160\) covariates, which are mostly zero for any country in any month.
 \item
-  Average: an unweighted average of the predictions from the four models briefly described above.
+  Average: unweighted average of the predictions from the four models briefly described above.
 \end{itemize}
 
 The corresponding results for each question are shown in B\&S Tables 1 and 2, which we examine further below. We accurately replicate their Tables 1 and 2. The results in Table 1, aside from the core base specification results, include eight additional robustness tests for both the 1-month and 6-month versions. These robustness checks vary either (1) random forecast hyperparameter values or (2) the year used to split the train/test data, or (3) alternative codings of the civil war onset dependent variable.
@@ -183,28 +181,28 @@ The second question, whether structural variables add to the escalation model, i
 \item
   Weighted by PITF: escalation model predictions weighted using the PITF instability model predictions.
 \item
-  PITF Split Population: the training data are split into high- and low-risk portions based on the PITF instability model predictions, two separate escalation random forests are trained on the splits, then re-combined into a single random forest that is used to create the test set predictions.
+  PITF Split Population: the training data are split into high and low risk portions based on the PITF instability model predictions, two separate escalation random forests are trained on the splits, then re-combined into a single random forest that is used to create the test set predictions.
 \item
   PITF Only: a random forest model based only on the annual, structural PITF model predictors.
 \end{itemize}
 
 The corresponding results are shown in B\&S Table 2.
 
-Finally, B\&S used their escalation model to create forecasts for the first half of 2016. In their third analysis, they score the forecasts' accuracy using subsequent civil war onset data. This is summarized in B\&S Table 3.
+Finally, B\&S used their escalation model to create forecasts for the first half of 2016. In their third analysis, they score the forecasts accuracy using subsequent civil war onset data. This is summarized in B\&S Table 3.
 
 \hypertarget{implementation-issues-in-bs}{%
 \section{Implementation Issues in B\&S}\label{implementation-issues-in-bs}}
 
-While replicating and analyzing B\&S's results, we found several issues worthy of further discussion and investigation. These are (a) the use of smoothed ROC curves to draw conclusions about which model is best, (b) incorrect implementations of the weighted by PITF and PITF analog split-population models, (c) inconsistent test sets for the models examined, and (d) incorrect scoring of the 2016 forecasts.\footnote{We also note additional concerns arising from the question of how the random forest models were tuned by B\&S, especially given the way they are used is unorthodox. We did not further investigate the latter issue as it is rendered somewhat moot by the changes in results after addressing the preceding issues.}
+While replicating and analyzing B\&S's results, we found several issues worthy of further discussion and investigation. These are (a) the use of smoothed ROC curves to draw conclusions about which model is best, (b) incorrect implementations of the weighted by PITF and PITF analog split-population models, (c) inconsistent test sets for the models examined, and (d) incorrect scoring of the 2016 forecasts.\footnote{We also note there are additional concerns arising from the question of how the random forest models were tuned by B\&S, especially given the way they are used is unorthodox. We did not further investigate the latter issue as it is rendered somewhat moot by the changes in results after addressing the preceding issues.}
 
-We believe that these research decisions and issues lead B\&S to incorrect conclusions. The escalation model \emph{is not} the best; it actually performs worse than the atheoretical, kitchen sink model with over \(1000\) variables. We discuss these five issues below. We defer a complete analysis that corrects all these issues until later, as there are many possible permutations of a seriatim unfolding.
+We believe that these research decisions and issues lead B\&S to incorrect conclusions. The escalation model \textit{is not} the best; it actually performs worse than the atheoretical, kitchen sink model with over \(1000\) variables. We discuss these five issues below. We defer a complete analysis that corrects all these issues until later, as there are many possible permutations of a seriatim unfolding.
 
 \hypertarget{smoothed-roc-curves}{%
 \subsection{Smoothed ROC Curves}\label{smoothed-roc-curves}}
 
-The most consequential issue that we found is that all AUC-ROC values reported in B\&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, empirical ROC curves. B\&S refer to smoothing only in the context of the ROC curves in Figure 1, justified as easing interpretation. However, smoothing is also used in all AUC-ROC values they report. There is no difficulty to be overcome in using non-smoothed plots. Indeed, such plots are standard practice in conflict research and forecasting, both for visualization and when calculating AUCs. We examined all 63 references in B\&S and also 15 articles in two randomly picked issues of JCR for 2020 (numbers 1 and 9), to survey the use of ROC curves. Of the 37 articles that used a binary outcome, 19 included either ROC curve figures or a table with AUC-ROC values. We found that 90\%--17 of 19--used empirical ROC curves, and 2 (10\%) where we could not establish whether empirical or smoothed curves were used.\footnote{One paper reports AUC-ROC values but no figure with ROC curves, and we could not find publicly posted replication code. The other is an ambiguous case where ROC curves are manually constructed in a way that might be considered "smoothing"--and one of the two figures certainly looks smoothed--but it's not a parametric smoothing method like used in B\&S. The online replication archive has more details at https://github.com/andybega/Blair-Sambanis-replication/tree/master/journal-survey. Both of the ambiguous cases include Blair as coauthor.} The survey results are not surprising since the original ideal as well as contemporaneous documentation suggest this is the gold standard. What is surprising is that anyone would choose the smoothed ROC implementation.
+The most consequential issue that we found is that all AUC-ROC values reported in B\&S Tables 1 and 2 are calculated using smoothed ROC curves, not the original, empirical ROC curves. B\&S refer to smoothing only in the context of the ROC curves in their Figure 1, justified as easing interpretation. However, smoothing is also used in all AUC-ROC values they report. There is no difficulty to be overcome in using non-smoothed plots. Indeed, such plots are standard practice in conflict research and forecasting, both for visualization and when calculating AUCs. We examined all 63 references in B\&S and also 15 articles in two randomly picked issues of JCR for 2020 (numbers 1 and 9), in order to survey the use of ROC curves. Of the 37 articles that used a binary outcome, 19 included either ROC curve figures or a table with AUC-ROC values. We found that 90\%--17 of 19--clearly used empirical ROC curves, and 2 (10\%) where we could not establish whether empirical or smoothed curves were used.\footnote{One paper reports AUC-ROC values but no figure with ROC curves, and we could not find publicly posted replication code. The other is an ambiguous case where ROC curves are manually constructed in a way that might be considered "smoothing"--and one of the two figures certainly looks smoothed--but it's not a parametric smoothing method like used in B\&S. The online replication archive has more details at https://github.com/andybega/Blair-Sambanis-replication/tree/master/journal-survey. Both of the ambiguous cases include Blair as coauthor.} The survey results are not surprising since the original ideal as well as contemporaneous documentation suggest this is the gold standard. What is surprising is that anyone would choose the smoothed ROC implementation.
 
-The next three issues we encountered all concern information in B\&S Table 2, which is the key table in which B\&S report AUC-ROC values to demonstrate the ``Escalation'' model's superiority.
+The next three issues we encountered all concern information in B\&S Table 2, which is the key table in which B\&S report AUC-ROC values to demonstrate the ``Escalation'' models superiority.
 
 \hypertarget{incorrect-weighted-by-pitf-implementation}{%
 \subsection{Incorrect ``Weighted by PITF'' Implementation}\label{incorrect-weighted-by-pitf-implementation}}
@@ -215,9 +213,9 @@ The ``Weighted by PITF'' model is described as follows in B\&S, page 19:
 The {[}Weighted by PITF model{]} uses PITF predicted probabilities to weight the results of the escalation model, ensuring that high-risk and low-risk countries that happen to take similar values on ICEWS-based predictors are nonetheless assigned different predicted probabilities in most months.
 \end{quote}
 
-We believe that B\&S intend that the escalation model's predictions for the test set are weighted by the PITF model predictions for the test set. However, they actually weigh the \textbf{test} set predictions using the PITF model predictions for the \textbf{training} set.
+We believe that B\&S intend that the escalation model's predictions for the test set are weighted by the PITF model predictions for the test set. However, they actually weight the \textbf{test} set predictions using the PITF model predictions for the \textbf{training} set.
 
-As a result: (1) in the test set, all countries with names that alphabetically start after ``Tonga'' are dropped from the data, including Turkey, Ukraine, Yemen, etc.; and (2) the cases whose PITF training data predictions are combined with Escalation model test predictions in the weighting are nonsensical. For example, the ``Weighted by PITF'' model predictions for Syria from 2008 to 2015 are the Escalation test predictions weighted by the 2002 to 2007 PITF predictions for South Africa and the 2001 to 2002 PITF predictions for Zambia.
+As a result: (1) in the test set, all countries with names that alphabetically start after ``Tongo'' are dropped from the data, including Turkey, Ukraine, Yemen, etc.; and (2) the cases whose PITF training data predictions are combined with Escalation model test predictions in the weighting are nonsensical. For example, the ``Weighted by PITF'' model predictions for Syria from 2008 to 2015 are the Escalation test predictions for that time period weighted, respectively, by the 2002 to 2007 PITF predictions for South Africa and the 2001 to 2002 PITF predictions for Zambia.
 
 This appears to be an easily corrected coding error on the part of B\&S.
 
@@ -230,23 +228,23 @@ The ``PITF Split Population'' model also appears to be incorrectly implemented, 
 The final approach is a random forest analog to split-population modeling. We first compute the average PITF predicted probability for each country across all years in our training set. We define those that fall in the bottom quartile as ``low risk'' and the rest as ``high risk.'' We then run our escalation model on the high-risk and low-risk subsets separately, combining the results into a single random forest {[}\ldots{]}.
 \end{quote}
 
-This description suggests that B\&S intended to run two separate random forest models, one each on the low- and high-risk training data splits. The replication code does indeed run two separate random forecasts, but they both utilize the \emph{same training data}, which consists of the full training data from all other models. In short, rather than using only data for high-risk countries to train their split-sample model for high-risk cases, the data they use captures both high- and low-risk countries, similarly for the training set for their low-risk split.
+This description suggests that B\&S intended to run two separate random forest models, one each on the low- and high-risk training data splits. The replication code does indeed run two separate random forecasts, but they both utilize the \emph{exact same training data}, which consist of the full training data from all other models. In short, rather than using only data for high-risk countries to train their split-sample model for high-risk cases, the data they use captures both high- and low-risk countries, similarly for the training set for their low-risk split.
 
 The model specifications are also identical; i.e., they use the same \emph{x} variables and the same random forest hyper-parameter settings. The \emph{only} difference in the models as they are implemented in the B\&S replication code is due to the non-deterministic nature of the random forest model itself. If we ran both with the same random seed, they would be identical in every respect, producing two forests of identical decision trees and, thus, identical predictions.
 
-The implementation error aside, this split-population analog model is quite odd and does not replicate the idea behind split-population modeling (Chiba, Metternich, and Ward 2015; Beger et al. 2017). Although the two random forest models are trained on separate data (in our updated, fixed replication), the process of combining them actually creates a new, larger random forest using both component model's underlying decision trees. Thus, while all random forest models throughout (except for one of the robustness checks) are trained with 100,000 decision trees (\texttt{ntree}), the new random forest model after combination has 200,000 decision trees. Furthermore, the PITF model predictions do not impact how the combined random forest model predicts at all, not even through a binary low-/high-risk split. The split-population PITF random forest model is, practically speaking, simply another escalation model trained with N=200,000 instead of N=100,000 trees and an extra (odd) randomization step added to the already existing random forest randomization facilities (row and column sampling for each decision tree). This does not adequately implement their split-sample modeling strategy.
+The implementation error aside, this split-population analog model is quite odd and does not replicate the idea behind split-population modeling (Chiba, Metternich, and Ward 2015; Beger et al. 2017). Although the two random forest models are trained on separate data (in our updated, fixed replication), the process of combining them actually creates a new, larger random forest using both component model's underlying decision trees. Thus, while all random forest models throughout (except for one of the robustness checks) are trained with 100,000 decision trees (\texttt{ntree}), the new random forest model after combination does have 200,000 decision trees. Furthermore, the PITF model predictions do not impact how the combined random forest model predicts at all, not even through a binary low-/high-risk split. The split-population PITF random forest model is practically speaking simply another escalation model trained with N=200,000 instead of N=100,000 trees and an extra odd randomization step added to the already existing random forest randomization facilities (row and column sampling for each decision tree). This does not adequately implement their split-sample modeling strategy.
 
 \hypertarget{inconsistent-test-set-n-for-the-models-in-table-2}{%
 \subsection{Inconsistent test set N for the models in Table 2}\label{inconsistent-test-set-n-for-the-models-in-table-2}}
 
 Further, the AUC-ROC values reported in the original B\&S Table 2 are calculated on different numbers of underlying test set cases (see Table \ref{tab:table2-N}). ROC calculations for a set of predictions can only be done on the set of cases for which both non-missing predictions and non-missing outcomes are available. Those sets differ across models (columns) for each row in B\&S Table 2.
 
-Thus, a difference in AUC-ROC values for two models could be because they were calculated on different sets of underlying cases, not because the models are systemically performing at a different level. In other words, the results for different models in B\&S Table 2 are not comparable to one another, and conclusions drawn from such comparison are potentially incorrect.
+Thus a difference in AUC-ROC values for two models could be because they were calculated on different sets of underlying cases, not because the models are systemically performing at a different level. In other words, the results for different models in B\&S Table 2 are not comparable to one another, and conclusions drawn from such comparison are potentially incorrect.
 
 \hypertarget{incorrect-scoring-of-the-2016-forecasts}{%
 \subsection{Incorrect scoring of the 2016 forecasts}\label{incorrect-scoring-of-the-2016-forecasts}}
 
-B\&S present a confusion matrix to score their 2016-H1 forecasts in Table 4. Although the forecasts are for the probability of civil war \emph{onset}, they are scored using \emph{incidence} of civil war. By definition, the incidence of civil war is much more common than onset, which is only coded for the starting year of a conflict. When forecasting rare events, it is common to have many false positives, i.e.~instances where we predict onset but no onsets occur. \emph{Ex ante}, using incidence rather than onset to score onset forecasts should decrease the number of false positives and correspondingly increase the number of true positives (good predictions) and false negatives (missed onsets).
+B\&S present a confusion matrix to score their 2016-H1 forecasts in Table 4. Although the forecasts are for the probability of civil war \emph{onset}, in the replication code, they are actually scored using \emph{incidence} of civil war. By definition the incidence of civil war is much more common than onset, which is only coded for the starting year of a conflict. When forecasting rare events, it is common to have many false positives, i.e.~instances where we predict onset but no onsets occur. \emph{Ex ante}, using incidence rather than onset to score onset forecasts should decrease the number of false positives and correspondingly increase the number of true positives (good predictions) and false negatives (missed onsets).
 
 \hypertarget{results-of-the-updated-analysis}{%
 \section{Results of the updated analysis}\label{results-of-the-updated-analysis}}
@@ -262,24 +260,27 @@ A reference to smoothing is made in a single sentence in B\&S (p.~12):
 Figure 1 displays the corresponding ROC curves, \emph{smoothed for ease of interpretation}. (emphasis added)
 \end{quote}
 
-This suggests that using smoothed ROC curves will have no substantive impact on the results; however, we find that smoothing does determine the comparative results. Their statement also implies that the ROC curves were only smoothed in referenced Figure 1. However, this is not the case. All AUC-ROC calculations throughout their replication code use an option to smooth the ROC curves before AUC calculation.
+This suggest that using smoothed ROC curves will have no substantive impact on the results; however, in this smoothing determines the comparative results. Their statement also implies that the ROC curves were only smoothed in the referenced Figure 1. However, this is not the case. All AUC-ROC calculations throughout their replication code use an option to smooth the ROC curves \emph{prior} to AUC calculation.
 
-ROC curves are constructed from the false positive and true positive rates as one moves through a set of ranked predictions, and as a result, they appear step-like. Figure \ref{fig:rocs} shows our replication of both the estimated smoothed ROC curves from the B\&S report (left-hand side) and the actual empirical ROC curves (right-hand side). The standard method is to compute the area under the curve (AUC) statistic on the original, empirical ROC curves that are shown on the right.
+ROC curves are constructed from the false positive and true positive rates as one moves through a set of ranked predictions, and as a result they appear step-like. Figure \ref{fig:rocs} shows our replication of both the estimated smoothed ROC curves from the B\&S report (left-hand side) and the actual empirical ROC curves (right-hand side). The standard method is to compute the area under the curve (AUC) statistic on the original, empirical ROC curves that are shown on the right.
 
 \begin{figure}
 \caption{Replication of B\&S Figure 1 with both smooth and non-smoothed ROC curves\label{fig:rocs}}
 \centering
-\includegraphics[width=.95\linewidth]{figures/fig-1-figure1-replicated.png}
+\includegraphics[width=.95\linewidth]{figures/figure1-replicated.png}
 \end{figure}
 
 The specific predictions also include groups of cases with identical predicted probabilities, which accounts for the unusual diagonal lines seen in the panels on the right. In any case, with a sparse outcome like civil war onsets, the true positive rate on the \emph{y}-axis only changes when the prediction for an observed positive case is reached. For these ROC curves, and in the fundamental train/test split used for 12 of the 18 rows/models in B\&S Table 1, for that matter, there are only 11 civil war onset cases in the test set. Thus, the ROC curves here are very step-like, with only 12 (11 positive cases plus 1 for TPR = 0) distinct \emph{y} coordinates. Notice also that the smoothing averages the left-most almost straight line with the right-most almost straight line in a monotonic way. Thus, smoothing changes the ordering of alternatives. It is not a cosmetic change as suggested.
 
-What impact did the ROC smoothing have overall on the evaluated performance of the Escalation model relative to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B\&S Table 1) and structural extensions (our Table \ref{tab:table2-fixed}, B\&S Table 2)? Figure \ref{fig:benefit-plot} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each point corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed} (the colors match those in Figure \ref{fig:rocs}). The vertical bar in each plot marks the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to ``PITF Only'', smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible on average. The Escalation model, however, \emph{always} benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models and accounts for the incorrect result B\&S report, namely that the escalation model is generally superior.
+What impact did the ROC smoothing have overall on the evaluated performance of the Escalation model relative to other ICEWS models (our Table \ref{tab:table1-nosmooth}, B\&S Table 1) and structural extensions (our Table \ref{tab:table2-fixed}, B\&S Table 2)? Figure \ref{fig:benefit-plot} shows the changes in AUC-ROC values had we used smoothed ROC curves to calculate the AUC-ROC values. Each point corresponds to the change in AUC-ROC values for one of the models in the cells in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed} (the colors match those in Figure \ref{fig:rocs}). The vertical bar in each plot marks the average effect of smoothing on AUC-ROC. For all alternative models, from Quad to ``PITF Only'', smoothing sometimes hurts and sometimes benefits, but the overall impact is negligible on average. The Escalation model, however, \emph{always} benefits from smoothing, with an average improvement on the order of 0.05. This is sufficient to push the Escalation model ahead of the alternative models, and accounts for the incorrect result B\&S report, namely that the escalation model is generally superior.
 
 \begin{figure}
-\caption{Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\&S Tables 1 and 2). The Escalation model is the only model which consistently benefits from using smoothed ROC curves, and this advantage accounts for its apparent superiority to the other models.\label{fig:benefit-plot}}
-\centering
-\includegraphics[width=.8\linewidth]{figures/fig-2-benefit-plot.png}
+
+{\centering \includegraphics[width=.8\linewidth]{paper_files/figure-latex/benefit-plot-1} 
+
+}
+
+\caption{Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\&S Tables 1 and 2). The Escalation model is the only model which consistently benefits from using smoothed ROC curves, and this advantage accounts for its apparent superiority to the other models.}\label{fig:benefit-plot}
 \end{figure}
 
 In sum, it is not only the case that using smoothed ROC curves alters the results, but also that the use of smoothed ROC curves to calculate AUC-ROC values \textbf{only} benefits the escalation model. It does so consistently and by a considerable margin. All eight alternative models reported in B\&S Tables 1 and 2, on average, do not gain when using smoothed ROC curves to calculate AUC. Four of the eight show a small positive bias from smoothing, while the other four display a small negative bias. The magnitudes of these are not close to the level of positive bias found in the escalation model.
@@ -287,7 +288,7 @@ In sum, it is not only the case that using smoothed ROC curves alters the result
 \hypertarget{is-the-escalation-model-superior-to-the-alternative-icews-models}{%
 \subsection{Is the Escalation model superior to the alternative ICEWS models?}\label{is-the-escalation-model-superior-to-the-alternative-icews-models}}
 
-Table \ref{tab:table1-nosmooth} (B\&S Table 1) shows the comparison of the Escalation model to other alternative models based on ICEWS event data indicators. The AUC-ROC values are based on original, non-smoothed ROC curves. Both the Average and the CAMEO models outperform the Escalation model in almost all instances (see also Figure \ref{fig:table1-plot}). The Goldstein model generally outperforms the Escalation model in the 6-month version. The Quad model appears to be roughly on par with the Escalation model. Thus, the original B\&S conclusion that the Escalation model is superior to the alternative models is entirely conditional on the non-standard use of smoothed ROC curves.
+Table \ref{tab:table1-nosmooth} (B\&S Table 1) shows the comparison of the Escalation model to other alternative models based on ICEWS event data indicators. The AUC-ROC values are based on original, non-smoothed ROC curves. Both the Average and CAMEO models outperform the Escalation model in almost all instances (see also Figure \ref{fig:table1-plot}). The Goldstein model generally outperforms the Escalation model in the 6-month version. The Quad model appears to be roughly on par with the Escalation model. Thus, the original B\&S conclusion that the Escalation model is superior to the alternative models is entirely conditional on the non-standard use of smoothed ROC curves.
 
 \begin{table}
 
@@ -334,7 +335,7 @@ The top portion of Table \ref{tab:table2-N} shows the number of valid test set p
 
 \begin{table}
 
-\caption{\label{tab:table2-N}Number of valid test predictions for the escalation and structural alternatives models (B\&S Table 2)}
+\caption{\label{tab:table2-N}Number of valid test predictions for the escalation and structural alterantives models (B\&S Table 2)}
 \centering
 \begin{tabular}[t]{ll>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}>{\raggedleft\arraybackslash}p{2cm}}
 \toprule
@@ -386,7 +387,7 @@ Escalation Only & With PITF Predictors & Weighted by PITF & PITF Split Populatio
 \end{threeparttable}
 \end{table}
 
-B\&S interpret their results as follows (page 20) and we comment on the conclusions seriatim:\footnote{We list the ``Overall, \ldots{}'' interpretation out-of-order for clarity.}
+B\&S interpret their results as follows (page 20) and we comment on the conclusions seratim:\footnote{We list the ``Overall, \ldots{}'' interpretation out-of-order for clarity.}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -405,7 +406,7 @@ The PITF split-population analog still performs well, but the simple Escalation 
   B\&S: ``Adding PITF predictors improves the performance of the escalation model over six-month windows but diminishes it over one-month windows \ldots ''
 \end{enumerate}
 
-Adding PITF predictors improves performance in both cases; the ``With PITF Predictions'' model strictly dominates the ``Escalation Only'' model by quite a margin in the 6-month data version.
+Adding PITF predictors actually improves performance in both cases; the ``With PITF Predictions'' model strictly dominates the ``Escalation Only'' model by quite a margin in the 6-month data version.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -415,7 +416,7 @@ Adding PITF predictors improves performance in both cases; the ``With PITF Predi
   B\&S: ``The weighted model performs very poorly regardless \ldots ''
 \end{enumerate}
 
-The weighted model performs roughly on par with the Escalation Only model. One finding that remains is that the ``PITF Only'' model is outperformed by the ``Escalation Only'' model. As the former only uses annual inputs, but the data at hand are the 1-month or 6-months level, this is neither surprising nor especially noteworthy.
+The weighted model performs roughly on par with the Escalation Only model. One finding that remains is that the ``PITF Only'' model is outperformed by the ``Escalation Only'' model. As the former only uses annual inputs, but the data at hand are the 1-month or 6-months level, this is neither surprising, nor especially noteworthy.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -430,58 +431,61 @@ The most straightforward method of incorporating the annual structural PITF vari
 \hypertarget{how-accurate-were-the-2016-forecasts}{%
 \subsection{How Accurate Were the 2016 Forecasts?}\label{how-accurate-were-the-2016-forecasts}}
 
-B\&S forecast the risk of civil war onset for the first half of 2016 (2016-H1, where H2 would be the second half), and assessed the accuracy of these forecasts. The forecasts themselves are probabilistic, i.e.~range from 0 to 1, but to score the forecasts they consider the 30 highest predictions to have been positive forecasts (``1'') and the remaining forecasts to have been for no onset (``0''). They evaluate two alternative codings of observed civil war outcomes, one in which 15 countries, including Colombia, had ongoing civil wars at the end of 2015 (labeled ``Assuming Persistence''), and an alternative coding in which the civil war in Colombia ends but Turkey and Benin experience civil war onsets (``Assuming Change'').\footnote{\label{fn:leadDV}The former coding is in the main replication data, while the latter is hand-coded in the Stata script that produces their confusion matrices. There is also some potential ambiguity about the discussion in this section because the forecasts B\&S claim are for the first half of 2016 are actually for the second half of 2016, but scored against outcomes for the first half of 2016.} However, when they score the forecasts to produce the confusion matrices they report in their Table 4, they score them using civil war incidence, not onset. This a conscious choice B\&S acknowledge in the text (if not the table with confusion matrices), but it's not clear to us how this is justifiable.
+B\&S made forecasts for the first half of 2016 (2016-H1), and assess the accuracy of these forecasts. The forecasts themselves are probabilistic, i.e.~range from 0 to 1, but for the purpose of scoring the forecasts they consider the 30 highest predictions to have been positive forecasts (``1'') and the remaining forecasts to have been for no onset (``0''). They then construct confusion matrices for the forecasts, in their Table 4 and which we replicate here in the top half of our Table \ref{tab:table4}. They use two alternative codings of the outcomes for 2016-H1, one of which they call ``Assuming Persistence'' (this is what is in their replication data), and one of which they call ``Assuming Change'' (hand-coded in one of their replication scripts).
 
-For reference for the following discussion, we reproduce confusion matrices for the 2016-H1 forecasts in Table \ref{tab:table4}, but distinguish between civil war onsets (\(Y=1\)), non-events (\(Y=0\)) that correspond to countries with an ongoing civil war, and non-events (\(Y=0\)) that correspond to countries without a civil war, but which could potentially experience a civil war onset. The original B\&S confusion matrices collapse the second two rows in each matrix and treat ongoing and onset as part of the same group. Essentially, all of the apparent true positives (\(P=1, Y=1\)) in the original B\&S confusion matrices are ongoing civil war cases which by definition \emph{cannot} experience another civil war onset. The alternative outcome coding B\&S evaluate, under ``Assuming Change'', produces the only two civil war onsets we would have observed in 2016-H1.
+With the ``Assuming Persistence'' version of the outcomes, shown in the first confusion matrix, B\&S report that there are 15 civil war onsets, of which the forecasts capture 13 (true positives) and miss 2 (false negatives). With the ``Assuming Persistence'' coding of outcomes, shown in the second confusion matrix, they report that there are 16 onsets and the forecasts capture 14 of those with, still, 2 misses. Fifteen to 16 civil war \emph{onsets} in the first half of 2016 is incredible, especially considering that the entire historical data from 2001 to 2015 only has 20 recorded civil war \emph{onsets}. Indeed, it turns out that B\&S scored their forecasts for civil war \textit{onset} using civil war \textit{incidence}, i.e.~counting ongoing civil wars as if they were onsets.
 
 \begin{table}
 \caption{Replication of B\&S Table 4: Confusion Matrices for Six-month Escalation Model forecasts for the first half of 2016.}\label{tab:table4}
 \centering
 \begin{tabular}{ll|c|c|l}
-\multicolumn{1}{l}{\multirow{5}{*}{Assuming Persistence}} & \multicolumn{3}{c}{} \\
+\multicolumn{5}{c}{\textbf{Original confusion matrices with civil war \textit{incidence}}} \\
+% BS, assuming persistence
+\multicolumn{1}{l}{\multirow{4}{*}{Assuming Persistence}} & \multicolumn{3}{c}{} \\
 \multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
 \cline{3-4}
-& $Y=0$, no civil war & 134 & 17 \\
+& $Y=0$ & 132 & 17 \\
 \cline{3-4}
-& $Y=0$, ongoing & 2 & 13 \\
+& $Y=1$ & 2 & 13 \\
 \cline{3-4}
-& $Y=1$, onset & 0 & 0 \\
+% BS, assuming change
+\multicolumn{1}{l}{\multirow{4}{*}{Assuming Change}} & \multicolumn{3}{c}{} \\
+\multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
+\cline{3-4}
+& $Y=0$ & 132 & 16 \\
+\cline{3-4}
+& $Y=1$ & 2 & 14 \\
+\cline{3-4}
+\\ \midrule
+\\
+\multicolumn{5}{c}{\textbf{Fixed confusion matrices with civil war \textit{onset}}} \\
+% fixed, assuming persistence
+\multicolumn{1}{l}{\multirow{4}{*}{Assuming Persistence}} & \multicolumn{3}{c}{} \\
+\multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
+\cline{3-4}
+& $Y=0$ & 134 & 30 \\
+\cline{3-4}
+& $Y=1$ & 0 & 0 \\
 \cline{3-4}
 % fixed, assuming change
-\multicolumn{1}{l}{\multirow{5}{*}{Assuming Change}} & \multicolumn{3}{c}{} \\
+\multicolumn{1}{l}{\multirow{4}{*}{Assuming Change}} & \multicolumn{3}{c}{} \\
 \multicolumn{2}{c}{}& \multicolumn{1}{c}{$P=0$} & \multicolumn{1}{c}{$P=1$} \\
 \cline{3-4}
-& $Y=0$, no civil war & 134 & 16 \\
+& $Y=0$ & 134 & 28 \\
 \cline{3-4}
-& $Y=0$, ongoing & 2 & 12 \\
+& $Y=1$ & 0 & 2 \\
 \cline{3-4}
-& $Y=1$, onset & 0 & 2 \\
-\cline{3-4}
-\\
 \end{tabular}
 \end{table}
 
-The fact that countries with an ongoing civil war cannot experience another civil war onset follows from the way the Sambanis civil war data conceptualize and operationalize civil war. Civil war appears to be a binary property of a country at any given moment in time, i.e.~a country at any given point is either at civil war or not, and onset is the first time period corresponding to this state. In the data, ongoing civil wars are coded as having a missing outcome value and dropped.
-
-If we place ourselves back to the beginning of 2016, when the forecasts were made (the forecasts are pre-registered in early March), this means that we would have observed that 15 countries had ongoing conflicts in the second half of 2015 which had not terminated prior to the forecasting period. In all previous analyses in the paper, these kinds of cases drop out of the data. However, B\&S re-introduce, produce forecasts for them, and include them as positive events (``1''s) in their confusion matrices. They write, on page 21:
-
-\begin{quote}
-Importantly, we make no assumptions about the persistence of civil war between the second half of 2015 and the first half of 2016, meaning that all countries---even those with ongoing conflicts as of December 31, 2015---are included in the 2016 test set. As a result, 14 of the 30 countries on the list (and nine of the top 10) are cases of ongoing conflict.
-\end{quote}
-
-It's not clear to us under what conditions forecasting civil war onset risk for countries with ongoing civil wars make sense. A
-conflict could have ended in 2015-H2 and a new one started right away in 2016-H1, but when making the forecasts, \emph{we would have already known that}. Rather than not making any ``assumptions about the persistence of civil war'', this would only make sense if we assume that all ongoing civil wars ended in 2015-H2. Since Sambanis is the author of the civil war data that is used, it would already have been known in early 2016 that these 15 civil wars had not terminated, and were still ongoing. It is thus both by definition impossible for countries with ongoing civil wars to experience another onset, and at the time the forecasts were made it would have been known that all conflicts were still ongoing up through the beginning of the forecasting period.
-
-Does it make sense to count a high probability for the risk of onset for a case with an ongoing civil war as a partial or complete ``win'' for the model? When creating the confusion matrices, B\&S treat these ongoing civil war instances equivalent to civil war onsets, as positive events (``1''). In the text, B\&S do acknowledge a distinction between predicting an actual onset versus predicting a continuation, but they also claim credit for the fact that the model places high probabilities on most of the ongoing civil war cases. This would only make sense if the civil war coding was at the conflict, not country-level, so that a country could experience more than one civil war at any given time, e.g., two separatists' conflicts in different portions of the country. But this is not the case; ongoing conflicts in all other analyses are consistently dropped from the data as if a new civil war onset for a country with an ongoing conflict is conceptually impossible.
-
-If we turn back to the confusion matrices to re-assess the accuracy of the 2016-H1 forecasts, we can thus conclude that almost all of the predictions are false positives. There are no onsets in the ``Assuming Persistence'' coding, and two onsets in the ``Assuming Change'' coding. This is normal. Civil war onsets are infrequent, and it is to be expected that forecasts of rare events will mostly consist of false positives. The forecasts do correctly capture the 2 civil war onsets in the ``Assuming Change'' version of the outcome coding. This is, at face value, a credit to the model's accuracy.
+The correct confusion matrices that use civil war onsets to score the forecasts are shown in the second part of Table \ref{tab:table4}. In the ``Assuming Persistence'' coding, there are no civil war onsets in the data for 2016-H1. The alternative ``Assuming Persistence'' coding records 2 civil war onsets in 2016-H1, according to the civil conflict dataset they rely on. As a result, if we compare the precision and recall of the forecasts with the correct scoring to the incorrect scoring in B\&S, almost all of the forecasts are false positives. This is the norm when predicting rare events, and thus not unusual at all. The forecasts do correctly capture the 2 civil war onsets in the ``Assuming Change'' version of the outcome coding. This is, at face value, a credit to the model's accuracy.
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
-B\&S advocate the use of theory to guide prediction. But ``theory'' is not defined by B\&S and may be an ambiguous and undefined concept. ``Theory'' has many interpretations in social science. For some---the EITM movement, for example (Aldrich, Alt, and Lupia 2008)---theory is a system of internally consistent, logically connected propositions from which additional statements may be deduced. The additional statements can be subjected to empirical scrutiny. An example might be William Riker's theory of coalitions (Riker 1962) which posits propositions in game-theoretic form from which the size principle of minimal winning coalitions may be deduced and further examined empirically. A more recent example of strong theory is found in \emph{The Political Logic of Survival} (Bueno de Mesquita et al. 2005). For the purposes of discussion, we call this strong theory.
+B\&S advocate the use of theory to guide prediction. But ``theory'' is not defined by B\&S and may be an ambiguous and undefined concept. ``Theory'' has many interpretations in social science. For some---the EITM movement, for example (Aldrich, Alt, and Lupia 2008)---theory is a system of internally consistent, logically connected propositions from which additional statements may be deduced. The additional statements can be subjected to empirical scrutiny. An example might be William Riker's theory of coalitions (Riker 1962) which posits propositions in game theoretic form from which the size principal of minimal winning coalitions may be deduced and further examined empirically. A more recent example of strong theory is found in \emph{The Political Logic of Survival} (Bueno de Mesquita et al. 2005). For the purposes of discussion we call this strong theory.
 
-However, for many, a theory is simply a falsifiable story or narrative that makes causal claims about the relationships among variables. Typically, it is fused together from a meta-analysis of prior work on the topic under consideration. We call these types of theory weak theory. They are weak because they do not include two characteristics of strong theory, though they may include one:
+However, for many, a theory is simply a falsifiable story or narrative that makes causal claims about the relationships among variables. Typically it is fused together from a meta-analysis of prior work on the topic under consideration. We call these types of theory weak theory. They are weak because they do not include two characteristics of strong theory, though they may include one:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -504,24 +508,24 @@ These variables, taken from ICEWS, are the main components of the escalation mod
 
 Indeed, most empirical social science research follows this approach: (1) delineation of an argument, (2) selection of variables that represent a plausible or compelling representation of the concepts, followed by (3) utilization of these variables in a statistical model with a dependent variable that measures the main phenomena of investigation. It is worth pointing out that this is simply one set of variables that are selected to represent the concepts in the theoretical story.
 
-A strong theory gives more guidance on compelling choices than does a weak theory. Accordingly, while the choice is plausible, it is not necessarily compelling. Another choice might be equally plausible. In the ICEWS example, we might include variables on intragovernmental demands (from the military toward the central government), or further look at the dynamics among opposition groups. In practical terms, there is a wide array of choices that are available to instantiate any particular theory. A second point is that putting them in a linear regression may be a particularly crude instantiation of complicated dynamics. One general principle in the B\&S article that is on point, and is more widely relevant, is that dynamical phenomena like civil wars need to have explanatory models that change rapidly over time---and by implication that are represented by data that change fairly quickly.
+A strong theory gives more guidance on compelling choices than does a weak theory. Accordingly, while the choice is plausible it is not necessarily compelling. Another choice might be equally plausible. In the ICEWS example, we might include variables on intragovernmental demands (from the military toward the central government), or further look a the dynamics among opposition groups. In practical terms there is a wide array of choices that are available to instantiate any particular theory. A second point is that putting them in a linear regression may be a particularly crude instantiation of complicated dynamics. One general principal that is on point in the B\&S article and is more widely relevant is that dynamical phenomenon like civil wars need to have explanatory models that change rapidly over time---and by implication that are represented by data that change fairly quickly.
 
-Instantiating the theoretical model is more about choosing the correct variables. This is the contrast between theoretical prediction models and atheoretical machine learning that B\&S focus on. But this dichotomy is misguided. The data that are used in a predictive model have to come from somewhere. Even if the inclusion of some factors is not explicitly justified, it is hardly the case that one assembles data without the expectation that it will be useful. It is not a coincidence that nobody uses 1,180 variable strawman models whose variable vectors predominantly consist of 0's, even if such a model coincidentally ends up performing well. Rather, we posit that most of the cases B\&S might characterize as atheoretical enter the ``theoretical'' with some awareness of existing arguments and work that is used to select data sources for inclusion in a dataset.\footnote{While we do not undertake this, there are a variety of procedures that one might use for variable choices, ranging from staring at lists of variables to machine learning approaches.}
+At this level of detail, the theoretical model is more about choosing the correct variables and this is the contrast between theoretical prediction models and atheoretical machine learning that B\&S focus on. But this dichotomy is misguided. The data that are used in a predictive model have to come from somewhere. Even if the inclusion of some factors is not explicitly justified, it is hardly the case that one assembles data without the expectation that it will be useful. It is not a coincidence that nobody uses 1,180 variable strawman models whose variable vectors predominantly consist of 0's, even if such a model coincidentally ends up performing well. Rather, we posit that most of the cases B\&S might characterize as atheoretical enter the ``theoretical'', with some awareness of existing arguments and work that is used to select data sources for inclusion in a dataset.\footnote{While we do not undertake this, there are a variety of procedures that one might use for variable choices, ranging from staring at lists of variables to machine learning approaches.}
 
-Furthermore, if what we mean by the concept ``theory'' is such that it suggests a large range of variables that could be related to an outcome, what do we really gain from having this theory in our predictive model? We can construct a model designed to predict well while avoiding overfitting, and then go back and try to couch it in theoretical language---which, given the malleability of extant theory, we probably could in many cases---but are we then better off? Certainly, that's not what B\&S are trying to suggest since this would be a problematic way to ``evaluate'' a theory. But when theory is extensive or malleable so that it suggests a broad range of variables and specifications, and thus a broad range of specifications could, in fact, be tied to a theory, it is hard to demonstrate that this theory is not the result of predictive modeling's equivalent to p-hacking, namely developing a model specification and associated ``theory'' with an eye towards out-of-sample predictive accuracy (cf.~Colaresi and Mahmood 2017 for how to avoid this problem while leveraging out-of-sample predictions). Incidentally, this is also a recipe for creating overfit models whose accuracy does not generalize and whose underlying theories may by extension not be externally valid (for a more detailed treatment of this issue, see Fariss and Jones 2018).
+Furthermore, if what we mean by the concept ``theory'' is such that it suggests a large range of variables that could be related to an outcome, what do we really gain from having this theory in our predictive model? We can construct a model designed to predict well while avoiding overfitting, and then go back and try to couch it in theoretical language---which, given the malleability of extant theory, we probably could in many cases---but are we then better off? Certainly that's not what B\&S are trying to suggest since this would be a problematic way to ``evaluate'' a theory. But when theory is extensive or malleable so that it suggests a broad range of variables and specifications, and thus a broad range of specifications could in fact be tied to a theory, it is hard to demonstrate that this theory is in fact not the result of predictive modeling's equivalent to p-hacking, namely developing a model specification and associated ``theory'' with any eye towards out-of-sample predictive accuracy (cf.~Colaresi and Mahmood 2017 for how to avoid this problem while leveraging out-of-sample predictions). Incidentally, this is also a recipe for creating overfit models whose accuracy does not generalize and whose underlying theories may by extension not be externally valid (for a more detailed treatment of this issue, see Fariss and Jones 2018).
 
-Conversely, not all factors that are ``theoretically'' important or suggested by the literature are also important for prediction, and some factors that are good predictors do not originate from prior theory. For example, both Ward, Greenhill, and Bakke (2010) and Hill and Jones (2014) examine a variety of variables that are considered ``theoretically'' important for explaining civil war onset and state repression, respectively, and find that there is substantial variation in how useful they are for actually predicting those outcomes. It is also possible that building accurate predictive models could uncover factors overlooked in the literature, e.g., the strong association between infant mortality and a broad variety of conflict outcomes like political instability (Goldstone et al. 2010), irregular leadership changes (Beger et al. 2017), and coups (Beger and Ward 2020).
+Conversely, not all factors that are ``theoretically'' important or suggested by the literature are also important for prediction, and some factors that turn out to be good predictors do not originate from prior theory. For example, both Ward, Greenhill, and Bakke (2010) and Hill and Jones (2014) examine a variety of variables that are considered ``theoretically'' important for explaining civil war onset and state repression, respectively, and find that there is substantial variation in how useful they are for for actually predicting those outcomes. And, it is entirely possible that a focus on building accurate predictive models could uncover factors overlooked in the literature, e.g.~the strong association between infant mortality and a broad variety of conflict outcomes like political instability (Goldstone et al. 2010), irregular leadership changes (Beger et al. 2017), and coups (Beger and Ward 2020).
 
-Aside from the selection of the variables that go into a model, another way in which we could contrast theoretical from atheoretical prediction models is in terms of their flexibility regarding functional form. Theory should not only tell us what factors matter, but also how they relate to each other. We think that few would be strongly committed to the idea that the linear additive equations that dominate published regression analyses, maybe with the occasional polynomial or multiplicative interaction terms, are \emph{the} correct functional specification. Is the danger posed by low-level violence the same when tensions are high, with high demands and high non-violent repression, as when tensions are low? Are those relationships linear in the log-odds? Some machine learning models, random forests included, are flexible in this regard and, to some extent, are capable of learning non-linear and interactive relationships. B\&S implicitly concede on this point since they use random forests for both their Escalation model and the atheoretical alternatives. But in the absence of strong a priori theoretical expectations about functional form, why not use machine learning tools to try to uncover any such non-linear relationships in need of explanation, and use this to improve our theory (see also Fariss and Jones 2018)?
+Aside from selection of the variables that go into a model, another way in which we could contrast theoretical from atheoretical prediction models is in terms of their flexibility in regard to functional form. Theory should not only tell us what factors matter, but also how they relate to each other. We think that few would be strongly committed to the idea that the linear additive equations that dominate published regression analyses, maybe with the occasional polynomial or multiplicative interaction terms, are \emph{the} correct functional specification. Is the danger posed by low-level violence the same when tensions are high, with high demands and high non-violent repression, as when tensions are low? Are those relationships linear in the log-odds? Some machine learning models, random forests included, are flexible in this regard and to some extent capable of learning non-linear and interactive relationships. B\&S implicitly concede on this point since they use random forests for both their Escalation model and the atheoretical alternatives. But in the absence of strong a priori theoretical expectations about functional form, why not use machine learning tools to try to uncover any such non-linear relationships in need of explanation, and use this to improve our theory (see also Fariss and Jones 2018)?
 
-Rather than trying to frame theoretical modeling and machine learning as competing endeavors, a more useful perspective is to consider how they can mutually reinforce each other. Even if the analysis in B\&S fails to support the point, we concede that predicting on the basis of a strong theoretical model is preferable to inductive prediction. Beyond accurate predictions, such models would allow us to make causal statements that are harder to make on the basis of ad hoc models. But this is hard to do in practice. The problem is that many extant theoretical models are in fact so malleable to interpretation that they essentially are ad hoc. They are useful for identifying variables that could be useful for prediction, and this is already taking place.
+Rather than trying to frame theoretical modeling and machine learning as competing endeavors, a more useful perspective is to consider the ways in which they can mutually reinforce each other. Even if the analysis in B\&S fails to support the point, we concede that predicting on the basis of a strong theoretical model is preferable to inductive prediction. Beyond accurate predictions, such models would allow us to make causal statements that are harder to make on the basis of ad hoc models. But this is hard to do in practice. The problem is that many extant theoretical models are in fact so malleable to interpretation that they essentially are ad hoc. They are useful for identifying variables that could be useful for prediction, and this is in fact already taking place.
 
-Most importantly, a single study is unlikely to be convincing that theory-based models are better (or worse) than ad hoc models based on machine learning. Even if B\&S were correct that in their study the theory-based escalation model performed better, it would simply be a case study of a single case where it was preferable. It establishes no general tendency, let alone law-like evidence for general theory. Nor, against it.
+Most importantly, a single study is unlikely to be convincing that theory-based models are better (or worse) than ad hoc models based mainly in machine learning. Even if B\&S were correct that in their study the theory based escalation model performed better, it would simply be a case study of a single case where it was preferable. It establishes no general tendency, let alone law-like evidence for general theory. Nor, against it.
 
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
 
-We encountered several issues in the code underlying the B\&S analysis. The problems we encountered are not subjective modeling choices. They bear no implications on the question of whether theory-based models are preferable. However, when we fix these issues and perform an updated analysis, the B\&S conclusions are all essentially overturned. In other words, B\&S findings are based on a faulty analysis, invalid, and should be disregarded as evidence in favor of theory-based models.
+We encountered several issues in the code underlying the B\&S analysis. The problems we encountered are not subjective modeling choices. They bear no implications on the question of whether theory based model are preferable. However, when we fix these issues and perform an updated analysis, the B\&S conclusions are all essentially overturned. In other words, B\&S findings are based on a faulty analysis, invalid, and should be disregarded as evidence in favor of theory-based models.
 
 In contradistinction to the conclusions offered by B\&S, we find that when correctly specified and implemented:
 
@@ -537,7 +541,7 @@ In contradistinction to the conclusions offered by B\&S, we find that when corre
 
 More importantly, trying to contrast machine learning and theory may be misguided. Even if a ``theory'' section is missing, predictive models are informed by previous work and arguments. If we had strong general theories of something like civil war onset, we could replace more inductive, ad hoc, methods with clearly specified models. But we do not. What we have instead are weak theories that could be interpreted to suggest any range of equations for predicting an outcome. Instead of trying to find an instantiation of such a ``theoretical'' model that can outperform a more ad hoc alternative, we could use the flexibility of machine learning methods and insights that predictive modeling brings to improve our weak theories.
 
-Blair \& Sambanis have focused attention on comparing forecasting models and forecasts in the civil war domain. As social science becomes more adept at predictive analysis, this will doubtless be of increasing importance. However, these comparisons must be made carefully to ensure those correct inferences are drawn. We continue to think that weak theory is overrated (Ward 2016) and that machine learning and big data will allow us to learn new things. It will be interesting to see how the evidence for these claims is adjudicated with additional usage and careful evaluation. Social science has leaned on theory for (at least) seventy years, but it is time to find useful ways to incorporate recently developed methods in the arena of machine learning and modern statistics.
+Blair \& Sambanis have focused attention on comparing forecasting models and forecasts in the civil war domain. As social science becomes more adept at predictive analysis, this will doubtless be of increasing importance. However, these comparisons must be made carefully to ensure those correct inferences are drawn. We continue to think that weak theory is overrated (Ward 2016), and that machine learning and big data will allow us to learn new things. It will be interesting to see how the evidence for these claims is adjudicated with additional usage and careful evaluation. Social science has leaned on theory for (at least) seventy years, but it might be time to find useful ways to incorporate some of the recently developed methods in the arena of machine learning and modern statistics as well.
 
 \newpage
 
@@ -645,36 +649,23 @@ Zou, Kelly H., William J. Hall, and David E. Shapiro. 1997. ``Smooth Non-Paramet
 
 We believe the intention with the ``Weighted by PITF'' model is to combine the PITF test predictions with the Escalation test predictions, i.e.~weight the latter with the former. Due to an error, the PITF \emph{training} set predictions are used, not the \emph{test} set predictions.
 
-See \texttt{1mo\_run\_escalation\_weighted\_PITF.R} line 4, where the PITF predictions are taken from the training data set (\texttt{train\$pred\_prob\_plus1}). The next line is a hack extending the shorter \texttt{weight} vector with missing values to avoid a R warning when it is multiplied with the longer vector of escalation model test set predictions -- similarly in the 6-month version of this file.
+See \texttt{1mo\_run\_escalation\_weighted\_PITF.R} line 4, where the PITF predictions are taken from the training data set (\texttt{train\$pred\_prob\_plus1}). The next line is a hack extending the shorter \texttt{weight} vector with missing values to avoid a R warning when it is multiplied with the longer vector of escalation model test set predictions. Similarly in the 6-month version of this file.
 
 Uncovering which cases in the PITF training predictions are matched to the cases that the Escalation model test set predictions correspond to requires tracing back several more data objects. We have documented details in issue \#3 in the GitHub repo.
 
 \hypertarget{section-3.3-incorrect-pitf-split-population-implementation}{%
 \subsubsection{Section 3.3: Incorrect ``PITF Split Population'' Implementation}\label{section-3.3-incorrect-pitf-split-population-implementation}}
 
-The intention is to train separate random forests on data split into high and low-risk groups based on PITF predictions, and then combine them back into one random forest. Actually, both random forests are trained on identical data, essentially production a random forest that just has N\_trees * 2.
+The intention is to train seperate random forests on data split into high and low-risk groups based on PITF predictions, and then combine them back into one random forest. Actually both random forests are trained on identical data, essentially production a random forest that just has N\_trees * 2.
 
 Disentangling this coding error is not straightforward as it occurs over several R scripts and requires (or at least is easier to verify by) running partway through the actual replication until the objects holding the training data for the models are instantiated and can be examined. Details are documented in issue \#5 in the GitHub repo.
 
 \hypertarget{section-3.5-incorrect-scoring-of-the-2016-forecasts}{%
 \subsubsection{Section 3.5: Incorrect scoring of the 2016 forecasts}\label{section-3.5-incorrect-scoring-of-the-2016-forecasts}}
 
-Regarding the claim in footnote \ref{fn:leadDV} that the 2016-H1 forecasts are actually forecasts for 2016-H2:
+The relevant variables in the data are ``incidence\_civil\_ns'' and ``incidence\_civil\_ns\_plus1'', which appears to be a 1-period lead (ie., \(t_+1\)) version of the dependent variable that is used in the actual prediction models. The incidence dependent variable contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. This reflects common practice.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Throughout the R code for the main analyses, the models predict a 1-time period lead version of the civil war onset variables (ending in "\_plus1``). This means that, for example, in the 6-month version of the data, a value of''1" for the "\_plus1" outcome variable for 2015-H2 actually refers to a civil war onset in the first half of 2016. One can confirm, through some tracing to work back to the original variable assignments, that the ROC curves and AUC are correspondingly, and correctly, also scored using the lead versions of the DV.
-\item
-  The nominally 2016-H1 forecasts are created at the bottom of \texttt{+master.R} using the data for 2016-H1 and still the lead DV. Thus, the lead DV here refers to outcomes in 2016-H2.
-\item
-  The scoring of the forecasts, whatever time period they are actually for, is done in a separate Stata do file, \texttt{6mo\_make\_confusion\_matrix.do}. Here, the scoring is done using the non-lead version of the DV. Thus, there is a mismatch between the time period the forecasts are for and the period whose observed outcomes are used to score them.
-\end{enumerate}
-
-The relevant variables in the data are ``incidence\_civil\_ns'' and ``incidence\_civil\_ns\_plus1'', which appears to be a 1-period lead (i.e., \(t_{+1}\)) version of the dependent variable that is used in the actual prediction models. The incidence dependent variable contains both 0/1 and missing values. By examining the pattern of missing values, it seems clear that this was originally an incidence variable indicating whether a country was at civil war in a given year or not, and which was converted to an onset version so that onsets retain the value of 1 but continuing civil war years are coded as missing. This reflects common practice.
-
-Furthermore, by examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file \texttt{6mo\_make\_confusion\_matrix.do} on line 52, missing values in ``incidence\_civil\_ns'' are recoded to 1, thus reverting the onset coding of this variable to incidence.
+However, by examining the code used to generated Table 4, we were able to confirm that the onset forecasts are assessed using incidence, not onset. In the file \texttt{6mo\_make\_confusion\_matrix.do} on line 52, missing values in ``incidence\_civil\_ns'' are recoded to 1, thus reverting the onset coding of this variable to incidence.
 
 \hypertarget{additional-replication-tables}{%
 \subsection{Additional replication tables}\label{additional-replication-tables}}
@@ -806,35 +797,35 @@ Model & Escalation Only & With PITF Predictors & Weighted by PITF & PITF Split P
 \end{tabular}
 \end{table}
 
-\clearpage
-
 \hypertarget{model-to-model-comparison-plots}{%
 \subsection{Model to model comparison plots}\label{model-to-model-comparison-plots}}
 
 Figures \ref{fig:table1-plot} and \ref{fig:table2-plot} replicate the information in Tables \ref{tab:table1-nosmooth} and \ref{tab:table2-fixed} in a way makes the comparison of the escalation model to the alternative models easier. Each facet shows the escalation AUC-ROC for all model settings (the rows in Table \ref{fig:table1-plot} and base specification for all models in Table \ref{tab:table2-fixed}) on the left, and the AUC-ROC for an alternative model on the right, with a connecting line. If the lines slope up to the right, the alternative model is better.
 
 \begin{figure}
-{\centering
-\includegraphics[width=.9\linewidth]{figures/fig-A1-table1-pairs.png}
+
+{\centering \includegraphics[width=.9\linewidth]{paper_files/figure-latex/table1-plot-1} 
+
 }
-\caption{Escalation to alternative comparisons for the ICEWS models (B\&S Table 1)\label{fig:table1-plot}}
+
+\caption{Escalation to alternative comparisons for the ICEWS models (B\&S Table 1)}\label{fig:table1-plot}
 \end{figure}
 
 \begin{figure}
-{\centering
-\includegraphics[width=.9\linewidth]{figures/fig-A2-table2-pairs.png}
-}
-\caption{Escalation to alternative comparisons for the structural models (B\&S Table 2)\label{fig:table2-plot}}
-\end{figure}
 
-\newpage
+{\centering \includegraphics[width=.9\linewidth]{paper_files/figure-latex/table2-plot-1} 
+
+}
+
+\caption{Escalation to alternative comparisons for the structural models (B\&S Table 2)}\label{fig:table2-plot}
+\end{figure}
 
 \hypertarget{random-forest-hyper-parameter-selection}{%
 \subsection{Random forest hyper-parameter selection}\label{random-forest-hyper-parameter-selection}}
 
-What initially sparked our interest in the paper was the unusual choice of hyperparameter settings for the random forest models estimated. Table \ref{tab:hp} shows the default values used by the implementation of random forest that B\&S use (from the \textbf{randomForest} R package), in contrast to the basic settings used by B\&S for most of the models reported in the paper.
+What initially sparked our interest in the paper was the unusual choice of hyperparameter settings for the random forest models estimated. Table \ref{tab:hp} shows the default values used by the implementation of random forest that B\&S use (from the \textbf{randomForest} R package), in contrast to the basic settings used by B\&S for most the models reported in the paper.
 
-As the outcome is a binary indicator of civil war onset, one would typically use a classification random forest that predicts 0 or 1 labels directly. The implementation of random forests that B\&S use ((Liaw and Wiener 2002)) is based on the original Breiman (2001) implementation and calculates predictive probabilities by averaging over the ``0'' or ``1'' votes from all constituent decision trees. The conventional wisdom regarding the number of trees in a random forest is that it needs to be large enough to stabilize performance, but without any additional gain or harm in accuracy beyond a certain number. From the other default settings, which are generally not uninformed choices, one can see that the basic logic is to grow a forest with a relatively small number of trees, but where each tree is fairly extensive and operates on a large bootstrapped sample of the original training data. These are of course only heuristics and it is usual to attempt to find better hyper-parameter methods through some form of tuning.
+As the outcome is a binary indicator of civil war onset, one would typically use a classification random forest that predicts 0 or 1 labels directly. The implementation of random forests that B\&S use ((Liaw and Wiener 2002)) is based on the original Breiman (2001) implementation and calculates predictive probabilities by averaging over the ``0'' or ``1'' votes from all constituent decision trees. The conventional wisdom regarding the number of trees in a random forest is that it needs to be large enough to stabilize performance, but without any additional gain or harm in accuracy beyond a certain number. From the other default settings, which are generally not uninformed choices, one can see that the basic logic is to grow a forest with a relatively small number of trees, but where each tree is fairly extensive, and operates on a large bootstrapped sample of the original training data. These are of course only heuristics and it is usual to attempt to find better hyper-parameter methods through some form of tuning.
 
 \begin{table}
 \caption{\label{tab:hp} Random forest (\texttt{randomForest()}) default versus B\&S hyperparameters}
@@ -870,8 +861,6 @@ Given that they are relatively unorthodox, yet appear to work very well, we wond
 
 Given the dramatic changes in results as a result of the preceding issues, we did not further investigate these potential concerns.
 
-\newpage
-
 \hypertarget{different-smoothing-methods}{%
 \subsection{Different smoothing methods}\label{different-smoothing-methods}}
 
@@ -880,8 +869,12 @@ The \textbf{pROC} package \texttt{smooth()} function includes several different 
 Only the ``binormal'' smoothing method produces a pattern of AUC-ROCs that clearly elevates the Escalation model above the alternatives. The ``density'' method does not on average change the AUC-ROC values very much from their empirical ROC curve equivalents. The ``fitdistr'' method tends to increase all AUC-ROC values, although maybe slightly more so for the Escalation model than the main alternatives.
 
 \begin{figure}
-{\centering \includegraphics[width=.95\linewidth]{figures/fig-a3-benefit-plot-extended.png}}
-\caption{Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\&S Tables 1 and 2), with 3 different smoothing methods (binormal is the default method and used in B\&S)\label{fig:smooth-benefit-plot-extended}}
+
+{\centering \includegraphics[width=.8\linewidth]{paper_files/figure-latex/smooth-benefit-plot-extended-1} 
+
+}
+
+\caption{Gain from using smoothed ROC to calculate AUC, for each model reported in Tables 3 and 4 (B\&S Tables 1 and 2), with 3 different smoothing methods (binormal is the default method and used in B\&S)}\label{fig:smooth-benefit-plot-extended}
 \end{figure}
 
 \end{document}
