@@ -27,7 +27,7 @@ check_packages <- function() {
             sprintf("  install.packages(c(%s))",
                     paste0(sprintf("\"%s\"", not_installed), collapse = ", ")),
             "\nand then re-run this script.")
-    stop("Not all required packages are installed.")
+    return(invisible(FALSE))
   }
 
   message("All required packages are installed")

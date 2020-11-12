@@ -33,7 +33,7 @@ rocs <- preds %>%
 #logcondens = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens"),
 #logcondens.smooth = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens.smooth")
 
-mt <- read_rds("../rep_nosmooth/output/model-table-w-results.rds")
+mt <- read_rds("output/model-table-w-results.rds")
 mt <- mt %>% left_join(rocs, by = "cell_id")
 
 cols <- c(
