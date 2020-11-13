@@ -10,13 +10,12 @@ library(dplyr)
 library(readr)
 library(tibble)
 
-setwd(here("rep_nosmooth"))
-dir.create("output/figures", showWarnings = FALSE)
+dir.create(here("rep_nosmooth/output/figures"), showWarnings = FALSE)
 
-all_predictions <- read_rds("output/all-predictions.rds") %>%
+all_predictions <- read_rds(here("rep_nosmooth/output/all-predictions.rds")) %>%
   group_by(cell_id) %>%
   nest()
-model_table <- read_rds("output/model-table-w-results.rds")
+model_table <- read_rds(here("rep_nosmooth/output/model-table-w-results.rds"))
 
 # We need predictions for Table 1, base specification
 cell_ids <- model_table %>%
@@ -54,7 +53,8 @@ cols <- c(
 # linewidth
 ll <- 4
 
-png("output/figures/fig-1-figure1-replicated.png", width = 1100, height = 1000,
+png(here("rep_nosmooth/output/figures/fig-1-figure1-replicated.png"),
+    width = 1100, height = 1000,
     units = "px", pointsize = 24)
 par(mfrow = c(2, 2))
 

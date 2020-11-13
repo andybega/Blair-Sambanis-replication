@@ -5,10 +5,9 @@ library(tidyr)
 library(kableExtra)
 library(purrr)
 
-setwd(here::here("rep_nosmooth"))
-dir.create("output/tables")
+dir.create(here("rep_nosmooth/output/tables"), showWarnings = FALSE)
 
-results <- read_rds("output/model-table-w-results.rds")
+results <- read_rds(here("rep_nosmooth/output/model-table-w-results.rds"))
 
 # Table 1 -----------------------------------------------------------------
 
@@ -24,7 +23,7 @@ table1_N <- results %>%
 table1_N
 table1_N %>%
   knitr::kable("markdown") %>%
-  writeLines("output/table1-N.md")
+  writeLines(here("rep_nosmooth/output/table1-N.md"))
 
 table1_smooth <- results %>%
   filter(table=="Table 1") %>%
@@ -34,10 +33,10 @@ table1_smooth <- results %>%
   dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
-write_csv(table1_smooth, "output/tables/table1-smooth.csv")
+write_csv(table1_smooth, here("rep_nosmooth/output/tables/table1-smooth.csv"))
 table1_smooth %>%
   knitr::kable("markdown", digits = 2) %>%
-  writeLines("output/table1-smooth.md")
+  writeLines(here("rep_nosmooth/output/table1-smooth.md"))
 
 table1_nosmooth <- results %>%
   filter(table=="Table 1") %>%
@@ -47,10 +46,10 @@ table1_nosmooth <- results %>%
   dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
-write_csv(table1_nosmooth, "output/tables/table1-nosmooth.csv")
+write_csv(table1_nosmooth, here("rep_nosmooth/output/tables/table1-nosmooth.csv"))
 table1_nosmooth %>%
   knitr::kable("markdown", digits = 2) %>%
-  writeLines("output/table1-nosmooth.md")
+  writeLines(here("rep_nosmooth/output/table1-nosmooth.md"))
 
 table1_smooth_benefit <- results %>%
   filter(table=="Table 1") %>%
@@ -61,10 +60,11 @@ table1_smooth_benefit <- results %>%
   dplyr::select(horizon, row, Escalation, Quad, Goldstein, CAMEO, Average) %>%
   rename(Model = row)
 
-write_csv(table1_smooth_benefit, "output/tables/table1-smooth-benefit.csv")
+write_csv(table1_smooth_benefit,
+          here("rep_nosmooth/output/tables/table1-smooth-benefit.csv"))
 table1_smooth_benefit %>%
   knitr::kable("markdown", digits = 2) %>%
-  writeLines("output/table1-smooth-benefit.md")
+  writeLines(here("rep_nosmooth/output/table1-smooth-benefit.md"))
 
 
 
@@ -85,7 +85,7 @@ auc_roc_vec <- function(pred, truth, smooth) {
 # all-predictions is a tibble of all predictions, ID's by cell_id.
 # For the common sub-setting below, it's easier to treat each set of predictions
 # as a seperate list/object, so use tidyr to nest them
-all_predictions <- read_rds("output/all-predictions.rds") %>%
+all_predictions <- read_rds(here("rep_nosmooth/output/all-predictions.rds")) %>%
   group_by(cell_id) %>%
   tidyr::nest(preds = year:value)
 
@@ -162,10 +162,10 @@ table2_smooth <- results_table2 %>%
   pivot_wider(names_from = "column", values_from = "auc_roc_smoothed") %>%
   rename(Model = row)
 
-write_csv(table2_smooth, "output/tables/table2-smooth.csv")
+write_csv(table2_smooth, here("rep_nosmooth/output/tables/table2-smooth.csv"))
 table2_smooth %>%
   knitr::kable("markdown", digits = 2) %>%
-  writeLines("output/table2-smooth.md")
+  writeLines(here("rep_nosmooth/output/table2-smooth.md"))
 
 table2_nosmooth <- results_table2 %>%
   filter(table=="Table 2") %>%
@@ -173,10 +173,11 @@ table2_nosmooth <- results_table2 %>%
   arrange(horizon, row) %>%
   pivot_wider(names_from = "column", values_from = "auc_roc") %>%
   rename(Model = row)
-write_csv(table2_nosmooth, "output/tables/table2-nosmooth.csv")
+write_csv(table2_nosmooth,
+          here("rep_nosmooth/output/tables/table2-nosmooth.csv"))
 table2_nosmooth %>%
   knitr::kable("markdown", digits = 2) %>%
-  writeLines("output/table2-nosmooth.md")
+  writeLines(here("rep_nosmooth/output/table2-nosmooth.md"))
 
 table2_smooth_benefit <- results_table2 %>%
   filter(table=="Table 2") %>%
@@ -186,10 +187,11 @@ table2_smooth_benefit <- results_table2 %>%
   pivot_wider(names_from = "column", values_from = "diff") %>%
   rename(Model = row)
 
-write_csv(table2_smooth_benefit, "output/tables/table2-smooth-benefit.csv")
+write_csv(table2_smooth_benefit,
+          here("rep_nosmooth/output/tables/table2-smooth-benefit.csv"))
 table2_smooth_benefit %>%
   knitr::kable("markdown", digits = 2) %>%
-  writeLines("output/table2-smooth-benefit.md")
+  writeLines(here("rep_nosmooth/output/table2-smooth-benefit.md"))
 
 
 # Appendix Table 2 --------------------------------------------------------
@@ -208,7 +210,8 @@ adj <- results_table2 %>%
 full_table2 <- bind_rows(orig, adj) %>%
   select(-cell_id, -table, -non_RF, -N_train, -time)
 
-write_csv(full_table2, "output/tables/table2-for-appendix.csv")
+write_csv(full_table2,
+          here("rep_nosmooth/output/tables/table2-for-appendix.csv"))
 
 # keep track of N for git; easier to spot differences
 table2_N <- full_table2 %>%
@@ -218,7 +221,7 @@ table2_N <- full_table2 %>%
 table2_N
 table2_N %>%
   knitr::kable("markdown") %>%
-  writeLines("output/table2-N.md")
+  writeLines(here("rep_nosmooth/output/table2-N.md"))
 
 
 

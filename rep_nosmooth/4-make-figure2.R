@@ -9,11 +9,10 @@ library(dplyr)
 library(tidyr)
 library(here)
 
-setwd(here::here("rep_nosmooth"))
-dir.create("output/figures", showWarnings = FALSE)
+dir.create(here("rep_nosmooth/output/figures"), showWarnings = FALSE)
 
-table1_benefit <- read_csv("output/tables/table1-smooth-benefit.csv")
-table2_benefit <- read_csv("output/tables/table2-smooth-benefit.csv")
+table1_benefit <- read_csv(here("rep_nosmooth/output/tables/table1-smooth-benefit.csv"))
+table2_benefit <- read_csv(here("rep_nosmooth/output/tables/table2-smooth-benefit.csv"))
 
 cols <- c(
   Escalation = "#e41a1c",
@@ -60,4 +59,6 @@ p <- benefit %>%
   geom_vline(xintercept = 0, linetype = 3) +
   theme(axis.text.y = element_text(size = 12))
 
-ggsave(plot = p, filename = "output/figures/fig-2-benefit-plot.png", height = 3.5, width = 5.5)
+ggsave(plot = p,
+       filename = here("rep_nosmooth/output/figures/fig-2-benefit-plot.png"),
+       height = 3.5, width = 5.5)

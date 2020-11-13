@@ -9,10 +9,9 @@ library(dplyr)
 library(tidyr)
 library(here)
 
-setwd(here::here("rep_nosmooth"))
-dir.create("output/figures", showWarnings = FALSE)
+dir.create(here("rep_nosmooth/output/figures"), showWarnings = FALSE)
 
-table1_nosmooth <- read_csv("output/tables/table1-nosmooth.csv")
+table1_nosmooth <- read_csv(here("rep_nosmooth/output/tables/table1-nosmooth.csv"))
 
 icews_lvls <- c("Escalation", "Quad", "Goldstein", "CAMEO", "Average")
 
@@ -41,6 +40,7 @@ p <- pairs %>%
   theme(panel.grid.minor = element_blank()) +
   labs(x = "", y = "AUC-ROC (empirical)")
 
-ggsave(plot=p, filename = "output/figures/fig-A1-table1-pairs.png",
+ggsave(plot=p,
+       filename = here("rep_nosmooth/output/figures/fig-A1-table1-pairs.png"),
        height = 5, width = 8)
 

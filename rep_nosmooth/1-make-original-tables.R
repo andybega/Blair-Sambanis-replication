@@ -4,10 +4,10 @@
 
 library(tibble)
 library(readr)
+library(here)
 
-setwd(here::here("rep_nosmooth"))
-
-dir.create("output/tables", recursive = TRUE, showWarnings = FALSE)
+dir.create(here("rep_nosmooth/output/tables"),
+           recursive = TRUE, showWarnings = FALSE)
 
 table1 <- tribble(
   ~horizon, ~model, ~Escalation, ~Quad, ~Goldstein, ~CAMEO, ~Average,
@@ -46,7 +46,7 @@ table4 <- tribble(
   "Assuming Change", 1L, 2L, 14L
 )
 
-write_csv(table1, "output/tables/table1-original.csv")
-write_csv(table2, "output/tables/table2-original.csv")
-write_csv(table4, "output/tables/table4-original.csv")
+write_csv(table1, here("rep_nosmooth/output/tables/table1-original.csv"))
+write_csv(table2, here("rep_nosmooth/output/tables/table2-original.csv"))
+write_csv(table4, here("rep_nosmooth/output/tables/table4-original.csv"))
 

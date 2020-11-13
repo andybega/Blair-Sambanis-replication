@@ -9,10 +9,9 @@ library(pROC)
 library(forcats)
 library(here)
 
-setwd(here::here("rep_nosmooth"))
-dir.create("output/figures", showWarnings = FALSE)
+dir.create(here("rep_nosmooth/output/figures"), showWarnings = FALSE)
 
-preds <- read_rds("output/all-predictions.rds")
+preds <- read_rds(here("rep_nosmooth/output/all-predictions.rds"))
 
 auc_roc_vec <- function(pred, truth, smooth, sm = "binormal") {
   roc_obj <- pROC::roc(truth, pred, auc = TRUE, quiet = TRUE, smooth = smooth, smooth.method = sm)
@@ -33,7 +32,7 @@ rocs <- preds %>%
 #logcondens = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens"),
 #logcondens.smooth = auc_roc_vec(pred = pred, truth = value, smooth = TRUE, sm = "logcondens.smooth")
 
-mt <- read_rds("output/model-table-w-results.rds")
+mt <- read_rds(here("rep_nosmooth/output/model-table-w-results.rds"))
 mt <- mt %>% left_join(rocs, by = "cell_id")
 
 cols <- c(
@@ -77,7 +76,8 @@ p <- ggplot(benefit, aes(x = value, y = column, color = column)) +
   geom_vline(xintercept = 0, linetype = 3) +
   theme(axis.text.y = element_text(size = 12))
 
-ggsave(plot = p, filename = "output/figures/fig-A3-benefit-plot-extended.png",
+ggsave(plot = p,
+       filename = here("rep_nosmooth/output/figures/fig-A3-benefit-plot-extended.png"),
        height = 3.5, width = 7.5)
 
 

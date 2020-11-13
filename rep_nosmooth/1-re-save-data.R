@@ -7,12 +7,10 @@ library(readstata13)
 library(readr)
 library(here)
 
-setwd(here::here("rep_nosmooth"))
+dir.create(here("rep_nosmooth/trafo-data"), showWarnings = FALSE)
 
-dir.create("trafo-data", showWarnings = FALSE)
+data_1mo <- read.dta13(here("rep_nosmooth/data/1mo_data.dta"))
+write_rds(data_1mo, here("rep_nosmooth/trafo-data/1mo_data.rds"))
 
-data_1mo <- read.dta13("data/1mo_data.dta")
-write_rds(data_1mo, "trafo-data/1mo_data.rds")
-
-data_6mo <- read.dta13("data/6mo_data.dta")
-write_rds(data_6mo, "trafo-data/6mo_data.rds")
+data_6mo <- read.dta13(here("rep_nosmooth/data/6mo_data.dta"))
+write_rds(data_6mo, here("rep_nosmooth/trafo-data/6mo_data.rds"))

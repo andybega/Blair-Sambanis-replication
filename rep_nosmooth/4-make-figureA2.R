@@ -9,10 +9,9 @@ library(dplyr)
 library(tidyr)
 library(here)
 
-setwd(here::here("rep_nosmooth"))
-dir.create("output/figures", showWarnings = FALSE)
+dir.create(here("rep_nosmooth/output/figures"), showWarnings = FALSE)
 
-table2_nosmooth <- read_csv("output/tables/table2-nosmooth.csv")
+table2_nosmooth <- read_csv(here("rep_nosmooth/output/tables/table2-nosmooth.csv"))
 
 model_lvls <- colnames(table2_nosmooth)[-c(1:2)]
 
@@ -42,6 +41,7 @@ p <- pairs %>%
         axis.text.x = element_text(angle = 30, hjust = 1)) +
   labs(x = "", y = "AUC-ROC (empirical)")
 
-ggsave(plot=p, filename = "output/figures/fig-A2-table2-pairs.png",
+ggsave(plot=p,
+       filename = here("rep_nosmooth/output/figures/fig-A2-table2-pairs.png"),
        height = 5, width = 8)
 

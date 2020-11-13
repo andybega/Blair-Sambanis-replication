@@ -1,7 +1,37 @@
-Replication materials for Beger, Morgan, Ward, nd
+Re-analysis of B\&S with both smoothed and empirical AUC-ROC
 ================
 
-**tl;dr:** run through `master.R`
+The easiest way to reproduce our re-analysis is to run `master.R`, which
+will run the other scripts in correct order.
+
+  - Adjust the number of parallel workers in `2-model-runner.R`
+  - Go through `master.R`.
+
+If you want to run without `master.R`, the numbers in the other R
+scripts indicate dependence. For example, the script starting with “3-”
+for requires all “1-” and “2-” scripts to have been run.
+
+Our re-analysis is based on the original B\&S replication materials. The
+main substantive changes are:
+
+  - We evaluate AUC values from both the original smoothed ROC curves
+    but also standard empirical ROC curves.
+  - Two of the structural model implementations have been changed.
+
+While the substantive changes are minor, we have changed the structure
+of the code substantially so that the random forest models can be run in
+parallel.
+
+We intentionally do not set a RNG seed, since the substantive
+conclusions of our re-analysis should not depend on particular RNG seed
+values. There is some slight variation between re-runs of the models as
+a result. There is a provision in the model runner for setting RNG
+seeds, but the downstream scripts won’t work with the resulting file
+names without some manual adjustment.
+
+-----
+
+## Overview
 
 The code in this folder replicates the results in Tables 1 and 2 of
 B\&S, but does so with both the smoothed ROC curve AUC values B\&S
@@ -25,9 +55,9 @@ logic is to:
 
 ## Reproducing our replication
 
-Below are instructions for how to run the script in order to replicate
-the updated analysis. To do a clean replication, delete the `output/`
-folder; this is not required though.
+Below are instructions for how to manually run the scripts in order to
+replicate the updated analysis. To do a clean replication, delete the
+`output/` folder; this is not required though.
 
 The file numbering indicates the order in which files should be run, and
 roughly correspond to the steps above. Files with the same number can be
@@ -107,8 +137,10 @@ AUC-ROC.
 Anyways, the model runner script does include a provision for setting a
 RNG seed, in which case the key output files will be suffixed with the
 RNG seed value. Note that the results processing scripts are not setup
-to work this these output files, but it should be fairly obvious what
-lines need modifications to make them work.
+to work this these output files. Instead of adjusting file names in the
+downstream scripts, the easiest way to get this working again is to copy
+the output + RNG seed files and rename them by dropping the RNG seed
+suffix.
 
 ## Model definitions
 

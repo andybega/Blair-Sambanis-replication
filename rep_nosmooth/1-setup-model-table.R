@@ -13,7 +13,6 @@ library(purrr)
 library(yaml)
 library(jsonlite)
 
-setwd(here::here("rep_nosmooth"))
 
 
 # Table 1 cell definitions ------------------------------------------------
@@ -596,13 +595,19 @@ stopifnot(
 #   JSON.
 #
 
-dir.create("output/model-definitions", recursive = TRUE, showWarnings = FALSE)
+dir.create(here("rep_nosmooth/output/model-definitions"),
+           recursive = TRUE, showWarnings = FALSE)
 
-write_rds(model_table,    "output/model-definitions/model-table.rds")
-write_json(feature_specs, "output/model-definitions/feature-specs.json",
+write_rds(model_table,
+          here("rep_nosmooth/output/model-definitions/model-table.rds"))
+write_json(feature_specs,
+           here("rep_nosmooth/output/model-definitions/feature-specs.json"),
            pretty = TRUE, auto_unbox = TRUE)
-write_yaml(hp_settings,   "output/model-definitions/hp-settings.yaml")
-write_yaml(dv_specs,      "output/model-definitions/dv-specs.yaml")
-write_yaml(train_end_year, "output/model-definitions/train-end-year.yaml")
+write_yaml(hp_settings,
+           here("rep_nosmooth/output/model-definitions/hp-settings.yaml"))
+write_yaml(dv_specs,
+           here("rep_nosmooth/output/model-definitions/dv-specs.yaml"))
+write_yaml(train_end_year,
+           here("rep_nosmooth/output/model-definitions/train-end-year.yaml"))
 
 

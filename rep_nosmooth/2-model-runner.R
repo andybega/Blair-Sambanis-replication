@@ -10,7 +10,14 @@ WORKERS  <- 8
 # last element of its file name.
 RNG_SEED <- NULL
 
-setwd(here::here("rep_nosmooth"))
+
+oldwd <- getwd()
+newwd <- here::here("rep_nosmooth")
+if (oldwd != newwd) {
+  lgr::lgr$info("Temporarily setting wd to '%s'", newwd)
+  setwd(newwd)
+}
+
 
 library(dplyr)
 library(readr)
@@ -367,7 +374,8 @@ if (!is.null(RNG_SEED)) {
     writeLines("output/model-table-w-results.md")
 }
 
-
-
-
+if (oldwd != newwd) {
+  lgr$info("Reseting working directory to '%s'", oldwd)
+  setwd(oldwd)
+}
 lgr$info("Script finished")
