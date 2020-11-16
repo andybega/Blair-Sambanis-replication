@@ -10,9 +10,21 @@ all: paper.pdf paper.docx
 paper.pdf: paper.Rmd
 		Rscript -e 'rmarkdown::render("paper.Rmd")'
 
+paper.md: paper.Rmd
+		Rscript -e 'rmarkdown::render("paper.Rmd")'
+
 paper.docx: paper.md
 		pandoc paper.md -o paper.docx
 
 clean:
-		rm paper.tex paper.md paper.out
+		rm paper.tex paper.md
 .PHONY: clean
+
+refs:
+		Rscript make-references-bib.R
+.PHONY: refs
+
+inputs:
+		Rscript update-inputs.R
+.PHONY: inputs
+
