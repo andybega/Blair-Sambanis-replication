@@ -39,6 +39,8 @@ a provision in the model runner for setting RNG seeds, but the downstream
 scripts won't work with the resulting file names without some manual 
 adjustment. 
 
+_Note (July 2022): The latest version of randomForest on CRAN leads to a memory issue when trying to the part of the replication code that trains all of the models. Memory usage increases until the process errors out or system crashes. Thus the old randomForest 4.6-14 is required for replication (this is also the version we used when originally conducting the replication). The package setup script will check for this, and issue guidance as needed. Thanks to Christian Oswald for raising this issue. (#12)_
+
 *****
 
 ## Overview

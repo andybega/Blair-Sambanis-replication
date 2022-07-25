@@ -12,6 +12,23 @@ check_packages <- function() {
 
   not_installed <- need[!need %in% installed]
 
+  # special treatment for randomForest (#12)
+  if ("randomForest" %in% not_installed) {
+    message("Please install version 4.6-14 of randomForest from source:\n\n",
+            "devtools::install_version(\"randomForest\", version = \"4.6-14\")",
+            "\n\nSee https://github.com/andybega/Blair-Sambanis-replication/issues/12 for more details.\n")
+  } else {
+    # make sure correct version of randomForest is at hand
+    ver <- installed.packages()["randomForest", "Version"]
+    if (ver > "4.6-14") {
+      message("Due to a memory issue with the latest version of {randomForest} on CRAN, ",
+              "an older version of the package is needed.\n",
+              "See https://github.com/andybega/Blair-Sambanis-replication/issues/12 for more details.\n\n",
+              "devtools::install_version(\"randomForest\", version = \"4.6-14\")")
+      return(invisible(FALSE))
+    }
+  }
+
   if ("dplyr" %in% installed) {
     # need v 1.0.0 or greater in order to be able to group_by a list column in
     # 3-recreate-tables.R
